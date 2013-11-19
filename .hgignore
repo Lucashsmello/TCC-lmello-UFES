@@ -1,0 +1,9 @@
+syntax: glob
+
+exemplos/*
+artigos/*
+monografia/*.aux
+monografia/monografia.pdf
+monografia/.tmpdir/*
+*.orig
+*~

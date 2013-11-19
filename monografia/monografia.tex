@@ -1,0 +1,93 @@
+\documentclass[english,ruledheader]{abnt}	% padrao abtnt, inlgles, nao sei oq eh ruledheader ainda TODO
+\usepackage[T1]{fontenc} 			% forcar fonte latina
+\usepackage[Lenny]{fncychap} 			% fancyfie!!! =p
+\usepackage[utf8]{inputenc}
+
+% \usepackage{algorithm2e}			% algoritmo com linhazinha legal ;)
+\usepackage{float}
+
+\usepackage{enumerate}
+
+\usepackage{url}
+
+\usepackage{amsmath}				% coisas matematicas
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{graphicx}				% trecos graficos
+
+\graphicspath{{pics/}}				% caminho para pasta com figuras
+
+\usepackage{verbatim}
+%para funcionar as referencias na abnt
+\usepackage{abnt-alf}
+
+%para insercao de numeracao nas linhas
+%\usepackage{lineno}
+
+\makeatletter
+\usepackage{babel}
+\makeatother
+
+\begin{document}
+
+\author{Lucas Henrique Sousa Mello}
+
+\title{Super Titulo}
+
+\orientador[Advisor:\\]{Fl\'avio Miguel Varej\~ao, Dr. -Ing??? QQ \'e esse -Ing???}
+
+\comentario{Monograph presented for obtaining the B.Sc. degree Computer Science at the Federal University of Esp\'irito Santo (UFES)}
+
+\instituicao{Departamento de Inform\'atica \par Centro Tecnol\'ogico\par Universidade Federal do Esp\'irito Santo}
+
+\local{Vit\'oria - ES, Brasil}
+
+% \data{February, 2010}
+\data{\today}
+
+\capa
+
+\folhaderosto
+
+\begin{folhadeaprovacao}
+Monograph of Graduation Final Project under the title of \textit{``\ABNTtitulodata''},
+defended by \ABNTautordata~ and aproved in \ABNTdatadata, at Vit\'oria,
+state of Esp\'irito Santo, by the examination of the following teachers:
+\setlength{\ABNTsignthickness}{0.4pt}
+
+
+\assinatura{Prof. Dr. Fl\'avio Miguel Varej\~ao\\ Universidade Federal do Esp\'irito Santo - UFES}
+\assinatura{???\\ ???}
+\assinatura{???\\ ???} 
+\end{folhadeaprovacao}
+
+\begin{abstract}
+
+\end{abstract}
+
+\begin{resumo}
+
+\end{resumo}
+
+\chapter*{Acknowledgements}
+
+\chapter*{Thanks to}
+% 
+\tableofcontents{}
+% 
+\listoffigures
+
+\listoftables
+
+% \listofalgorithms
+
+\input{conteudo.tex}
+
+\bibliographystyle{abnt-alf}
+\bibliography{references}
+
+\anexo
+
+\end{document}
+
