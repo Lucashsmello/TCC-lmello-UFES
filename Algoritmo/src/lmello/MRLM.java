@@ -20,9 +20,14 @@
  */
 package lmello;
 
+import java.util.ArrayList;
+
+import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.MultiLabelOutput;
+import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
 import mulan.data.DataUtils;
+import mulan.data.LabelsMetaData;
 import mulan.data.MultiLabelInstances;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -30,112 +35,195 @@ import weka.classifiers.meta.FilteredClassifier;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.attribute.Add;
 
 public class MRLM extends TransformationBasedMultiLabelLearner {
 
-    /**
-     * The new chain ordering of the label indices
-     */
-    private int[] chain;
-    /**
-     * The ensemble of binary relevance models. These are Weka
-     * FilteredClassifier objects, where the filter corresponds to removing all
-     * label apart from the one that serves as a target for the corresponding
-     * model.
-     */
-    protected FilteredClassifier[][] ensemble;
-    int chainSize = 2;
+	/**
+	 * The ensemble of binary relevance models. These are Weka
+	 * FilteredClassifier objects, where the filter corresponds to removing all
+	 * label apart from the one that serves as a target for the corresponding
+	 * model.
+	 */
+	protected FilteredClassifier[][] ensemble;
+	int chainSize = 2;
+	BinaryRelevance br;
+	Add[] addsattr;
 
-    /**
-     * Creates a new instance
-     *
-     * @param classifier the base-level classification algorithm that will be
-     * used for training each of the binary models
-     * @param aChain
-     */
-    public MRLM(Classifier classifier, int chainSize) {
-        super(classifier);
-        this.chainSize = chainSize;
-    }
+	/**
+	 * Creates a new instance
+	 * 
+	 * @param classifier
+	 *            the base-level classification algorithm that will be used for
+	 *            training each of the binary models
+	 * @param aChain
+	 */
+	public MRLM(Classifier classifier, int chainSize) {
+		super(classifier);
+		this.chainSize = chainSize;
+		br = new BinaryRelevance(classifier);
+	}
 
-    /**
-     * Creates a new instance
-     *
-     * @param classifier the base-level classification algorithm that will be
-     * used for training each of the binary models
-     */
-    public MRLM(Classifier classifier) {
-        super(classifier);
-    }
+	/**
+	 * Creates a new instance
+	 * 
+	 * @param classifier
+	 *            the base-level classification algorithm that will be used for
+	 *            training each of the binary models
+	 */
+	public MRLM(Classifier classifier) {
+		this(classifier, 2);
+	}
 
-    @Override
-    protected void buildInternal(MultiLabelInstances train) throws Exception {
-        if (chain == null) {
-            chain = new int[numLabels];
-            for (int i = 0; i < numLabels; i++) {
-                chain[i] = i;
-            }
-        }
+	private void TransformInstance(Instance inst, MultiLabelOutput mlo) {
+		if (mlo != null) {
+			double[] confs = mlo.getConfidences();
+			boolean[] bipart= mlo.getBipartition();
+			for (int j = 0; j < numLabels; j++) {
+//				inst.setValue(inst.numAttributes() - numLabels + j, confs[j]);
+				inst.setValue(inst.numAttributes() - numLabels + j, bipart[j]?1:0);
+			}
+		}
+	}
 
+	private MultiLabelOutput ChainMakePrediction(int c, Instance inst,
+			MultiLabelOutput prevOut) throws Exception {
 
-        Instances trainDataset;
-        numLabels = train.getNumLabels();
-        ensemble = new FilteredClassifier[chainSize][numLabels];
-        trainDataset = train.getDataSet();
+		// boolean[] bipart = prevOut.getBipartition();
 
-        for (int i = 0; i < chainSize; i++) {
-            for (int j = 0; j < numLabels; j++) {
-                ensemble[i][j] = new FilteredClassifier();
-                ensemble[i][j].setClassifier(AbstractClassifier.makeCopy(baseClassifier));
+		// double[] bv = new double[numLabels];
+		boolean[] bipartition = new boolean[numLabels];
+		double[] confidences = new double[numLabels];
 
+		TransformInstance(inst, prevOut);
 
-//            Add addattr=new Add();
-//            addattr
+		for (int j = 0; j < numLabels; j++) {
+			// double v = inst.value(labelIndices[j]);
+			// inst.setValue(labelIndices[j], bv[j]);
+			double[] distribution = ensemble[c][j]
+					.distributionForInstance(inst);
+			// inst.setValue(labelIndices[j], v);
 
-//            Remove remove = new Remove();
-//            remove.setAttributeIndicesArray(indicesToRemove);
-//            remove.setInputFormat(trainDataset);
-//            remove.setInvertSelection(false);
-//            ensemble[i].setFilter(remove);
+			int maxIndex = (distribution[0] > distribution[1]) ? 0 : 1;
 
-                trainDataset.setClassIndex(labelIndices[j]);
-                debug("Bulding model " + (j + 1) + "/" + numLabels);
-                ensemble[i][j].buildClassifier(trainDataset);
-            }
-        }
-    }
+			// Ensure correct predictions both for class values {0,1} and {1,0}
+			bipartition[j] = (maxIndex == 1) ? true : false;
 
-    @Override
-    protected MultiLabelOutput makePredictionInternal(Instance instance) throws Exception {
-        boolean[] bipartition = new boolean[numLabels];
-        double[] confidences = new double[numLabels];
+			// The confidence of the label being equal to 1
+			confidences[j] = distribution[1];
+		}
+		MultiLabelOutput mlo = new MultiLabelOutput(bipartition, confidences);
+		return mlo;
+	}
 
-        Instance tempInstance = DataUtils.createInstance(instance, instance.weight(), instance.toDoubleArray());
-        for (int i = 0; i < chainSize; i++) {
-            for (int j = 0; j < numLabels; j++) {
-                double distribution[];
-                try {
-                    distribution = ensemble[i][j].distributionForInstance(tempInstance);
-                } catch (Exception e) {
-                    System.out.println(e);
-                    return null;
-                }
-                int maxIndex = (distribution[0] > distribution[1]) ? 0 : 1;
+	private MultiLabelOutput ChainMakePrediction(int c, Instance inst)
+			throws Exception {
+		return ChainMakePrediction(c, inst, null);
+	}
 
-                // Ensure correct predictions both for class values {0,1} and {1,0}
-                Attribute classAttribute = ensemble[i][j].getFilter().getOutputFormat().classAttribute();
-                bipartition[j] = (classAttribute.value(maxIndex).equals("1")) ? true : false;
+	private FilteredClassifier constructClassifier(int labeli,
+			Instances trainDataset) throws Exception {
+		FilteredClassifier fc = new FilteredClassifier();
+		fc.setClassifier(AbstractClassifier.makeCopy(baseClassifier));
+		int[] indicesToRemove = new int[numLabels];
+		// ensemble[c][j].setClassifier(AbstractClassifier
+		// .makeCopy(baseClassifier));
 
-                // The confidence of the label being equal to 1
-                confidences[j] = distribution[classAttribute.indexOfValue("1")];
+		int k;
+		for (k = 0; k < labeli; k++) {
+			indicesToRemove[k] = labelIndices[k];
+		}
+		indicesToRemove[k] = trainDataset.numAttributes() - numLabels + labeli;
+		for (k = labeli + 1; k < numLabels; k++) {
+			indicesToRemove[k] = labelIndices[k];
+		}
 
-//                tempInstance.setValue(labelIndices[chain[j]], maxIndex);
+		Remove remove = new Remove();
+		remove.setAttributeIndicesArray(indicesToRemove);
+		remove.setInputFormat(trainDataset);
+		remove.setInvertSelection(false);
 
-            }
-        }
-        MultiLabelOutput mlo = new MultiLabelOutput(bipartition, confidences);
-        return mlo;
-    }
+		fc.setFilter(remove);
+		return fc;
+	}
+
+	@Override
+	protected void buildInternal(MultiLabelInstances train) throws Exception {
+
+		numLabels = train.getNumLabels();
+		Instances trainData = train.getDataSet();
+		ensemble = new FilteredClassifier[chainSize][numLabels];
+
+		addsattr = new Add[numLabels];
+		Instances newtrainData = trainData;
+
+		for (int j = 0; j < numLabels; j++) {
+			addsattr[j] = new Add();
+			addsattr[j].setOptions(new String[] { "-T", "NUM" });
+
+			addsattr[j].setAttributeIndex("last");
+			addsattr[j].setAttributeName("labelAttr" + j);
+			addsattr[j].setInputFormat(newtrainData);
+
+			newtrainData = Filter.useFilter(newtrainData, addsattr[j]);
+		}
+
+		br.build(train);
+
+		for (int i = 0; i < newtrainData.numInstances(); i++) {
+			Instance inst = newtrainData.instance(i);
+			MultiLabelOutput mlo = br.makePrediction(inst);
+			TransformInstance(inst, mlo);
+		}
+
+		if (chainSize == 0) {
+			return;
+		}
+
+		for (int c = 0; c < chainSize - 1; c++) {
+			for (int i = 0; i < newtrainData.numInstances(); i++) {
+
+				for (int j = 0; j < numLabels; j++) {
+
+					ensemble[c][j] = constructClassifier(j, newtrainData);
+
+					newtrainData.setClassIndex(labelIndices[j]);
+					ensemble[c][j].buildClassifier(newtrainData);
+				}
+				Instance inst = newtrainData.instance(i);
+				MultiLabelOutput mlo;
+
+				mlo = ChainMakePrediction(c, inst);
+
+				TransformInstance(inst, mlo);
+			}
+		}
+		for (int j = 0; j < numLabels; j++) {
+			ensemble[chainSize - 1][j] = constructClassifier(j, newtrainData);
+			newtrainData.setClassIndex(labelIndices[j]);
+			ensemble[chainSize - 1][j].buildClassifier(newtrainData);
+		}
+
+	}
+
+	@Override
+	protected MultiLabelOutput makePredictionInternal(Instance instance)
+			throws Exception {
+		Instance tempInstance = instance;
+
+		for (int j = 0; j < numLabels; j++) {
+			addsattr[j].input(tempInstance);
+			tempInstance = addsattr[j].output();
+		}
+
+		MultiLabelOutput mlo = br.makePrediction(instance);
+
+		for (int c = 0; c < chainSize; c++) {
+			mlo = ChainMakePrediction(c, tempInstance, mlo);
+		}
+
+		return mlo;
+	}
 }
