@@ -59,7 +59,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	Add[] addsattr;
 	double Climit = 0.1;
 
-	List<Integer> indexs = new ArrayList<>();
+	List<Integer> indexs = new ArrayList<Integer>();
 
 	/**
 	 * Creates a new instance
@@ -72,7 +72,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	public MRLM(Classifier classifier, int chainSize) {
 		super(classifier);
 		this.chainSize = chainSize;
-		br = new ClassifierChain(classifier);
+		br = new BinaryRelevance(classifier);
 	}
 
 	/**
@@ -91,9 +91,10 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			double[] confs = mlo.getConfidences();
 			boolean[] bipart = mlo.getBipartition();
 			for (int j = 0; j < numLabels; j++) {
-				inst.setValue(inst.numAttributes() - numLabels + j, confs[j]);
 				// inst.setValue(inst.numAttributes() - numLabels + j,
-				// bipart[j] ? 1 : 0);
+				// confs[j]);
+				inst.setValue(inst.numAttributes() - numLabels + j,
+						bipart[j] ? 1 : 0);
 			}
 		}
 	}
@@ -138,7 +139,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			Instances trainDataset) throws Exception {
 		FilteredClassifier fc = new FilteredClassifier();
 		fc.setClassifier(AbstractClassifier.makeCopy(baseClassifier));
-		int[] indicesToRemove = new int[numLabels];
+		int[] indicesToRemove = new int[numLabels - 1];
 		// int nattrs=trainDataset.numAttributes();
 		// int[] indicesToRemove = new int[nattrs-numLabels];
 		// ensemble[c][j].setClassifier(AbstractClassifier
@@ -151,7 +152,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
 		// labeli;
 		for (k = labeli + 1; k < numLabels; k++) {
-			indicesToRemove[k] = labelIndices[k];
+			indicesToRemove[k - 1] = labelIndices[k];
 		}
 		// for (k = 0; k < nattrs-numLabels;k++) {
 		// if(k==labelIndices[labeli]){
@@ -181,21 +182,18 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		// ensemble[c][j].setClassifier(AbstractClassifier
 		// .makeCopy(baseClassifier));
 
-		System.out.println("L="+numLabels);
 		int k;
 		for (k = 0; k < labeli; k++) {
-			System.out.println("k=" + k);
 			indicesToRemove[k] = labelIndices[k];
 		}
 		// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
 		// labeli;
 		for (; k < numLabels - 1; k++) {
-			System.out.println("k=" + k);
 			indicesToRemove[k] = labelIndices[k + 1];
 		}
-		for (int i = trainDataset.numAttributes() - numLabels + labeli; i < trainDataset.numAttributes(); i++) {
+		for (int i = trainDataset.numAttributes() - numLabels + labeli; i < trainDataset
+				.numAttributes(); i++) {
 			indicesToRemove[k] = i;
-			System.out.println("k=" + k);
 			k++;
 		}
 		// for (k = 0; k < nattrs-numLabels;k++) {
@@ -219,7 +217,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	private void buildChainClassifier(int c, Instances newtrainData)
 			throws Exception {
 		for (int j = 0; j < numLabels; j++) {
-			ensemble[c][j] = constructClassifier2(j, newtrainData);
+			ensemble[c][j] = constructClassifier(j, newtrainData);
 			newtrainData.setClassIndex(labelIndices[j]);
 			// debug("Bulding model " + (c * numLabels + j + 1) + "/" +
 			// numLabels
@@ -348,24 +346,24 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		debug("Propagating Prediction 0");
 
 		// // indexs.clear();
-		// for (int i = 0; i < numinsts; i++) {
-		//
-		// Instance inst = newtrainData.instance(i);
-		//
-		// MultiLabelOutput mlo = br.makePrediction(inst);
-		// double[] confs = mlo.getConfidences();
-		// int j;
-		// for (j = 0; j < confs.length; j++) {
-		// if (Math.abs(0.5 - (confs[j])) < Climit) {
-		// // indexs.add(i);
-		// break;
-		// }
-		// }
-		// if (j == confs.length) {
-		// TransformInstance(inst, mlo);
-		// }
-		//
-		// }
+		for (int i = 0; i < numinsts; i++) {
+
+			Instance inst = newtrainData.instance(i);
+
+			MultiLabelOutput mlo = br.makePrediction(inst);
+			// double[] confs = mlo.getConfidences();
+			// int j;
+			// for (j = 0; j < confs.length; j++) {
+			// if (Math.abs(0.5 - (confs[j])) < Climit) {
+			// // indexs.add(i);
+			// break;
+			// }
+			// }
+			// if (j == confs.length) {
+			TransformInstance(inst, mlo);
+			// }
+
+		}
 
 		if (chainSize == 0) {
 			return;
@@ -398,18 +396,19 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 				mlo = ChainMakePrediction(c, inst);
 
 				double[] confs = mlo.getConfidences();
-				int j;
-				for (j = 0; j < confs.length; j++) {
-					if (Math.abs(0.5 - confs[j]) < Climit) {
-						// indexs.add(i);
-						// System.out.println("N Transforma " + i);
-						break;
-					}
-				}
-				if (j == confs.length) {
 
-					TransformInstance(inst, mlo);
-				}
+				// int j;
+				// for (j = 0; j < confs.length; j++) {
+				// if (Math.abs(0.5 - confs[j]) < Climit) {
+				// // indexs.add(i);
+				// // System.out.println("N Transforma " + i);
+				// break;
+				// }
+				// }
+				// if (j == confs.length) {
+				//
+				TransformInstance(inst, mlo);
+				// }
 			}
 		}
 
@@ -435,7 +434,8 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 					mloensemble[c]);
 		}
 
-		return combineMLO(mloensemble);
+//		return mloensemble[chainSize];
+		 return combineMLO2(mloensemble);
 	}
 
 	private MultiLabelOutput combineMLO(MultiLabelOutput[] mloensemble) {
@@ -445,22 +445,53 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		for (int i = 0; i < Fconf.length; i++) {
 			Fconf[i] = c[i];
 		}
-		for (int i = 1; i < mloensemble.length; i++) {
-			double[] conf = mloensemble[i].getConfidences();
-			for (int j = 0; j < conf.length; j++) {
-				Fconf[j] += conf[j];
-			}
-		}
 		// for (int i = 1; i < mloensemble.length; i++) {
 		// double[] conf = mloensemble[i].getConfidences();
 		// for (int j = 0; j < conf.length; j++) {
-		// if(conf[j]>Fconf[j]){
-		// Fconf[j]=conf[j];
+		// Fconf[j] += conf[j];
 		// }
 		// }
-		// }
+		for (int i = 1; i < mloensemble.length; i++) {
+			double[] conf = mloensemble[i].getConfidences();
+			for (int j = 0; j < conf.length; j++) {
+				if (conf[j] > Fconf[j]) {
+					Fconf[j] = conf[j];
+				}
+			}
+		}
 		for (int i = 0; i < Fconf.length; i++) {
-			Fconf[i] /= mloensemble.length;
+			// Fconf[i] /= mloensemble.length;
+			Fbipart[i] = Fconf[i] > 0.5;
+		}
+		return new MultiLabelOutput(Fbipart, Fconf);
+	}
+
+	private MultiLabelOutput combineMLO2(MultiLabelOutput[] mloensemble) {
+		double[] c = mloensemble[1].getConfidences();
+		boolean[] Fbipart = new boolean[mloensemble[1].getBipartition().length];
+		double[] Fconf = new double[mloensemble[1].getConfidences().length];
+		double maxprod = c[0];
+		Fconf[0] = c[0];
+		for (int i = 1; i < Fconf.length; i++) {
+			Fconf[i] = c[i];
+			maxprod *= c[i] >= 0.5 ? c[i] : 1 - c[i];
+		}
+
+		for (int i = 2; i < mloensemble.length; i++) {
+			double[] conf = mloensemble[i].getConfidences();
+			double prod = conf[0];
+
+			for (int j = 1; j < conf.length; j++) {
+				prod *= c[j] >= 0.5 ? c[j] : 1 - c[j];
+			}
+			if (prod > maxprod) {
+				maxprod = prod;
+				for (int j = 0; j < conf.length; j++) {
+					Fconf[j] = c[j];
+				}
+			}
+		}
+		for (int i = 0; i < Fconf.length; i++) {
 			Fbipart[i] = Fconf[i] > 0.5;
 		}
 		return new MultiLabelOutput(Fbipart, Fconf);

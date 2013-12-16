@@ -18,6 +18,7 @@ import weka.classifiers.lazy.IBk;
 import weka.classifiers.trees.J48;
 import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.NormalizableDistance;
 import weka.core.SelectedTag;
 import weka.core.Summarizable;
 import weka.filters.unsupervised.attribute.Normalize;
@@ -32,7 +33,7 @@ import mulan.evaluation.measure.SubsetAccuracy;
 public class test {
 
 	public static void main(String[] args) throws Exception {
-		String dataDir = "/home/lmello/mulan-1.4.0/data/";
+		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
 
 		// String arffFilename =
 		// "/home/lucasmello/mulan-1.4.0/data/emotions.arff";
@@ -45,26 +46,28 @@ public class test {
 
 		MultiLabelInstances dataset = new MultiLabelInstances(arffFilename,
 				xmlFilename);
-		// Instances data=dataset.getDataSet();
-		// Normalize norm=new Normalize();
-		// norm.setInputFormat(data);
-		// Instances newdata=norm.getOutputFormat();
-		//
-		// for(int i=0;i<data.numInstances();i++){
-		// norm.input(data.instance(i));
-		// }
-		// norm.batchFinished();
-		// Instance processed;
-		// while((processed=norm.output())!=null){
-		// newdata.add(processed);
-		// }
-		//
-		// MultiLabelInstances newMLdataset=new MultiLabelInstances(newdata,
-		// dataset.getLabelsMetaData());
+		 Instances data=dataset.getDataSet();
+		 Normalize norm=new Normalize();
+		 norm.setInputFormat(data);
+		 Instances newdata=norm.getOutputFormat();
+		
+		 for(int i=0;i<data.numInstances();i++){
+		 norm.input(data.instance(i));
+		 }
+		 norm.batchFinished();
+		 Instance processed;
+		 while((processed=norm.output())!=null){
+		 newdata.add(processed);
+		 }
+		
+		 MultiLabelInstances newMLdataset=new MultiLabelInstances(newdata,
+		 dataset.getLabelsMetaData());
 
-		IBk knn = new IBk(11);
+		IBk knn = new IBk(7);
+		NormalizableDistance nd=(NormalizableDistance)knn.getNearestNeighbourSearchAlgorithm().getDistanceFunction();
+//		nd.setDontNormalize(true);
 //		knn.setOptions(new String[]{"-I"});
-		MRLM mrlm = new MRLM(knn, 1);
+		MRLM mrlm = new MRLM(knn, 7);
 		mrlm.setDebug(true);
 		BinaryRelevance br = new BinaryRelevance(knn);
 		ClassifierChain cc = new ClassifierChain(knn);
@@ -78,10 +81,10 @@ public class test {
 		String[] metrics = { new SubsetAccuracy().getName(),
 				new mulan.evaluation.measure.HammingLoss().getName() };
 
-//		results = eval.crossValidate(mrlm, dataset, numFolds);
-//		for (String m : metrics) {
-//			System.out.println(m + " : " + results.getMean(m));
-//		}
+		results = eval.crossValidate(mrlm, dataset, numFolds);
+		for (String m : metrics) {
+			System.out.println(m + " : " + results.getMean(m));
+		}
 //		results = eval.crossValidate(br, dataset, numFolds);
 //		for (String m : metrics) {
 //			System.out.println(m + " : " + results.getMean(m));
@@ -90,11 +93,11 @@ public class test {
 		for (String m : metrics) {
 			System.out.println(m + " : " + results.getMean(m));
 		}
-		
-		results = eval.crossValidate(cc2, dataset, numFolds);
-		for (String m : metrics) {
-			System.out.println(m + " : " + results.getMean(m));
-		}
+//		
+//		results = eval.crossValidate(cc2, dataset, numFolds);
+//		for (String m : metrics) {
+//			System.out.println(m + " : " + results.getMean(m));
+//		}
 
 	}
 }
