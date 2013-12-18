@@ -10,6 +10,7 @@ import mulan.classifier.lazy.MLkNN;
 import mulan.classifier.meta.RAkEL;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
+import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.LabelPowerset;
 import mulan.data.MultiLabelInstances;
 import mulan.evaluation.Evaluator;
@@ -25,6 +26,7 @@ import weka.filters.unsupervised.attribute.Normalize;
 import mulan.evaluation.loss.HammingLoss;
 import mulan.evaluation.measure.AveragePrecision;
 import mulan.evaluation.measure.SubsetAccuracy;
+import weka.classifiers.multitarget.meta.*;
 
 /**
  * 
@@ -33,41 +35,42 @@ import mulan.evaluation.measure.SubsetAccuracy;
 public class test {
 
 	public static void main(String[] args) throws Exception {
-		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
+		String dataDir = "/home/lmello/mulan-1.4.0/data/";
 
 		// String arffFilename =
 		// "/home/lucasmello/mulan-1.4.0/data/emotions.arff";
 		// String xmlFilename =
 		// "/home/lucasmello/mulan-1.4.0/data/emotions.xml";
-		// String arffFilename =dataDir+"yeast.arff";
-		// String xmlFilename = dataDir+"yeast.xml";
+//		 String arffFilename =dataDir+"yeast.arff";
+//		 String xmlFilename = dataDir+"yeast.xml";
 		String arffFilename = dataDir + "emotions.arff";
 		String xmlFilename = dataDir + "emotions.xml";
 
 		MultiLabelInstances dataset = new MultiLabelInstances(arffFilename,
 				xmlFilename);
-		 Instances data=dataset.getDataSet();
-		 Normalize norm=new Normalize();
-		 norm.setInputFormat(data);
-		 Instances newdata=norm.getOutputFormat();
-		
-		 for(int i=0;i<data.numInstances();i++){
-		 norm.input(data.instance(i));
-		 }
-		 norm.batchFinished();
-		 Instance processed;
-		 while((processed=norm.output())!=null){
-		 newdata.add(processed);
-		 }
-		
-		 MultiLabelInstances newMLdataset=new MultiLabelInstances(newdata,
-		 dataset.getLabelsMetaData());
+//		 Instances data=dataset.getDataSet();
+//		 Normalize norm=new Normalize();
+//		 norm.setInputFormat(data);
+//		 Instances newdata=norm.getOutputFormat();
+//		
+//		 for(int i=0;i<data.numInstances();i++){
+//		 norm.input(data.instance(i));
+//		 }
+//		 norm.batchFinished();
+//		 Instance processed;
+//		 while((processed=norm.output())!=null){
+//		 newdata.add(processed);
+//		 }
+//		
+//		 MultiLabelInstances newMLdataset=new MultiLabelInstances(newdata,
+//		 dataset.getLabelsMetaData());
 
-		IBk knn = new IBk(7);
-		NormalizableDistance nd=(NormalizableDistance)knn.getNearestNeighbourSearchAlgorithm().getDistanceFunction();
+		IBk knn = new IBk(11);
+//		NormalizableDistance nd=(NormalizableDistance)knn.getNearestNeighbourSearchAlgorithm().getDistanceFunction();
 //		nd.setDontNormalize(true);
 //		knn.setOptions(new String[]{"-I"});
-		MRLM mrlm = new MRLM(knn, 7);
+		knn.setDistanceWeighting(new SelectedTag(IBk.WEIGHT_INVERSE, IBk.TAGS_WEIGHTING));
+		MRLM mrlm = new MRLM(knn, 10);
 		mrlm.setDebug(true);
 		BinaryRelevance br = new BinaryRelevance(knn);
 		ClassifierChain cc = new ClassifierChain(knn);
@@ -76,11 +79,15 @@ public class test {
 
 		Evaluator eval = new Evaluator();
 		MultipleEvaluation results;
+		EnsembleOfClassifierChains ecc=new EnsembleOfClassifierChains(knn, 10, true, true);
+		lmelloECC lecc=new lmelloECC(knn, 10, true, false);
+		
+//		EnsembleMT
 
 		int numFolds = 10;
 		String[] metrics = { new SubsetAccuracy().getName(),
 				new mulan.evaluation.measure.HammingLoss().getName() };
-
+//
 		results = eval.crossValidate(mrlm, dataset, numFolds);
 		for (String m : metrics) {
 			System.out.println(m + " : " + results.getMean(m));
@@ -93,8 +100,12 @@ public class test {
 		for (String m : metrics) {
 			System.out.println(m + " : " + results.getMean(m));
 		}
-//		
-//		results = eval.crossValidate(cc2, dataset, numFolds);
+		results = eval.crossValidate(ecc, dataset, numFolds);
+		for (String m : metrics) {
+			System.out.println(m + " : " + results.getMean(m));
+		}
+////		
+//		results = eval.crossValidate(lecc, dataset, numFolds);
 //		for (String m : metrics) {
 //			System.out.println(m + " : " + results.getMean(m));
 //		}

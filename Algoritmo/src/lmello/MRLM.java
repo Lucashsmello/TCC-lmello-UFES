@@ -30,6 +30,7 @@ import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
 import mulan.data.DataUtils;
 import mulan.data.LabelsMetaData;
 import mulan.data.MultiLabelInstances;
+import mulan.evaluation.measure.SubsetAccuracy;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.meta.FilteredClassifier;
@@ -86,17 +87,25 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		this(classifier, 2);
 	}
 
-	private void TransformInstance(Instance inst, MultiLabelOutput mlo) {
+	private void TransformInstance(Instance inst, MultiLabelOutput mlo,
+			boolean useConf) {
 		if (mlo != null) {
 			double[] confs = mlo.getConfidences();
 			boolean[] bipart = mlo.getBipartition();
 			for (int j = 0; j < numLabels; j++) {
-				// inst.setValue(inst.numAttributes() - numLabels + j,
-				// confs[j]);
-				inst.setValue(inst.numAttributes() - numLabels + j,
-						bipart[j] ? 1 : 0);
+				if (useConf) {
+					inst.setValue(inst.numAttributes() - numLabels + j,
+							confs[j]);
+				} else {
+					inst.setValue(inst.numAttributes() - numLabels + j,
+							bipart[j] ? 1 : 0);
+				}
 			}
 		}
+	}
+
+	private void TransformInstance(Instance inst, MultiLabelOutput mlo) {
+		TransformInstance(inst, mlo, true);
 	}
 
 	private MultiLabelOutput ChainMakePrediction(int c, Instance inst,
@@ -107,8 +116,12 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		// double[] bv = new double[numLabels];
 		boolean[] bipartition = new boolean[numLabels];
 		double[] confidences = new double[numLabels];
-
-		TransformInstance(inst, prevOut);
+		// boolean hittt = prevOut == null ? true : hit(prevOut, inst);
+		if (c < chainSize - 1) {
+			TransformInstance(inst, prevOut);
+		} else {
+			TransformInstance(inst, prevOut, false);
+		}
 		for (int j = 0; j < numLabels; j++) {
 			// double v = inst.value(labelIndices[j]);
 			// inst.setValue(labelIndices[j], bv[j]);
@@ -272,7 +285,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		buildInternal2(train);
 	}
 
-	protected void buildInternal1(MultiLabelInstances train) throws Exception {
+	private void buildInternal1(MultiLabelInstances train) throws Exception {
 		numLabels = train.getNumLabels();
 		Instances trainData = train.getDataSet();
 		int numinsts = trainData.numInstances();
@@ -284,7 +297,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		// debug("Bulding model BR");
 		br.build(train);
 
-		debug("Propagating Prediction 0");
+//		debug("Propagating Prediction 0");
 
 		// for (int i = 0; i < numinsts; i++) {
 		//
@@ -331,7 +344,23 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		buildChainClassifier(chainSize - 1, newtrainData);
 	}
 
-	protected void buildInternal2(MultiLabelInstances train) throws Exception {
+	private boolean hit(MultiLabelOutput mlo, Instance inst) {
+		boolean[] bip = mlo.getBipartition();
+		for (int i = 0; i < numLabels; i++) {
+			if (bip[i]) {
+				if (inst.value(labelIndices[i]) == 0) {
+					return false;
+				}
+			} else {
+				if (inst.value(labelIndices[i]) == 1) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	private void buildInternal2(MultiLabelInstances train) throws Exception {
 		numLabels = train.getNumLabels();
 		Instances trainData = train.getDataSet();
 		int numinsts = trainData.numInstances();
@@ -343,27 +372,29 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		// debug("Bulding model BR");
 		br.build(train);
 
-		debug("Propagating Prediction 0");
+//		debug("Propagating Prediction 0");
 
 		// // indexs.clear();
-		for (int i = 0; i < numinsts; i++) {
+//		for (int i = 0; i < numinsts; i++) {
+//
+//			Instance inst = newtrainData.instance(i);
 
-			Instance inst = newtrainData.instance(i);
-
-			MultiLabelOutput mlo = br.makePrediction(inst);
-			// double[] confs = mlo.getConfidences();
+//			MultiLabelOutput mlo = br.makePrediction(inst);
+//			double[] confs = mlo.getConfidences();
 			// int j;
 			// for (j = 0; j < confs.length; j++) {
 			// if (Math.abs(0.5 - (confs[j])) < Climit) {
-			// // indexs.add(i);
+			// indexs.add(i);
 			// break;
 			// }
 			// }
 			// if (j == confs.length) {
-			TransformInstance(inst, mlo);
+//			if (hit(mlo, inst)) {
+//				TransformInstance(inst, mlo);
+//			}
 			// }
 
-		}
+//		}
 
 		if (chainSize == 0) {
 			return;
@@ -372,7 +403,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		for (int c = 0; c < chainSize - 1; c++) {
 			buildChainClassifier(c, newtrainData);
 
-			debug("Propagating Prediction " + (c + 1));
+//			debug("Propagating Prediction " + (c + 1));
 
 			// int toremove = (numinsts / chainSize);
 			// indexs.clear();
@@ -389,13 +420,13 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			// numinsts = newtrainData.numInstances();
 			// System.out.println(numinsts+" | "+toremove+"| "+indexs.size());
 			// for (int i = 0; i < numinsts / 10; i++) {
-			for (int i = 0; i < numinsts; i++) {
-				Instance inst = newtrainData.instance(i);
-				MultiLabelOutput mlo;
+//			for (int i = 0; i < numinsts; i++) {
+//				Instance inst = newtrainData.instance(i);
+//				MultiLabelOutput mlo;
 
-				mlo = ChainMakePrediction(c, inst);
+//				mlo = ChainMakePrediction(c, inst);
 
-				double[] confs = mlo.getConfidences();
+//				double[] confs = mlo.getConfidences();
 
 				// int j;
 				// for (j = 0; j < confs.length; j++) {
@@ -407,9 +438,11 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 				// }
 				// if (j == confs.length) {
 				//
-				TransformInstance(inst, mlo);
+//				if (hit(mlo, inst)) {
+//					TransformInstance(inst, mlo);
+//				}
 				// }
-			}
+//			}
 		}
 
 		buildChainClassifier(chainSize - 1, newtrainData);
@@ -434,8 +467,8 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 					mloensemble[c]);
 		}
 
-//		return mloensemble[chainSize];
-		 return combineMLO2(mloensemble);
+//		 return mloensemble[chainSize];
+		return combineMLO2(mloensemble);
 	}
 
 	private MultiLabelOutput combineMLO(MultiLabelOutput[] mloensemble) {
@@ -445,22 +478,29 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		for (int i = 0; i < Fconf.length; i++) {
 			Fconf[i] = c[i];
 		}
+		for (int i = 1; i < mloensemble.length; i++) {
+
+			double[] conf = mloensemble[i].getConfidences();
+			for (int j = 0; j < conf.length; j++) {
+				Fconf[j] += conf[j];
+			}
+		}
+		// for (int i = 0; i < mloensemble.length; i++) {
+		//
+		// double[] conf = mloensemble[i].getConfidences();
+		// System.out.print(conf[i] + " ");
+		// }
+		// System.out.println("");
 		// for (int i = 1; i < mloensemble.length; i++) {
 		// double[] conf = mloensemble[i].getConfidences();
 		// for (int j = 0; j < conf.length; j++) {
-		// Fconf[j] += conf[j];
+		// if (conf[j] > Fconf[j]) {
+		// Fconf[j] = conf[j];
 		// }
 		// }
-		for (int i = 1; i < mloensemble.length; i++) {
-			double[] conf = mloensemble[i].getConfidences();
-			for (int j = 0; j < conf.length; j++) {
-				if (conf[j] > Fconf[j]) {
-					Fconf[j] = conf[j];
-				}
-			}
-		}
+		// }
 		for (int i = 0; i < Fconf.length; i++) {
-			// Fconf[i] /= mloensemble.length;
+			Fconf[i] /= mloensemble.length;
 			Fbipart[i] = Fconf[i] > 0.5;
 		}
 		return new MultiLabelOutput(Fbipart, Fconf);
