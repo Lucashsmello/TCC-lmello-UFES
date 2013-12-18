@@ -199,6 +199,7 @@ public class CC2 extends TransformationBasedMultiLabelLearner {
 
 			ensemble[i].buildClassifier(trainDataset);
 
+//			long t1=System.nanoTime();
 			try {
 				for (int k = 0; k < trainDataset.numInstances(); k++) {
 					Instance inst = trainDataset.instance(k);
@@ -211,14 +212,15 @@ public class CC2 extends TransformationBasedMultiLabelLearner {
 					Attribute classAttribute = ensemble[i].getFilter()
 							.getOutputFormat().classAttribute();
 
-//					inst.setValue(inst.numAttributes() - numLabels + chain[i],
-//							distribution[classAttribute.indexOfValue("1")]);
 					inst.setValue(inst.numAttributes() - numLabels + chain[i],
-							maxIndex);
+							distribution[classAttribute.indexOfValue("1")]);
+//					inst.setValue(inst.numAttributes() - numLabels + chain[i],
+//							maxIndex);
 				}
 			} catch (Exception e) {
 				throw e;
 			}
+//			System.out.println("t1 (ms)="+(System.nanoTime()-t1)/1e6);
 		}
 	}
 
@@ -258,10 +260,10 @@ public class CC2 extends TransformationBasedMultiLabelLearner {
 					.indexOfValue("1")];
 			// System.out.println(confidences[chain[counter]]);
 
-			 tempInstance.setValue(instance.numAttributes()+chain[counter],
-			 maxIndex);
-//			tempInstance.setValue(instance.numAttributes() + chain[counter],
-//					confidences[chain[counter]]);
+//			 tempInstance.setValue(instance.numAttributes()+chain[counter],
+//			 maxIndex);
+			tempInstance.setValue(instance.numAttributes() + chain[counter],
+					confidences[chain[counter]]);
 
 		}
 
