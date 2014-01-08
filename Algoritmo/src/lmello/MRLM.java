@@ -18,29 +18,23 @@
 package lmello;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.MultiLabelOutput;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
+import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
-import mulan.data.DataUtils;
-import mulan.data.LabelsMetaData;
 import mulan.data.MultiLabelInstances;
-import mulan.evaluation.measure.SubsetAccuracy;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.classifiers.meta.FilteredClassifier;
-import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
 import weka.filters.unsupervised.attribute.Add;
-import weka.filters.unsupervised.instance.RemoveRange;
+import weka.filters.unsupervised.attribute.Remove;
 
 public class MRLM extends TransformationBasedMultiLabelLearner {
 
@@ -55,12 +49,16 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	 * model.
 	 */
 	protected FilteredClassifier[][] ensemble;
-	int chainSize = 2;
-	MultiLabelLearner br;
+	private int chainSize = 2;
+	private int realchainSize;
+	MultiLabelLearner baseml;
 	Add[] addsattr;
 	double Climit = 0.1;
 
 	List<Integer> indexs = new ArrayList<Integer>();
+	private boolean instanceSelection = true;
+	private boolean useTrainPropag;
+	private boolean useOnlyLabels;
 
 	/**
 	 * Creates a new instance
@@ -73,7 +71,27 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	public MRLM(Classifier classifier, int chainSize) {
 		super(classifier);
 		this.chainSize = chainSize;
-		br = new BinaryRelevance(classifier);
+		realchainSize = chainSize;
+		baseml = new BinaryRelevance(classifier);
+		useTrainPropag = false;
+		useOnlyLabels = false;
+	}
+
+	/**
+	 * Creates a new instance
+	 * 
+	 * @param classifier
+	 *            the base-level classification algorithm that will be used for
+	 *            training each of the binary models
+	 * @param aChain
+	 */
+	public MRLM(MultiLabelLearner baseml, Classifier classifier, int chainSize) {
+		super(classifier);
+		this.chainSize = chainSize;
+		realchainSize = chainSize;
+		this.baseml = baseml;
+		useTrainPropag = false;
+		useOnlyLabels = false;
 	}
 
 	/**
@@ -111,13 +129,9 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	private MultiLabelOutput ChainMakePrediction(int c, Instance inst,
 			MultiLabelOutput prevOut) throws Exception {
 
-		// boolean[] bipart = prevOut.getBipartition();
-
-		// double[] bv = new double[numLabels];
 		boolean[] bipartition = new boolean[numLabels];
 		double[] confidences = new double[numLabels];
-		// boolean hittt = prevOut == null ? true : hit(prevOut, inst);
-		if (c < chainSize - 1) {
+		if (c < realchainSize - 1) {
 			TransformInstance(inst, prevOut);
 		} else {
 			TransformInstance(inst, prevOut, false);
@@ -128,7 +142,13 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 
 			double[] distribution = ensemble[c][j]
 					.distributionForInstance(inst);
-			// inst.setValue(labelIndices[j], v);
+
+			// if ((distribution[0] > 0.1) && (distribution[0] < 0.9)) {
+			// for (int x = 0; x < distribution.length; x++) {
+			// System.out.print(distribution[x] + " ");
+			// }
+			// System.out.println();
+			// }
 
 			int maxIndex = (distribution[0] > distribution[1]) ? 0 : 1;
 
@@ -137,6 +157,13 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 
 			// The confidence of the label being equal to 1
 			confidences[j] = distribution[1];
+
+			if (c < realchainSize - 1) {
+				inst.setValue(inst.numAttributes() - numLabels + j,
+						confidences[j]);
+			} else {
+				inst.setValue(inst.numAttributes() - numLabels + j, maxIndex);
+			}
 		}
 
 		MultiLabelOutput mlo = new MultiLabelOutput(bipartition, confidences);
@@ -152,29 +179,37 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			Instances trainDataset) throws Exception {
 		FilteredClassifier fc = new FilteredClassifier();
 		fc.setClassifier(AbstractClassifier.makeCopy(baseClassifier));
-		int[] indicesToRemove = new int[numLabels - 1];
-		// int nattrs=trainDataset.numAttributes();
+		int[] indicesToRemove;
+		int nattrs = trainDataset.numAttributes();
 		// int[] indicesToRemove = new int[nattrs-numLabels];
 		// ensemble[c][j].setClassifier(AbstractClassifier
 		// .makeCopy(baseClassifier));
 
 		int k;
-		for (k = 0; k < labeli; k++) {
-			indicesToRemove[k] = labelIndices[k];
+
+		if (useOnlyLabels) {
+			int x;
+			indicesToRemove = new int[nattrs - numLabels - 1];
+			for (x = 0, k = 0; k < nattrs - numLabels; k++) {
+				if (k == labelIndices[labeli]) {
+					indicesToRemove[k] = trainDataset.numAttributes()
+							- numLabels + labeli;
+					continue;
+				}
+				indicesToRemove[x] = k;
+				x++;
+			}
+		} else {
+			indicesToRemove = new int[numLabels - 1];
+			for (k = 0; k < labeli; k++) {
+				indicesToRemove[k] = labelIndices[k];
+			}
+			// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
+			// labeli;
+			for (k = labeli + 1; k < numLabels; k++) {
+				indicesToRemove[k - 1] = labelIndices[k];
+			}
 		}
-		// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
-		// labeli;
-		for (k = labeli + 1; k < numLabels; k++) {
-			indicesToRemove[k - 1] = labelIndices[k];
-		}
-		// for (k = 0; k < nattrs-numLabels;k++) {
-		// if(k==labelIndices[labeli]){
-		// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
-		// labeli;
-		// continue;
-		// }
-		// indicesToRemove[k] = k;
-		// }
 
 		Remove remove = new Remove();
 		remove.setAttributeIndicesArray(indicesToRemove);
@@ -189,7 +224,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			Instances trainDataset) throws Exception {
 		FilteredClassifier fc = new FilteredClassifier();
 		fc.setClassifier(AbstractClassifier.makeCopy(baseClassifier));
-		int[] indicesToRemove = new int[2 * numLabels - labeli - 1];
+		int[] indicesToRemove = new int[2 * numLabels - labeli];
 		// int nattrs=trainDataset.numAttributes();
 		// int[] indicesToRemove = new int[nattrs-numLabels];
 		// ensemble[c][j].setClassifier(AbstractClassifier
@@ -201,6 +236,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		}
 		// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
 		// labeli;
+		// k++;
 		for (; k < numLabels - 1; k++) {
 			indicesToRemove[k] = labelIndices[k + 1];
 		}
@@ -230,7 +266,15 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	private void buildChainClassifier(int c, Instances newtrainData)
 			throws Exception {
 		for (int j = 0; j < numLabels; j++) {
+			if (!useTrainPropag) {
+				if (c > 0) {
+					ensemble[c][j] = ensemble[0][j];
+					continue;
+				}
+			}
+
 			ensemble[c][j] = constructClassifier(j, newtrainData);
+
 			newtrainData.setClassIndex(labelIndices[j]);
 			// debug("Bulding model " + (c * numLabels + j + 1) + "/" +
 			// numLabels
@@ -284,66 +328,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	protected void buildInternal(MultiLabelInstances train) throws Exception {
 		buildInternal2(train);
 	}
-
-	private void buildInternal1(MultiLabelInstances train) throws Exception {
-		numLabels = train.getNumLabels();
-		Instances trainData = train.getDataSet();
-		int numinsts = trainData.numInstances();
-
-		ensemble = new FilteredClassifier[chainSize][numLabels];
-
-		Instances newtrainData = generateData(trainData);
-
-		// debug("Bulding model BR");
-		br.build(train);
-
-//		debug("Propagating Prediction 0");
-
-		// for (int i = 0; i < numinsts; i++) {
-		//
-		// Instance inst = newtrainData.instance(i);
-		//
-		// MultiLabelOutput mlo = br.makePrediction(inst);
-		// TransformInstance(inst, mlo);
-		// }
-
-		if (chainSize == 0) {
-			return;
-		}
-
-		for (int c = 0; c < chainSize - 1; c++) {
-			buildChainClassifier(c, newtrainData);
-
-			debug("Propagating Prediction " + (c + 1));
-
-			// int toremove = (numinsts / chainSize);
-			// indexs.clear();
-			// for (int i = 0; i < numinsts; i++) {
-			// indexs.add(i);
-			// }
-			// Collections.shuffle(indexs);
-			// indexs=indexs.subList(0, toremove);
-			//
-			// for (int i = 0; i < toremove; i++) {
-			// newtrainData.remove(0);
-			// }
-
-			// numinsts = newtrainData.numInstances();
-			// System.out.println(numinsts+" | "+toremove+"| "+indexs.size());
-			// for (int i = 0; i < numinsts / 10; i++) {
-			for (int i = 0; i < numinsts; i++) {
-				Instance inst = newtrainData.instance(i);
-				MultiLabelOutput mlo;
-
-				mlo = ChainMakePrediction(c, inst);
-
-				TransformInstance(inst, mlo);
-			}
-		}
-
-		buildChainClassifier(chainSize - 1, newtrainData);
-	}
-
+	
 	private boolean hit(MultiLabelOutput mlo, Instance inst) {
 		boolean[] bip = mlo.getBipartition();
 		for (int i = 0; i < numLabels; i++) {
@@ -364,111 +349,161 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		numLabels = train.getNumLabels();
 		Instances trainData = train.getDataSet();
 		int numinsts = trainData.numInstances();
+		if (instanceSelection) {
+			debug("Data size=" + numinsts);
+		}
 
 		ensemble = new FilteredClassifier[chainSize][numLabels];
 
 		Instances newtrainData = generateData(trainData);
 
 		// debug("Bulding model BR");
-		br.build(train);
+		baseml.build(train);
 
-//		debug("Propagating Prediction 0");
+		indexs.clear();
+		if (useTrainPropag || instanceSelection) {
+			debug("Propagating Prediction 0");
+			for (int i = numinsts - 1; i >= 0; i--) {
 
-		// // indexs.clear();
-//		for (int i = 0; i < numinsts; i++) {
-//
-//			Instance inst = newtrainData.instance(i);
+				Instance inst = newtrainData.instance(i);
 
-//			MultiLabelOutput mlo = br.makePrediction(inst);
-//			double[] confs = mlo.getConfidences();
-			// int j;
-			// for (j = 0; j < confs.length; j++) {
-			// if (Math.abs(0.5 - (confs[j])) < Climit) {
-			// indexs.add(i);
-			// break;
-			// }
-			// }
-			// if (j == confs.length) {
-//			if (hit(mlo, inst)) {
-//				TransformInstance(inst, mlo);
-//			}
-			// }
-
-//		}
+				MultiLabelOutput mlo = baseml.makePrediction(inst);
+				if (hit(mlo, inst)) {
+					if (useTrainPropag) {
+						TransformInstance(inst, mlo);
+					}
+					indexs.add(i);
+				}
+			}
+		}
 
 		if (chainSize == 0) {
 			return;
 		}
 
 		for (int c = 0; c < chainSize - 1; c++) {
+			if (instanceSelection) {
+				for (int i = 0; i < indexs.size(); i++) {
+					newtrainData.remove((int) indexs.get(i));
+				}
+
+				indexs.clear();
+				numinsts = newtrainData.numInstances();
+				debug("Data size=" + numinsts);
+
+				if (!checkData(newtrainData)) {
+					realchainSize = c;
+					return;
+				}
+			}
 			buildChainClassifier(c, newtrainData);
+			if (useTrainPropag || instanceSelection) {
+				debug("Propagating Prediction " + (c + 1));
 
-//			debug("Propagating Prediction " + (c + 1));
+				for (int i = numinsts - 1; i >= 0; i--) {
+					Instance inst = newtrainData.instance(i);
+					MultiLabelOutput mlo;
 
-			// int toremove = (numinsts / chainSize);
-			// indexs.clear();
-			// for (int i = 0; i < numinsts; i++) {
-			// indexs.add(i);
-			// }
-			// Collections.shuffle(indexs);
-			// indexs=indexs.subList(0, toremove);
-			//
-			// for (int i = 0; i < toremove; i++) {
-			// newtrainData.remove(0);
-			// }
-
-			// numinsts = newtrainData.numInstances();
-			// System.out.println(numinsts+" | "+toremove+"| "+indexs.size());
-			// for (int i = 0; i < numinsts / 10; i++) {
-//			for (int i = 0; i < numinsts; i++) {
-//				Instance inst = newtrainData.instance(i);
-//				MultiLabelOutput mlo;
-
-//				mlo = ChainMakePrediction(c, inst);
-
-//				double[] confs = mlo.getConfidences();
-
-				// int j;
-				// for (j = 0; j < confs.length; j++) {
-				// if (Math.abs(0.5 - confs[j]) < Climit) {
-				// // indexs.add(i);
-				// // System.out.println("N Transforma " + i);
-				// break;
-				// }
-				// }
-				// if (j == confs.length) {
-				//
-//				if (hit(mlo, inst)) {
-//					TransformInstance(inst, mlo);
-//				}
-				// }
-//			}
+					mlo = ChainMakePrediction(c, inst);
+					if (hit(mlo, inst)) {
+						if (useTrainPropag) {
+							TransformInstance(inst, mlo);
+						}
+						indexs.add(i);
+					}
+				}
+			}
 		}
+		
+		if (instanceSelection) {
+			for (int i = 0; i < indexs.size(); i++) {
+				newtrainData.remove((int) indexs.get(i));
+			}
+			indexs.clear();
+			numinsts = newtrainData.numInstances();
+			debug("Data size=" + numinsts);
+
+			if (!checkData(newtrainData)) {
+				realchainSize = chainSize - 1;
+				return;
+			}
+		}
+		realchainSize = chainSize;
 
 		buildChainClassifier(chainSize - 1, newtrainData);
+	}
+
+	private boolean checkData(Instances data) {
+		int[] countLabels = countLabels(data, true);
+		for (int cl : countLabels) {
+			if (cl < 11) {
+				return false;
+			}
+		}
+		countLabels = countLabels(data, false);
+		for (int cl : countLabels) {
+			if (cl < 11) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	int[] countLabels(Instances data, boolean has) {
+		int[] clabels = new int[numLabels];
+		for (int i = 0; i < clabels.length; i++) {
+			clabels[i] = 0;
+		}
+
+		if (has) {
+			for (int i = 0; i < data.numInstances(); i++) {
+				Instance inst = data.instance(i);
+				for (int j = data.numAttributes() - numLabels; j < data
+						.numAttributes(); j++) {
+					if (inst.value(j) > 0.5) {
+						clabels[j - data.numAttributes() + numLabels]++;
+					}
+				}
+			}
+		} else {
+			for (int i = 0; i < data.numInstances(); i++) {
+				Instance inst = data.instance(i);
+				for (int j = data.numAttributes() - numLabels; j < data
+						.numAttributes(); j++) {
+					if (inst.value(j) <= 0.5) {
+						clabels[j - data.numAttributes() + numLabels]++;
+					}
+				}
+			}
+		}
+
+		return clabels;
 	}
 
 	@Override
 	protected MultiLabelOutput makePredictionInternal(Instance instance)
 			throws Exception {
 		Instance tempInstance = instance;
+		// System.out.println("makePredictionInternal IN");
 
 		for (int j = 0; j < numLabels; j++) {
 			addsattr[j].input(tempInstance);
 			tempInstance = addsattr[j].output();
 		}
-		MultiLabelOutput[] mloensemble = new MultiLabelOutput[chainSize + 1];
-		mloensemble[0] = br.makePrediction(instance);
+		MultiLabelOutput[] mloensemble = new MultiLabelOutput[realchainSize + 1];
+		mloensemble[0] = baseml.makePrediction(instance);
 
-		for (int c = 0; c < chainSize; c++) {
 
-			// mlo = ChainMakePrediction(c, tempInstance, mlo);
+		for (int c = 0; c < realchainSize; c++) {
 			mloensemble[c + 1] = ChainMakePrediction(c, tempInstance,
 					mloensemble[c]);
 		}
 
-//		 return mloensemble[chainSize];
-		return combineMLO2(mloensemble);
+		// System.out.println("makePredictionInternal OUT");
+
+		return mloensemble[realchainSize];
+		// return mloensemble[chainSize];
+		// return combineMLO2(mloensemble);
 	}
 
 	private MultiLabelOutput combineMLO(MultiLabelOutput[] mloensemble) {
@@ -507,9 +542,14 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	}
 
 	private MultiLabelOutput combineMLO2(MultiLabelOutput[] mloensemble) {
+
+		if (realchainSize == 0) {
+			return mloensemble[0];
+		}
+		
 		double[] c = mloensemble[1].getConfidences();
-		boolean[] Fbipart = new boolean[mloensemble[1].getBipartition().length];
-		double[] Fconf = new double[mloensemble[1].getConfidences().length];
+		boolean[] Fbipart = new boolean[mloensemble[0].getBipartition().length];
+		double[] Fconf = new double[mloensemble[0].getConfidences().length];
 		double maxprod = c[0];
 		Fconf[0] = c[0];
 		for (int i = 1; i < Fconf.length; i++) {
@@ -535,5 +575,17 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			Fbipart[i] = Fconf[i] > 0.5;
 		}
 		return new MultiLabelOutput(Fbipart, Fconf);
+	}
+
+	public void setInstanceSelection(boolean t) {
+		instanceSelection = t;
+	}
+
+	public void setTrainPropagation(boolean tp) {
+		useTrainPropag = tp;
+	}
+
+	public void setUseOnlyLabels(boolean l) {
+		useOnlyLabels = l;
 	}
 }
