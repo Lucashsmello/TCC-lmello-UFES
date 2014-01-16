@@ -5,35 +5,55 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Writer;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import mulan.classifier.InvalidDataException;
 import mulan.classifier.MultiLabelLearner;
+import mulan.classifier.MultiLabelLearnerBase;
+import mulan.classifier.MultiLabelOutput;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
 import mulan.classifier.transformation.EnsembleOfClassifierChains;
-import mulan.classifier.transformation.LabelPowerset;
 import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
 import mulan.data.MultiLabelInstances;
 import mulan.evaluation.Evaluator;
 import mulan.evaluation.MultipleEvaluation;
+import mulan.evaluation.measure.AveragePrecision;
+import mulan.evaluation.measure.Coverage;
+import mulan.evaluation.measure.ErrorSetSize;
+import mulan.evaluation.measure.ExampleBasedAccuracy;
+import mulan.evaluation.measure.ExampleBasedFMeasure;
+import mulan.evaluation.measure.ExampleBasedPrecision;
+import mulan.evaluation.measure.ExampleBasedRecall;
+import mulan.evaluation.measure.ExampleBasedSpecificity;
 import mulan.evaluation.measure.HammingLoss;
+import mulan.evaluation.measure.IsError;
+import mulan.evaluation.measure.MacroFMeasure;
+import mulan.evaluation.measure.MacroPrecision;
+import mulan.evaluation.measure.MacroRecall;
+import mulan.evaluation.measure.MacroSpecificity;
+import mulan.evaluation.measure.MeanAveragePrecision;
 import mulan.evaluation.measure.Measure;
+import mulan.evaluation.measure.MicroAUC;
+import mulan.evaluation.measure.MicroFMeasure;
+import mulan.evaluation.measure.MicroPrecision;
+import mulan.evaluation.measure.MicroRecall;
+import mulan.evaluation.measure.MicroSpecificity;
+import mulan.evaluation.measure.OneError;
+import mulan.evaluation.measure.RankingLoss;
 import mulan.evaluation.measure.SubsetAccuracy;
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
-import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.MultilayerPerceptron;
-import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
-import weka.classifiers.multilabel.MCC;
 import weka.classifiers.multilabel.MultilabelClassifier;
-import weka.classifiers.multilabel.PCC;
-import weka.classifiers.trees.J48;
+import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.TechnicalInformation;
 
 public class ExperimentLM {
 	public static final SimpleDateFormat sdf = new SimpleDateFormat(
@@ -45,26 +65,73 @@ public class ExperimentLM {
 	private Date begin;
 	private Date end;
 	private List<Long> timeExec;
+	private List<Long> timeExec2;
 	private long totaltimeExec;
 	private List<MultipleEvaluation> results;
 	private List<Measure> measures;
-	int numFolds = 10;
+	final int numFolds = 10;
 	private boolean useCSVMethodName = true;
 	private String dataname = "???";
 
-	public static int globalseed = 123;
+	private int rotationseed = 1;
+
+	public static int globalseed = 1;
 
 	public ExperimentLM(MultiLabelInstances mldata) {
 		mlls = new ArrayList<MultiLabelLearner>();
 		this.mldata = mldata;
 		results = new ArrayList<MultipleEvaluation>();
 		timeExec = new ArrayList<Long>();
+		timeExec2 = new ArrayList<Long>();
 
 		measures = new ArrayList<Measure>();
 		measures.add(new HammingLoss());
 		measures.add(new SubsetAccuracy());
 		measures.add(new mulan.evaluation.measure.RankingLoss());
 		measures.add(new mulan.evaluation.measure.AveragePrecision());
+	}
+
+	public void setAllMeasures() {
+		// add example-based measures
+		measures.clear();
+		measures.add(new HammingLoss());
+		measures.add(new SubsetAccuracy());
+		measures.add(new ExampleBasedPrecision());
+		measures.add(new ExampleBasedRecall());
+		measures.add(new ExampleBasedFMeasure());
+		measures.add(new ExampleBasedAccuracy());
+		measures.add(new ExampleBasedSpecificity());
+		// add label-based measures
+		int numOfLabels = mldata.getNumLabels();
+		measures.add(new MicroPrecision(numOfLabels));
+		measures.add(new MicroRecall(numOfLabels));
+		measures.add(new MicroFMeasure(numOfLabels));
+		measures.add(new MicroSpecificity(numOfLabels));
+		measures.add(new MacroPrecision(numOfLabels));
+		measures.add(new MacroRecall(numOfLabels));
+		measures.add(new MacroFMeasure(numOfLabels));
+		measures.add(new MacroSpecificity(numOfLabels));
+
+		// add ranking-based measures if applicable
+
+		// add ranking based measures
+		measures.add(new AveragePrecision());
+		measures.add(new Coverage());
+		measures.add(new OneError());
+		measures.add(new IsError());
+		measures.add(new ErrorSetSize());
+		measures.add(new RankingLoss());
+
+		// add confidence measures if applicable
+		measures.add(new MeanAveragePrecision(numOfLabels));
+		// measures.add(new GeometricMeanAveragePrecision(numOfLabels));
+		// measures.add(new MeanAverageInterpolatedPrecision(numOfLabels, 10));
+		// measures.add(new
+		// GeometricMeanAverageInterpolatedPrecision(numOfLabels,
+		// 10));
+		measures.add(new MicroAUC(numOfLabels));
+		// measures.add(new MacroAUC(numOfLabels));
+
 	}
 
 	public ExperimentLM(MultiLabelLearner ml, MultiLabelInstances mldata) {
@@ -96,7 +163,14 @@ public class ExperimentLM {
 			System.out.println("Experiment already executed!");
 		}
 
+		Thread currentThread = Thread.currentThread();
+		long threadId = currentThread.getId();
+		ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+
 		PrintStream nothingStream;
+		PrintStream stdout = System.out;
+		Instances data = mldata.getDataSet();
+		int tmpci = data.classIndex();
 		try {
 			nothingStream = new PrintStream(new File("/tmp/nothinglog"));
 		} catch (FileNotFoundException e) {
@@ -105,35 +179,56 @@ public class ExperimentLM {
 		}
 
 		Evaluator eval = new Evaluator();
-		eval.setSeed(123);
+		eval.setSeed(rotationseed);
 		begin = new Date();
 
 		totaltimeExec = System.nanoTime();
 
 		int nm = 1;
-		for (MultiLabelLearner mll : mlls) {
-			PrintStream stdout = System.out;
-			System.setOut(nothingStream);
-			long timeelapsed;
-			if (mll instanceof MekaWrapperClassifier) {
-				Instances data = mldata.getDataSet();
-				int tmpci = data.classIndex();
-				data.setClassIndex(mldata.getNumLabels());
+		for (int i = 0; i < mlls.size(); i++) {
+			// for (MultiLabelLearner mll : mlls) {
+			MultiLabelLearner mll = mlls.get(i);
+			long timeelapsed, timeelapsed2;
+			try {
 
-				timeelapsed = System.nanoTime();
-				results.add(eval.crossValidate(mll, mldata, measures, numFolds));
-				timeelapsed = System.nanoTime() - timeelapsed;
+				System.setOut(nothingStream);
 
-				data.setClassIndex(tmpci);
-			} else {
-				timeelapsed = System.nanoTime();
-				results.add(eval.crossValidate(mll, mldata, measures, numFolds));
-				timeelapsed = System.nanoTime() - timeelapsed;
+				if (mll instanceof MekaWrapperClassifier) {
+
+					data.setClassIndex(mldata.getNumLabels());
+
+					timeelapsed = System.nanoTime();
+					timeelapsed2 = threadMXBean.getThreadCpuTime(threadId);
+					results.add(eval.crossValidate(mll, mldata, measures,
+							numFolds));
+					timeelapsed2 = threadMXBean.getThreadCpuTime(threadId)
+							- timeelapsed2;
+					timeelapsed = System.nanoTime() - timeelapsed;
+
+					data.setClassIndex(tmpci);
+				} else {
+					timeelapsed = System.nanoTime();
+					timeelapsed2 = threadMXBean.getThreadCpuTime(threadId);
+					results.add(eval.crossValidate(mll, mldata, measures,
+							numFolds));
+					timeelapsed2 = threadMXBean.getThreadCpuTime(threadId)
+							- timeelapsed2;
+					timeelapsed = System.nanoTime() - timeelapsed;
+
+				}
+
+				System.setOut(stdout);
+				System.out.println(getMethodDescription(mll) + " FINISHED ("
+						+ (100 * nm / mlls.size()) + "% completed)");
+				timeExec.add(timeelapsed);
+				timeExec2.add(timeelapsed2);
+			} catch (OutOfMemoryError outm) {
+				System.setOut(stdout);
+				System.out.println(outm.toString());
+				mlls.set(i, new OOMmethod(getMethodAbbrv(mll)));
+				mll = null;
+				System.gc();
 			}
-			System.setOut(stdout);
-			System.out.println(getMethodDescription(mll) + " FINISHED ("
-					+ (100 * nm / mlls.size()) + "% completed)");
-			timeExec.add(timeelapsed);
 			nm++;
 		}
 
@@ -213,6 +308,9 @@ public class ExperimentLM {
 				+ machineaddress + "\n";
 		s += "Nome do Usuario: " + username + "\n\n";
 
+		s += "GLOBAL SEED: " + globalseed + "\n";
+		s += "METODO DE AVALIAÇÃO: rotation, " + numFolds + " folds, seed="
+				+ rotationseed + "\n";
 		s += "BASE DE DADOS: " + dataname + ", " + mldata.getNumInstances()
 				+ " instancias, " + mldata.getDataSet().numAttributes()
 				+ " atributos, " + mldata.getNumLabels() + " rótulos" + "\n";
@@ -230,13 +328,15 @@ public class ExperimentLM {
 			s += m.getName() + ";";
 		}
 
-		s += "Tempo(seg) \n";
+		s += "Tempo(seg);";
+		s += "Tempo2(seg) \n";
 		for (int i = 0; i < results.size(); i++) {
 			if (useCSVMethodName) {
 				s += getMethodAbbrv(mlls.get(i)) + ";";
 			}
 			s += results.get(i).toCSV();
-			s += ((double) timeExec.get(i)) / 1e9 + ";\n";
+			s += ((double) timeExec.get(i)) / 1e9 + ";";
+			s += ((double) timeExec2.get(i)) / 1e9 + ";\n";
 		}
 		// } else {
 		// s += results.get(0).toString();
@@ -256,7 +356,17 @@ public class ExperimentLM {
 
 	static String getMethodDescription(MultiLabelLearner ml) {
 		// String s = ml.getClass().getName();
+
+		if (ml instanceof OOMmethod) {
+			return ml.toString();
+		}
+
 		String s = ml.getClass().getSimpleName();
+		if (ml instanceof MRLM) {
+			if (((MRLM) ml).isInstanceSelection()) {
+				s += "-I";
+			}
+		}
 
 		if (ml instanceof TransformationBasedMultiLabelLearner) {
 			s += " [";
@@ -289,6 +399,12 @@ public class ExperimentLM {
 	static String getMethodAbbrv(MultiLabelLearner ml) {
 		String s = ml.getClass().getSimpleName();
 
+		if (ml instanceof MRLM) {
+			if (((MRLM) ml).isInstanceSelection()) {
+				s += "-I";
+			}
+		}
+
 		if (ml instanceof TransformationBasedMultiLabelLearner) {
 			TransformationBasedMultiLabelLearner tbml = (TransformationBasedMultiLabelLearner) ml;
 			Classifier c = tbml.getBaseClassifier();
@@ -300,8 +416,13 @@ public class ExperimentLM {
 			if (ml instanceof BinaryRelevance) {
 				s = "BR";
 			}
+
 			if (ml instanceof EnsembleOfClassifierChains) {
-				s = "ECC";
+				if (ml instanceof ECC2) {
+					s = "ECC2";
+				} else {
+					s = "ECC";
+				}
 			}
 
 			if (c instanceof MultilayerPerceptron) {
@@ -321,6 +442,46 @@ public class ExperimentLM {
 		}
 
 		return s;
+	}
+
+	private class OOMmethod extends MultiLabelLearnerBase {
+
+		private String methodname;
+
+		public OOMmethod(String methodname) {
+			this.methodname = methodname;
+		}
+
+		@Override
+		protected void buildInternal(MultiLabelInstances trainingSet)
+				throws Exception {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		protected MultiLabelOutput makePredictionInternal(Instance instance)
+				throws Exception, InvalidDataException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public TechnicalInformation getTechnicalInformation() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String globalInfo() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public String toString() {
+			return "OOM-" + methodname;
+		}
+
 	}
 
 }

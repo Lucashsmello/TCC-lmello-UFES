@@ -12,6 +12,7 @@ import java.util.List;
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
+import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.LabelPowerset;
 import mulan.data.MultiLabelInstances;
 import weka.classifiers.Classifier;
@@ -29,10 +30,10 @@ public class ExperimentLMTCC {
 		// LA!!!
 
 		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
-		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/";
+		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv3/";
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P" };
-		String[] datasnames = new String[] { "emotions-P" };
+		String[] datasnames = new String[] { "Corel5k-P" };
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
 		FileWriter logfile = new FileWriter(new File(expDir + "expLog"
 				+ sdffile.format(new Date())));
@@ -49,6 +50,7 @@ public class ExperimentLMTCC {
 				configureClassifiers(baseclassifs, dataset);
 
 				ExperimentLM exp1 = new ExperimentLM(mmm, dataset, dataname);
+				exp1.setAllMeasures();
 				exp1.execute();
 
 				try {
@@ -74,14 +76,16 @@ public class ExperimentLMTCC {
 
 		logfile.close();
 	}
-	
+
 	private static void logError(Writer logfile, Exception ex) {
+		ex.printStackTrace();
 		log(logfile, ex.toString());
 	}
 
 	private static void log(Writer logfile, String msg) {
 		try {
-			logfile.write(ExperimentLM.sdf.format(new Date()) + " -> " + msg + "\n");
+			logfile.write(ExperimentLM.sdf.format(new Date()) + " -> " + msg
+					+ "\n");
 			logfile.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -90,7 +94,6 @@ public class ExperimentLMTCC {
 		}
 	}
 
-	
 	public static void main(String[] args) throws Exception {
 		long t1 = System.nanoTime();
 		superPowerLucasExperiment();
@@ -138,8 +141,8 @@ public class ExperimentLMTCC {
 
 		// baseclassifs.add(mlp);
 
-		// baseclassifs.add(nb);
-		// baseclassifs.add(j48);
+		baseclassifs.add(nb);
+		baseclassifs.add(j48);
 		baseclassifs.add(knn);
 		baseclassifs.add(svm);
 
@@ -152,15 +155,30 @@ public class ExperimentLMTCC {
 
 		for (Classifier c : baseclassifs) {
 			ClassifierChain cc = new ClassifierChain(c);
+			CC2 cc2 = new CC2(c);
 			BinaryRelevance br = new BinaryRelevance(c);
 			PCC pcc = new PCC();
 			pcc.setClassifier(c);
 			pcc.setSeed(ExperimentLM.globalseed);
-			MRLM mrlm = new MRLM(new BinaryRelevance(c),c, 5);
+			MRLM mrlm = new MRLM(new ClassifierChain(c), c, 5);
 			mrlm.setInstanceSelection(false);
 			mrlm.setTrainPropagation(false);
-			mrlm.setUseOnlyLabels(false);
-//			 mrlm.setDebug(true);
+			mrlm.setUseOnlyLabels(true);
+			mrlm.setUseMirrorLabel(false);
+			mrlm.setUseConfiability(false);
+			mrlm.setChainUpdate(true);
+
+			MRLM mrlm2 = new MRLM(new ClassifierChain(c), c, 5);
+			mrlm2.setInstanceSelection(true);
+			mrlm2.setTrainPropagation(false);
+			mrlm2.setUseOnlyLabels(true);
+			mrlm2.setUseMirrorLabel(false);
+			mrlm2.setUseConfiability(false);
+			mrlm2.setChainUpdate(true);
+
+			DBR dbr = new DBR(c);
+
+			// mrlm.setDebug(true);
 			weka.classifiers.multilabel.MCC mcc = new MCC();
 			mcc.setOptions(new String[] { "-Iy", "20" });
 			mcc.setClassifier(c);
@@ -172,16 +190,19 @@ public class ExperimentLMTCC {
 			// EnsembleOfPrunedSets(
 			// 66, 10, 0.5, 2, PrunedSets.Strategy.A, 3, c);
 
-			// mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
-			// mmm.add(new MekaWrapperClassifier(mcc));
-			// if (mldata.getNumLabels() <= 10) {
-			// mmm.add(lpower);
-			// mmm.add(new MekaWrapperClassifier(pcc));
-			// }
-			// mmm.add(cc);
-			// mmm.add(br);
+			mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
+			mmm.add(new ECC2(c, 10, true, true));
+			mmm.add(new MekaWrapperClassifier(mcc));
+			if (mldata.getNumLabels() <= 10) {
+				mmm.add(lpower);
+				mmm.add(new MekaWrapperClassifier(pcc));
+			}
+			mmm.add(cc);
+			mmm.add(cc2);
+			mmm.add(br);
 			mmm.add(mrlm);
-
+			mmm.add(mrlm2);
+			mmm.add(dbr);
 			// mmm.add(eps);
 		}
 
