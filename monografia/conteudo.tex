@@ -89,6 +89,8 @@ Falar sobre bases separadas de treino,teste e validação.
 \subsection{Ensemble of Classifier Chain}
 \subsection{Probabilistic Classifier Chain}
 \subsection{LEAD}
+\subsection{Dependent Binary Relevance - DBR}
+\label{sec:dbr}
 \subsection{MAIS MÉTODOS...}
 
 \section{Adaptação de classificadores}
@@ -100,10 +102,12 @@ Falar sobre bases separadas de treino,teste e validação.
 
 
 \chapter{Super Novo Método Revolucionário*}
-A proposta de \MRLM é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014} portanto,
-esse capítulo é iniciado com uma seção explicando o funcionamento do DBR, facilitando o entendimento do \MRLMa~na seção seguinte.
+A proposta de \MRLM é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014}, explicado
+na seção \ref{sec:dbr}. Assim como o DBR, o \MRLMa~é um método baseado na transfomação do problema.
+% portanto,
+% esse capítulo é iniciado com uma seção explicando o funcionamento do DBR, facilitando o entendimento do \MRLMa~na seção seguinte.
 
-\section{Dependent Binary Relevance - DBR}
+
 \section{Algoritmo \MRLM~-~\MRLMa}
 Como foi dito anteriormente, o \MRLM~é baseado no DBR. 
 % Ambos se baseiam na expansão do espaço de características
@@ -112,31 +116,59 @@ Como foi dito anteriormente, o \MRLM~é baseado no DBR.
 % Ou seja, 
 Ambos dependem da hipótese de que as estimativas dos rótulos em $Y$ por um classificador multirrótulo $c_0$
 são boas características para aprimorar as estimativas dos mesmos rótulos por um novo classificador $c_1$
-e que quanto melhor forem as estimativas dos rótulos por $c_0$, melhores são as de $c_1$.
+e que quanto melhor forem as estimativas dos rótulos por $c_0$, melhores são as de $c_1$. Nesse caso, podemos dizer
+que o classificador $c_0$ é usado para "alimentar" o classificador $c_1$.
 E ainda ambos usam o BR como classificador multirrótulo base, que servirá para realizar as primeiras estimativas dos 
 rótulos.
- No entanto, o \MRLMa, ao invés de usar apenas dois classificadores, como o DBR, 
- usa $n$ classificadores multirrótulo $c_0,c_1,...,c_{n-1}$ organizados em uma cadeia de tal forma que
- as predições do classificador $c_{i-1}$ , para $1\leq i<n$, são usados como características para o classificador $c_{i}$. 
- Dessa forma, o classificador $c_{i}$ será baseado em estimativas melhores de rótulos do que seus antecessores $c_{i-1},c_{i-2},...,c_0$ e ainda
- o classificador $c_{i}$ será capaz de aprender sobre os erros e acertos do classificador $c_{i-1}$ e alcançar resultados melhores.
- 
- Adicionalmente, o \MRLMa~assume que as características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$, estimados por um classificador multirrótulo,
- são suficientes ou quase suficientes para predizer corretamente os valores reais dos rótulos em $Y$.
- Baseado nessa suposição, o \MRLMa~substitue todas as características do espaço original pelas características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$,
- para todos os seus classificadores, exceto para o classificador base $c_0$, uma vez que não existe ainda uma estimativa dos rótulos a usar.
- Isso reduz o espaço de características o que diminui o custo computacional dos algoritmos.
- Por outro lado, essa suposição nem sempre se mantém, podendo prejudicar a qualidade de predição dos algoritmos, mas espera-se que em média se mantenha.
- 
- Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
- \begin{itemize}
-  \item Para um valor pré-definido de n tal que $n\in \mathbb{N}, n>0$, o algoritmo é composto de
-  $n$ classsificadores BR que formam o conjunto $C=\{c_0,c_1,...,c_{n-1}\}$. 
-  \item Os classificadores em $C$ estão ordenados e dispostos em uma cadeia de tal forma que o 
-  classificador $c_i$ está ligado a saída (estimativas dos rótulos) do classificador $c_{i-1}$ e apenas a ele.
-  \item Cada classificador multirrótulo $c_i$ é composto de $l$ classificadores binários $h_{i1},h_{i2},h_{i3},...,h_{il}$
-  dispostos em uma cadeia.
+
+No entanto, o \MRLMa, ao invés de usar apenas o classificador base $c_0$ para "alimentar" $c_1$, como o DBR,
+ele usa o próprio $c_1$ para se "alimentar", ou seja, há realimentação pelo próprio classificador.
+A idéia é que cada vez que $c_1$ se realimente, melhores ficam suas estimativas uma vez que ele será baseado
+em estimativas melhores de rótulos do que anteriormente. 
+A alimentação que dizemos é a propagação das 
+estimativas dos rótulos de um classificador multirrótulo para o espaço de características expandido de um outro, ou o mesmo,
+classificador multirrótulo. A alimentação e o funcionamento do algoritmo serão formalmente detalhados nas seções seguintes.
+
+Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
+\begin{itemize}
+  \item É composto de dois BRs, o primeiro chamaremos de $c_0$ e o segundo de $c_1$.
+  \item O $c_0$ trabalha dentro do espaço de características original do problema, de nome $X$,
+  e $c_1$ trabalha dentro de um espaço de características expandido do problema, de nome $X_e$ e
+   definido como $X_e=X \times [0,1]^{l-1}$.
+  \item O método contém duas funções $t_0$ e $t_1$ que mapeiam espaços de características:
+   \begin{equation}
+ \begin{split}
+    & t_0 : X \rightarrow X_e \\
+    & t_1 : X_e \rightarrow X_e \\
+    & t_0(x)=(x,h(x))
+%   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
+  \end{split}
+ \end{equation}
   
+\end{itemize}
+
+%  No entanto, o \MRLMa, ao invés de usar apenas dois classificadores, como o DBR, 
+%  usa $n$ classificadores multirrótulo $c_0,c_1,...,c_{n-1}$ organizados em uma cadeia de tal forma que
+%  as predições do classificador $c_{i-1}$ , para $1\leq i<n$, são usados como características para o classificador $c_{i}$. 
+%  Dessa forma, o classificador $c_{i}$ será baseado em estimativas melhores de rótulos do que seus antecessores $c_{i-1},c_{i-2},...,c_0$ e ainda
+%  o classificador $c_{i}$ será capaz de aprender sobre os erros e acertos do classificador $c_{i-1}$ e alcançar resultados melhores.
+%  
+%  Adicionalmente, o \MRLMa~assume que as características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$, estimados por um classificador multirrótulo,
+%  são suficientes ou quase suficientes para predizer corretamente os valores reais dos rótulos em $Y$.
+%  Baseado nessa suposição, o \MRLMa~substitue todas as características do espaço original pelas características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$,
+%  para todos os seus classificadores, exceto para o classificador base $c_0$, uma vez que não existe ainda uma estimativa dos rótulos a usar.
+%  Isso reduz o espaço de características o que diminui o custo computacional dos algoritmos.
+%  Por outro lado, essa suposição nem sempre se mantém, podendo prejudicar a qualidade de predição dos algoritmos, mas espera-se que em média se mantenha.
+ 
+%  Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
+%  \begin{itemize}
+%   \item Para um valor pré-definido de n tal que $n\in \mathbb{N}, n>0$, o algoritmo é composto de
+%   $n$ classsificadores BR que formam o conjunto $C=\{c_0,c_1,...,c_{n-1}\}$. 
+%   \item Os classificadores em $C$ estão ordenados e dispostos em uma cadeia de tal forma que o 
+%   classificador $c_i$ está ligado a saída (estimativas dos rótulos) do classificador $c_{i-1}$ e apenas a ele.
+%   \item Cada classificador multirrótulo $c_i$ é composto de $l$ classificadores binários $h_{i1},h_{i2},h_{i3},...,h_{il}$
+%   dispostos em uma cadeia.
+%   
   
   Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa.
   
@@ -144,39 +176,39 @@ rótulos.
   
 %   de tal forma que , para um $j\in \mathbb{N}, 0<j\leq l$, o $h_{ij}$ está ligado a $h_{i(j-1)}$ e somente a ele.
   
- \end{itemize}
+%  \end{itemize}
 
  
  
  \subsection{Fase de Treinamento}
 %  Dado uma base de treino $D$ composta de $n$ instâncias 
  
- Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1}$ são representados
- pelas funções $h_0,h_1,...,h_{n-1}$:
- \begin{equation}
- \begin{split}
-    & h_0 : X \rightarrow [0,1]^l \\
-    & h_i : [0,1]^l \rightarrow [0,1]^l | i=1,...,n-1
-%   h_0 : X \rightarrow \mathbb{R}^l &\\
-%   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
-  \end{split}
- \end{equation}
- 
- onde a imagem de cada função $h_i$ é um vetor $(\hat{y}_1,\hat{y}_2,...,\hat{y}_l)$ de tamanho $l$ onde cada elemento
- $\hat{y}_i$ é um valor entre 0 e 1 que representa a pertinência de uma instância $t$ para o rótulo $i$ ou a probabilidade da instância $t$ pertencer
- ao rótulo $i$.
- 
- Primeiramente, treinamos o classificador BR $c_0$ no espaço de
- características original $X$, resultando na construção da função $h_0(\bf{x})$:
- \begin{equation}
-  h_0 : X \rightarrow \{0,1\}^l\.{z} 
- \end{equation}
- Em seguida, aplica-se a função $h_0$ sobre todas as instâncias da base de treino, resultando nas saídas
- $h_0(x_1), h_0(x_2),...,h_0(x_n)$. A partir daí as instâncias são transformadas e mapeadas para um novo espaço de
- características, criando a nova base de dados $D'$:
- \begin{equation}
-  D'=\{(h_0(x_i),y_i)|i=1,...,n\}
- \end{equation}
+%  Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1}$ são representados
+%  pelas funções $h_0,h_1,...,h_{n-1}$:
+%  \begin{equation}
+%  \begin{split}
+%     & h_0 : X \rightarrow [0,1]^l \\
+%     & h_i : [0,1]^l \rightarrow [0,1]^l | i=1,...,n-1
+% %   h_0 : X \rightarrow \mathbb{R}^l &\\
+% %   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
+%   \end{split}
+%  \end{equation}
+%  
+%  onde a imagem de cada função $h_i$ é um vetor $(\hat{y}_1,\hat{y}_2,...,\hat{y}_l)$ de tamanho $l$ onde cada elemento
+%  $\hat{y}_i$ é um valor entre 0 e 1 que representa a pertinência de uma instância $t$ para o rótulo $i$ ou a probabilidade da instância $t$ pertencer
+%  ao rótulo $i$.
+%  
+%  Primeiramente, treinamos o classificador BR $c_0$ no espaço de
+%  características original $X$, resultando na construção da função $h_0(\bf{x})$:
+%  \begin{equation}
+%   h_0 : X \rightarrow \{0,1\}^l\.{z} 
+%  \end{equation}
+%  Em seguida, aplica-se a função $h_0$ sobre todas as instâncias da base de treino, resultando nas saídas
+%  $h_0(x_1), h_0(x_2),...,h_0(x_n)$. A partir daí as instâncias são transformadas e mapeadas para um novo espaço de
+%  características, criando a nova base de dados $D'$:
+%  \begin{equation}
+%   D'=\{(h_0(x_i),y_i)|i=1,...,n\}
+%  \end{equation}
 
  
 %  \begin{equation}
@@ -221,6 +253,7 @@ rótulos.
 
 \chapter{Avaliação e Análise Experimental}
 \section{Método de Comparação}
+\label{sec:methodcomp}
 
 A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
 A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 \textit{folds}
@@ -264,7 +297,8 @@ O estudo dos parâmetros foi dividido em dois subestudos:
  No estudo de grupo há duas características principais que se desejam observar:
   
   \begin{enumerate}
-  \item a variação do ranking dos métodos segundo um critério de qualidade ao variar o classificador base
+  
+  \item a variação do ranking do método segundo um critério de qualidade ao variar o classificador base
   para uma base específica.
   \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
 %    \item rankeamento constante, que acontece se a ordem dos métodos permanece a mesma independente
@@ -276,7 +310,7 @@ O estudo dos parâmetros foi dividido em dois subestudos:
   Para mais detalhes sobre os motivos desse estudo bem como seus resultados e conclusões na seção \ref{sec:study1}.
   
 
-\section{Estudo prévio - NOME MELHOR DPOIS @@@}
+\section{Estudo dos Métodos baseados em Transformação}
 \label{sec:study1}
 \begin{verbatim}
  -Listar métodos.
@@ -296,7 +330,11 @@ A comparação é realizada pelo rankeamento dos métodos, ou seja, os \MMLs~de 
 e ordenados segundo seus desempenhos de tal forma que para cada métrica e classificador base,
 é atribuído ao \MML~um valor correspondente a sua ordem, entre 1 e \NmlT. A ordenação por uma métrica
 é independente da ordenação da outra. 
-Os resultados experimentais são apresentados nas tabelas \ref{tab:study1-R-emotions},\ref{tab:study1-R-birds},..., uma para cada métrica utilizada.
+Os resultados experimentais são apresentados nas tabelas \ref{tab:study1-R-emotions},\ref{tab:study1-R-birds},..., uma para cada base de dados utilizada.
+Por essas tabelas, já podemos observar as duas características desejadas, enumeradas anteriormente na seção \ref{sec:methodcomp},
+mas para facilitar, construiu-se também as tabelas \ref{tab:study1-resumo}, que são resumos das tabelas ???.
+
+
 
 
 
