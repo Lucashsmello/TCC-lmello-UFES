@@ -1,29 +1,92 @@
+
+\newcommand{\NbasesV}{\textit{N}}
+\newcommand{\Nbases}{123}
+\newcommand{\Nml}{6}
+\newcommand{\NmlT}{4}
+\newcommand{\NmlA}{2}
+\newcommand{\Ncb}{4}
+\newcommand{\MML}{método multirrótulo}
+\newcommand{\MMLs}{métodos multirrótulo}
+\newcommand{\MRLM}{Método Revolucionário de Lucas Mello}
+\newcommand{\MRLMa}{MRLM}
+
 \chapter{Introdução}
-\section{Motivações e Objetivos}
-\section{Contribuições}
+\begin{verbatim}
+ -Falar um pouco sobre aprendizado de máquina.
+ -Falar sobre Classificação multiclasse
+ -Apresentar Classificação multirrótulo e falar como é mais tenso que a multiclasse, dar exemplos etc.
+ -Falar um pouco do estado da arte da Classificacao multirrotulo.
+ 
+\end{verbatim}
+
+
+
+\section{Motivações}
+% Análises dos métodos multirrótulo trazem os seguintes benefícios:
+O melhor entendimento do funcionamento dos métodos multirrótulo permite:
+\begin{itemize}
+ \item descobrir atributos destes que se alterados, aproveitados
+ e/ou combinados podem acarretar na criação de novos métodos e/ou na melhora dos existentes.
+ \item prever, com uma certa taxa de erro, seus desempenhos, o que facilita o uso mais inteligente dos métodos
+ sem precisar utilizar muito esforço computacional devido a testes.
+ \item reforçar ou contrariar as conclusões já estabelecidas dos métodos, uma vez que a maioria delas são 
+ baseadas em testes experimentais.
+\end{itemize}
+
+\section{Objetivos}
+O objetivo geral deste trabalho é analisar e comparar métodos multirrótulos distintos.
+Mais formalmente, a análise deve implicar em conclusões matemáticas ou estatísticas sobre o desempenho dos métodos multirrótulo.
+Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
+\begin{itemize}
+ \item Comparação estatística e análise crítica dos métodos multirrótulos;
+ \item Implementação dos métodos multirrótulos em uma biblioteca que integra técnicas de reconhecimento de padrões.
+\end{itemize}
+
+
+% \section{Contribuições}
 \section{Estrutura do Trabalho}
 
 \chapter{Classificação multirrótulo}
 
 \section{Enunciado do problema}
-Definição formal.
+\begin{verbatim}
+ESBOÇO:
+-Definição formal.
+-um classificador multirrótulo mapeia do espaço de características
+para um vetor de valores reais entre 0 e 1 
+de tamanho igual ao número de rótulos.
+-falar da complexidade do problema
+-falar sobre lidar o problema como probabilidade condicional dado o rótulo e etc...
+    P(l_1 | x,l_2)
+\end{verbatim}
+
+
 
 \section{Avaliação de Desempenho}
-Apresentar matematicamente o que pode indicar correlação entre rótulos e outras coisas
-conforme o artigo: "Bayes Optimal Multilabel Classification via Probabilistic Classifier Chains"
+\begin{verbatim}
+-Apresentar matematicamente o que pode indicar correlação entre rótulos e outras coisas
+conforme o artigo: "Bayes Optimal Multilabel Classification via Probabilistic Classifier Chains".
+-Falar que é diferente do multiclasse
+\end{verbatim}
 \subsection{Métricas}
+\label{sec:metrics}
 \subsubsection{Accuracy}
 \subsubsection{Hamming-Loss}
 \subsubsection{Subset Accuracy}
 \subsubsection{Ranking Loss}
 \subsection{Modelo de Avaliação}
+\label{sec:modelav}
+
+\begin{verbatim}
 Falar do Holdout,Cross-validation estratificado.
 Falar sobre bases separadas de treino,teste e validação.
+\end{verbatim}
 
 \chapter{Métodos Multirrótulos}
 \section{Transformação do Problema}
 \subsection{Relevância Binária - BR}
 \subsection{Classifier Chain}
+\subsection{Ensemble of Classifier Chain}
 \subsection{Probabilistic Classifier Chain}
 \subsection{LEAD}
 \subsection{MAIS MÉTODOS...}
@@ -37,7 +100,205 @@ Falar sobre bases separadas de treino,teste e validação.
 
 
 \chapter{Super Novo Método Revolucionário*}
-Se for propor o novo método.
+A proposta de \MRLM é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014} portanto,
+esse capítulo é iniciado com uma seção explicando o funcionamento do DBR, facilitando o entendimento do \MRLMa~na seção seguinte.
 
-\chapter{Resultados Experimentais}
+\section{Dependent Binary Relevance - DBR}
+\section{Algoritmo \MRLM~-~\MRLMa}
+Como foi dito anteriormente, o \MRLM~é baseado no DBR. 
+% Ambos se baseiam na expansão do espaço de características
+% com características que representam a estimativas dos rótulos como forma de explorar
+% a correlação entre rótulos. Isso é feito usando a predição do BR no espaço de características original.
+% Ou seja, 
+Ambos dependem da hipótese de que as estimativas dos rótulos em $Y$ por um classificador multirrótulo $c_0$
+são boas características para aprimorar as estimativas dos mesmos rótulos por um novo classificador $c_1$
+e que quanto melhor forem as estimativas dos rótulos por $c_0$, melhores são as de $c_1$.
+E ainda ambos usam o BR como classificador multirrótulo base, que servirá para realizar as primeiras estimativas dos 
+rótulos.
+ No entanto, o \MRLMa, ao invés de usar apenas dois classificadores, como o DBR, 
+ usa $n$ classificadores multirrótulo $c_0,c_1,...,c_{n-1}$ organizados em uma cadeia de tal forma que
+ as predições do classificador $c_{i-1}$ , para $1\leq i<n$, são usados como características para o classificador $c_{i}$. 
+ Dessa forma, o classificador $c_{i}$ será baseado em estimativas melhores de rótulos do que seus antecessores $c_{i-1},c_{i-2},...,c_0$ e ainda
+ o classificador $c_{i}$ será capaz de aprender sobre os erros e acertos do classificador $c_{i-1}$ e alcançar resultados melhores.
+ 
+ Adicionalmente, o \MRLMa~assume que as características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$, estimados por um classificador multirrótulo,
+ são suficientes ou quase suficientes para predizer corretamente os valores reais dos rótulos em $Y$.
+ Baseado nessa suposição, o \MRLMa~substitue todas as características do espaço original pelas características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$,
+ para todos os seus classificadores, exceto para o classificador base $c_0$, uma vez que não existe ainda uma estimativa dos rótulos a usar.
+ Isso reduz o espaço de características o que diminui o custo computacional dos algoritmos.
+ Por outro lado, essa suposição nem sempre se mantém, podendo prejudicar a qualidade de predição dos algoritmos, mas espera-se que em média se mantenha.
+ 
+ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
+ \begin{itemize}
+  \item Para um valor pré-definido de n tal que $n\in \mathbb{N}, n>0$, o algoritmo é composto de
+  $n$ classsificadores BR que formam o conjunto $C=\{c_0,c_1,...,c_{n-1}\}$. 
+  \item Os classificadores em $C$ estão ordenados e dispostos em uma cadeia de tal forma que o 
+  classificador $c_i$ está ligado a saída (estimativas dos rótulos) do classificador $c_{i-1}$ e apenas a ele.
+  \item Cada classificador multirrótulo $c_i$ é composto de $l$ classificadores binários $h_{i1},h_{i2},h_{i3},...,h_{il}$
+  dispostos em uma cadeia.
+  
+  
+  Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa.
+  
+  
+  
+%   de tal forma que , para um $j\in \mathbb{N}, 0<j\leq l$, o $h_{ij}$ está ligado a $h_{i(j-1)}$ e somente a ele.
+  
+ \end{itemize}
+
+ 
+ 
+ \subsection{Fase de Treinamento}
+%  Dado uma base de treino $D$ composta de $n$ instâncias 
+ 
+ Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1}$ são representados
+ pelas funções $h_0,h_1,...,h_{n-1}$:
+ \begin{equation}
+ \begin{split}
+    & h_0 : X \rightarrow [0,1]^l \\
+    & h_i : [0,1]^l \rightarrow [0,1]^l | i=1,...,n-1
+%   h_0 : X \rightarrow \mathbb{R}^l &\\
+%   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
+  \end{split}
+ \end{equation}
+ 
+ onde a imagem de cada função $h_i$ é um vetor $(\hat{y}_1,\hat{y}_2,...,\hat{y}_l)$ de tamanho $l$ onde cada elemento
+ $\hat{y}_i$ é um valor entre 0 e 1 que representa a pertinência de uma instância $t$ para o rótulo $i$ ou a probabilidade da instância $t$ pertencer
+ ao rótulo $i$.
+ 
+ Primeiramente, treinamos o classificador BR $c_0$ no espaço de
+ características original $X$, resultando na construção da função $h_0(\bf{x})$:
+ \begin{equation}
+  h_0 : X \rightarrow \{0,1\}^l\.{z} 
+ \end{equation}
+ Em seguida, aplica-se a função $h_0$ sobre todas as instâncias da base de treino, resultando nas saídas
+ $h_0(x_1), h_0(x_2),...,h_0(x_n)$. A partir daí as instâncias são transformadas e mapeadas para um novo espaço de
+ características, criando a nova base de dados $D'$:
+ \begin{equation}
+  D'=\{(h_0(x_i),y_i)|i=1,...,n\}
+ \end{equation}
+
+ 
+%  \begin{equation}
+% \label{eq:funcT}
+%   T : X \times Y \rightarrow \hat{Y} \times Y,~T(x,y)=(h_0(x),y)
+%  \end{equation}
+%  onde $\hat{Y}$ é composto por instâncias da forma:
+%  \begin{equation}
+%   x'=(h_0(\bf{x}))
+%  \end{equation}
+
+
+ 
+ \subsection{Fase de Predição}
+ 
+%  A ideia por detrás de suposição é que o classificador $c_i$ já foi capaz de extrair todas as informações dispo
+ 
+
+% No entanto,
+% o \MRLMa~depende de duas novas hipóteses. A primeira é que 
+
+% A primeira é que as estimativas dos rótulos em $Y-\{y_i\}$ podem ser usados para estimar
+% o rótulo $y_i$ e quanto melhor forem as estimativas dos rótulos em $Y-\{y_i\}$, melhor é a de $y_i$. 
+% A idéia de que ao supor que essa hipótese é
+% verdade, o 
+% A segunda é que a estimativa de um rótulo
+%   \begin{enumerate}
+%    \item 
+%    
+%    
+%    Em outras palavras, 
+%    
+%    
+%    A estimativa de um rótulo $y_i$ para uma instância qualquer pode ser feita, com uma certa taxa de erro $E$~
+%    usando apenas as estimativas marginais de todos os rótulos, inclusive $y_i$, de tal forma que $E<e_i$, onde $e_i$ é taxa de erro
+%    para estimativa marginal do rótulo .
+%   \end{enumerate}
+
+ 
+
+
+
+\chapter{Avaliação e Análise Experimental}
+\section{Método de Comparação}
+
+A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
+A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 \textit{folds}
+sobre as \Nbases~bases de dados, todas apresentadas pela tabela \ref{tab:datas}.
+Todas as bases de dados foram obtidas de repositórios públicos pelo seguinte
+endereço virtual @@@.
+Para quantificar a qualidade de predição, foram escolhidas as seguintes métricas, todas detalhadas na seção \ref{sec:metrics}:
+% Hamming Loss, Accuracy, Subset Accuracy, Ranking Loss, ...@@@.
+
+% As métrica escolhidas e os motivos pela qual foram escolhidas são os seguintes:
+\begin{itemize}
+ \item Subset Accuracy, pois é rígida @@@ etc...
+ \item @@@
+ \item @@@
+ \item Tempo computacional, pois é @@@ etc...
+\end{itemize}
+
+É insteressante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
+um aspecto diferente da classificação.
+No entanto, uma vez que é impossível obter uma única ordenação dos métodos
+usando múltiplos critérios,
+% e isso é necessário para
+% observar a característica de rankeamento constante, citada na seção anterior,
+optou-se por usar a da média dos ranking das métricas como
+o único critério de ordenação ao levantar pontos conclusivos sobre os métodos. 
+
+Num total, foram comparados \Nml~\MML, \NmlT~da categoria de transformação e \NmlA~de adaptação @@@.
+A comparação é antecedida por um estudo dos parâmetros dos métodos
+cujo objetivo principal é encontrar os parâmetros que devem ser usadas na comparação dos métodos. Objetivos secundários são
+espeficicados nas seções \ref{sec:study1} e \ref{sec:study2}, especialmente dedicadas para esse estudo.
+O objetivo principal é alcançado ao analisar a alteração do comportamento dos métodos quando seus parâmetros são alterados.
+% , por exemplo,
+% se são muito sensíveis aos seus parâmetros ou não. 
+O estudo dos parâmetros foi dividido em dois subestudos:
+\begin{enumerate}
+ \item estudo individual, que tem por objetivo analisar os parâmetros únicos de cada método individualmente.
+  \item estudo de grupo, que tem por objetivo analisar os parâmetros que são idênticos para um grupo de métodos.
+  Nesse caso o parâmetro que representa a escolha do classificador binário base para os método baseados em transformação é
+  analisado. 
+\end{enumerate}
+ No estudo de grupo há duas características principais que se desejam observar:
+  
+  \begin{enumerate}
+  \item a variação do ranking dos métodos segundo um critério de qualidade ao variar o classificador base
+  para uma base específica.
+  \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
+%    \item rankeamento constante, que acontece se a ordem dos métodos permanece a mesma independente
+%    do valor do parâmetro quando ordenados por um critério de qualidade a uma base específica.
+%    \item parâmetro ótimo, que é o classificador base que causa o melhor desempenho no \MMLs em uma base específica.
+%    Caso o rankeamento seja inconstante, será um parâmetro ótimo para cada \MML.
+  \end{enumerate}
+
+  Para mais detalhes sobre os motivos desse estudo bem como seus resultados e conclusões na seção \ref{sec:study1}.
+  
+
+\section{Estudo prévio - NOME MELHOR DPOIS @@@}
+\label{sec:study1}
+\begin{verbatim}
+ -Listar métodos.
+ -Falar como vai ser comparado cada método (teste estatístico, rankeamento, métrica boa) para comprovar a hipotese.
+ -Apresentar resultados. (experimentos,tabela, gráficos...)
+ -Conclusão sobre os resultados
+\end{verbatim}
+
+Nessa seção os \NmlT~\MMLs~de transformação são estudados com relação a suas qualidades. (@@@ listar os métodos de transfomação.)
+A escolha do classificador base para cada um dos métodos foi reestrito para \Ncb~classificadores: @@@.
+Esse subestudo tem como objetivo principal encontrar os classificadores $c_1^*,c_2^*,c_3^*,c_4^*,c_5^*$ que serão utilizados pelos
+métodos $T_1,T_2,T_3,T_4,T_5$.
+
+% Como forma de comprovar a hipótese 1 aplicou-se o teste estatístico @@@.
+% Assim, a
+A comparação é realizada pelo rankeamento dos métodos, ou seja, os \MMLs~de transformação são submetidos a testes experimentais
+e ordenados segundo seus desempenhos de tal forma que para cada métrica e classificador base,
+é atribuído ao \MML~um valor correspondente a sua ordem, entre 1 e \NmlT. A ordenação por uma métrica
+é independente da ordenação da outra. 
+Os resultados experimentais são apresentados nas tabelas \ref{tab:study1-R-emotions},\ref{tab:study1-R-birds},..., uma para cada métrica utilizada.
+
+
+
+
 \chapter{Conclusão}
