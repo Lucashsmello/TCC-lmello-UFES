@@ -50,6 +50,34 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	 */
 	protected FilteredClassifier[][] ensemble;
 	private int chainSize = 2;
+	public boolean isUseTrainPropag() {
+		return useTrainPropag;
+	}
+
+	public void setUseTrainPropag(boolean useTrainPropag) {
+		this.useTrainPropag = useTrainPropag;
+	}
+
+	public boolean isInstanceSelection() {
+		return instanceSelection;
+	}
+
+	public boolean isUseOnlyLabels() {
+		return useOnlyLabels;
+	}
+
+	public boolean isUseMirrorLabel() {
+		return useMirrorLabel;
+	}
+
+	public boolean isUseConfiability() {
+		return useConfiability;
+	}
+
+	public boolean isChainUpdate() {
+		return chainUpdate;
+	}
+
 	private int realchainSize;
 	MultiLabelLearner baseml;
 	Add[] addsattr;
@@ -59,6 +87,9 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	private boolean instanceSelection = true;
 	private boolean useTrainPropag;
 	private boolean useOnlyLabels;
+	private boolean useMirrorLabel = true;
+	private boolean useConfiability = true;
+	private boolean chainUpdate = true;
 
 	/**
 	 * Creates a new instance
@@ -131,24 +162,15 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 
 		boolean[] bipartition = new boolean[numLabels];
 		double[] confidences = new double[numLabels];
-		if (c < realchainSize - 1) {
-			TransformInstance(inst, prevOut);
-		} else {
-			TransformInstance(inst, prevOut, false);
-		}
+		// if (c < realchainSize - 1) {
+		TransformInstance(inst, prevOut, useConfiability);
+		// } else {
+		// TransformInstance(inst, prevOut, false);
+		// }
 		for (int j = 0; j < numLabels; j++) {
-			// double v = inst.value(labelIndices[j]);
-			// inst.setValue(labelIndices[j], bv[j]);
 
 			double[] distribution = ensemble[c][j]
 					.distributionForInstance(inst);
-
-			// if ((distribution[0] > 0.1) && (distribution[0] < 0.9)) {
-			// for (int x = 0; x < distribution.length; x++) {
-			// System.out.print(distribution[x] + " ");
-			// }
-			// System.out.println();
-			// }
 
 			int maxIndex = (distribution[0] > distribution[1]) ? 0 : 1;
 
@@ -158,12 +180,14 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			// The confidence of the label being equal to 1
 			confidences[j] = distribution[1];
 
-			if (c < realchainSize - 1) {
-				inst.setValue(inst.numAttributes() - numLabels + j,
-						confidences[j]);
-			} else {
+			// if (c < realchainSize - 1) {
+			// inst.setValue(inst.numAttributes() - numLabels + j,
+			// confidences[j]);
+			// } else {
+			if (chainUpdate) {
 				inst.setValue(inst.numAttributes() - numLabels + j, maxIndex);
 			}
+			// }
 		}
 
 		MultiLabelOutput mlo = new MultiLabelOutput(bipartition, confidences);
@@ -200,14 +224,24 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 				x++;
 			}
 		} else {
-			indicesToRemove = new int[numLabels - 1];
+			if (useMirrorLabel) {
+				indicesToRemove = new int[numLabels - 1];
+			} else {
+				indicesToRemove = new int[numLabels];
+			}
 			for (k = 0; k < labeli; k++) {
 				indicesToRemove[k] = labelIndices[k];
 			}
-			// indicesToRemove[k] = trainDataset.numAttributes() - numLabels +
-			// labeli;
-			for (k = labeli + 1; k < numLabels; k++) {
-				indicesToRemove[k - 1] = labelIndices[k];
+
+			int k2 = k + 1;
+			if (!useMirrorLabel) {
+				indicesToRemove[k] = trainDataset.numAttributes() - numLabels
+						+ labeli;
+				k++;
+			}
+
+			for (; k2 < numLabels; k++, k2++) {
+				indicesToRemove[k] = labelIndices[k2];
 			}
 		}
 
@@ -328,7 +362,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	protected void buildInternal(MultiLabelInstances train) throws Exception {
 		buildInternal2(train);
 	}
-	
+
 	private boolean hit(MultiLabelOutput mlo, Instance inst) {
 		boolean[] bip = mlo.getBipartition();
 		for (int i = 0; i < numLabels; i++) {
@@ -368,10 +402,12 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 				Instance inst = newtrainData.instance(i);
 
 				MultiLabelOutput mlo = baseml.makePrediction(inst);
+
+				if (useTrainPropag) {
+					TransformInstance(inst, mlo);
+				}
+
 				if (hit(mlo, inst)) {
-					if (useTrainPropag) {
-						TransformInstance(inst, mlo);
-					}
 					indexs.add(i);
 				}
 			}
@@ -405,16 +441,17 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 					MultiLabelOutput mlo;
 
 					mlo = ChainMakePrediction(c, inst);
+					if (useTrainPropag) {
+						TransformInstance(inst, mlo);
+					}
+
 					if (hit(mlo, inst)) {
-						if (useTrainPropag) {
-							TransformInstance(inst, mlo);
-						}
 						indexs.add(i);
 					}
 				}
 			}
 		}
-		
+
 		if (instanceSelection) {
 			for (int i = 0; i < indexs.size(); i++) {
 				newtrainData.remove((int) indexs.get(i));
@@ -493,17 +530,16 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		MultiLabelOutput[] mloensemble = new MultiLabelOutput[realchainSize + 1];
 		mloensemble[0] = baseml.makePrediction(instance);
 
-
 		for (int c = 0; c < realchainSize; c++) {
 			mloensemble[c + 1] = ChainMakePrediction(c, tempInstance,
 					mloensemble[c]);
 		}
 
-		// System.out.println("makePredictionInternal OUT");
-
+		if (instanceSelection) {
+			return combineMLO2(mloensemble);
+		}
 		return mloensemble[realchainSize];
-		// return mloensemble[chainSize];
-		// return combineMLO2(mloensemble);
+
 	}
 
 	private MultiLabelOutput combineMLO(MultiLabelOutput[] mloensemble) {
@@ -546,8 +582,8 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		if (realchainSize == 0) {
 			return mloensemble[0];
 		}
-		
-		double[] c = mloensemble[1].getConfidences();
+
+		double[] c = mloensemble[0].getConfidences();
 		boolean[] Fbipart = new boolean[mloensemble[0].getBipartition().length];
 		double[] Fconf = new double[mloensemble[0].getConfidences().length];
 		double maxprod = c[0];
@@ -557,7 +593,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 			maxprod *= c[i] >= 0.5 ? c[i] : 1 - c[i];
 		}
 
-		for (int i = 2; i < mloensemble.length; i++) {
+		for (int i = 1; i < mloensemble.length; i++) {
 			double[] conf = mloensemble[i].getConfidences();
 			double prod = conf[0];
 
@@ -585,7 +621,20 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		useTrainPropag = tp;
 	}
 
-	public void setUseOnlyLabels(boolean l) {
-		useOnlyLabels = l;
+	public void setUseOnlyLabels(boolean u) {
+		useOnlyLabels = u;
+	}
+
+	public void setUseMirrorLabel(boolean u) {
+		useMirrorLabel = u;
+	}
+
+	public void setUseConfiability(boolean u) {
+		useConfiability = u;
+	}
+
+	public void setChainUpdate(boolean b) {
+		chainUpdate = b;
+
 	}
 }
