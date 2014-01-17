@@ -1,13 +1,11 @@
 package lmello;
 
-import java.util.Arrays;
-
-import weka.classifiers.Classifier;
-import weka.classifiers.trees.J48;
-import weka.core.Instance;
 import mulan.classifier.InvalidDataException;
 import mulan.classifier.MultiLabelOutput;
 import mulan.classifier.transformation.EnsembleOfClassifierChains;
+import weka.classifiers.Classifier;
+import weka.classifiers.trees.J48;
+import weka.core.Instance;
 
 public class ECC2 extends EnsembleOfClassifierChains {
 
@@ -25,12 +23,7 @@ public class ECC2 extends EnsembleOfClassifierChains {
 	public MultiLabelOutput makePredictionInternal(Instance instance)
 			throws Exception, InvalidDataException {
 
-		int[] sumVotes = new int[numLabels];
-		double[] sumConf = new double[numLabels];
 		MultiLabelOutput[] mloensemble = new MultiLabelOutput[numOfModels];
-
-		Arrays.fill(sumVotes, 0);
-		Arrays.fill(sumConf, 0);
 
 		for (int i = 0; i < numOfModels; i++) {
 			mloensemble[i] = ensemble[i].makePrediction(instance);
@@ -66,7 +59,7 @@ public class ECC2 extends EnsembleOfClassifierChains {
 		}
 
 		for (int i = 0; i < Fconf.length; i++) {
-			Fbipart[i] = Fconf[i] > 0.5;
+			Fbipart[i] = Fconf[i] >= 0.5;
 		}
 		return new MultiLabelOutput(Fbipart, Fconf);
 	}
