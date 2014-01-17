@@ -131,16 +131,25 @@ classificador multirrótulo. A alimentação e o funcionamento do algoritmo ser�
 
 Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 \begin{itemize}
-  \item É composto de dois BRs, o primeiro chamaremos de $c_0$ e o segundo de $c_1$.
+  \item Assim como o DBR, é composto de dois BRs, o primeiro chamaremos de $c_0$ e o segundo de $c_1$. 
+
   \item O $c_0$ trabalha dentro do espaço de características original do problema, de nome $X$,
-  e $c_1$ trabalha dentro de um espaço de características expandido do problema, de nome $X_e$ e
-   definido como $X_e=X \times [0,1]^{l-1}$.
+  e $c_1$ trabalha dentro de um novo espaço de características do problema, de nome $X_e$ e
+   definido como $X_e=[0,1]^{l}$. O $c_0$ e $c_1$ podem ser
+  representados pelas seguintes funções:
+  \begin{equation}
+  \begin{split}
+   & h_0 : X \rightarrow [0,1]^l \\
+   & h_1 : X_e \rightarrow [0,1]^l
+   \end{split}
+  \end{equation}
   \item O método contém duas funções $t_0$ e $t_1$ que mapeiam espaços de características:
    \begin{equation}
  \begin{split}
     & t_0 : X \rightarrow X_e \\
     & t_1 : X_e \rightarrow X_e \\
-    & t_0(x)=(x,h(x))
+    & t_0(x)=(x,h_0(x)) | x \in X \\
+    & t_1(x,y)=(x,h_1(x,y)) | x \in X,  y \in [0,1]^{l}
 %   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
   \end{split}
  \end{equation}
@@ -170,7 +179,13 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   dispostos em uma cadeia.
 %   
   
-  Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa.
+  Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa. 
+  
+  A fase de treinamento do \MRLMa~é bastante semelhante ao DBR.
+  Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado apenas com as características adicionais $Y$.
+  Portanto, apenas a fase de predição do algoritmo será detalhado nessa capítulo.
+  \MRLMa~trabalha
+  
   
   
   
@@ -180,7 +195,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 
  
  
- \subsection{Fase de Treinamento}
+%  \subsection{Fase de Treinamento}
 %  Dado uma base de treino $D$ composta de $n$ instâncias 
  
 %  Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1}$ são representados
