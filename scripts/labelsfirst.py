@@ -77,6 +77,7 @@ def transformDataValues(fdata,fdataout,labels_indexs):
             continue
 
         line=line.replace("\n","")
+        line=line.replace("\r","")
         attrs=line.split(',')
         if(attrs[0].find(' ')==-1): #se uma base de dados sparso ou nao
             fdataout.write(attrs[labels_indexs[0]])        
