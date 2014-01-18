@@ -21,15 +21,10 @@ def getLabelsName(fname):
 def attrValue(s):
     return int(s[:s.find(' ')])
 
-def transformData(dataPath,labelsPath):
-    i=dataPath.rfind('/')+1
-    dataoutname=dataPath[:i]+dataPath[i:].replace('.','-P.')
-    fdataout=open(dataoutname,'w')
-    fdata=open(dataPath,'r')
-    labels=getLabelsName(labelsPath)
-    labels_indexs=[-1]*len(labels)
+def transformAttrs(fdata,fdataout,labels):
     labels_written=False
-    
+    labels_indexs=[-1]*len(labels)
+
     attrindex=0
     for line in fdata:
         if(line.find("@data")>=0):
@@ -70,7 +65,9 @@ def transformData(dataPath,labelsPath):
                 print "Index of label ("+labels[x]+") not found."
             x+=1
 
-    print "Writing Data"
+    return labels_indexs
+
+def transformDataValues(fdata,fdataout,labels_indexs):
     linei=1
     for line in fdata:
         print linei
@@ -113,6 +110,18 @@ def transformData(dataPath,labelsPath):
                 else:
                     fdataout.write(','+attrs[i])
             fdataout.write('}\n')
+
+
+def transformData(dataPath,labelsPath):
+    i=dataPath.rfind('/')+1
+    dataoutname=dataPath[:i]+dataPath[i:].replace('.','-P.')
+    fdataout=open(dataoutname,'w')
+    fdata=open(dataPath,'r')
+    labels=getLabelsName(labelsPath)
+    
+    labels_indexs=transformAttrs(fdata,fdataout,labels)
+    print "Writing Data"
+    transformDataValues(fdata,fdataout,labels_indexs)
         
     fdataout.close()
     fdata.close()
