@@ -87,16 +87,19 @@ def posprocessRank(rank,result):
 
     return newranks
 
-def makeRank(results): #results organizado em metodos
+def makeRank(results,makeMeanRank=True): #results organizado em metodos
     allranks=[]
     j=0
     for expR in results:
         ranks=[]
         metrics=expR[0][1:]
-        sa_i=metrics.index("Subset Accuracy")
+        try:
+            sa_i=metrics.index("Mean Rank")
+        except:
+            sa_i=metrics.index("Subset Accuracy")
         expR=zip(expR[1:],range(len(expR[1:])))
         for i in range(0,len(metrics)):
-            if(metrics[i].find("Loss")<0 and metrics[i].find("Tempo")<0):
+            if(metrics[i].find("Loss")<0 and metrics[i].find("Tempo")<0 and metrics[i].find("Mean Rank")<0):
                 expRsort=sorted(expR,key=lambda k:k[0][i+1],reverse=True)
             else:
                 expRsort=sorted(expR,key=lambda k:k[0][i+1])
@@ -112,12 +115,21 @@ def makeRank(results): #results organizado em metodos
             
         for i in range(len(newranks)):
             newranks[i]=posprocessRank(newranks[i],zip(*results[j])[i+1][1:])
+                
+        newranksT=zip(*newranks)
+        if(makeMeanRank):
+            for res,r in zip(results[j][1:],newranksT):
+                res.append(float(sum(r))/len(r)+1)
+            results[j][0].append("Mean Rank")
+        
         allranks.append(newranks)
         j+=1
     
+    if(makeMeanRank):
+        return makeRank(results,False)
     return allranks
 
-def tocsv(dirpath,  metrics, methods="ALL",makerank=True):
+def tocsv(dirpath, metrics, methods="ALL",makerank=True,makeMeanRank=True):
     if(not os.path.exists(dirpath+"/csv")):
         os.mkdir(dirpath+"/csv",0777)
     fout=open(dirpath+"/csv/"+"exps.csv",'w')
@@ -134,25 +146,20 @@ def tocsv(dirpath,  metrics, methods="ALL",makerank=True):
                     except Exception as e:
                         print "ERROR in file "+f+" :" + str(e)
 
-  #  print allresults[0]
-   # print zip(*allresults[0])
     allranks=[]
     if(makerank):
-        allranks=makeRank(allresults)
+        allranks=makeRank(allresults,makeMeanRank)
+        if(makeMeanRank):
+            metrics.append("Mean Rank")
 
     print str(len(allresults))+" experimentos"
     maxm=0
     for r in allresults:
         if(len(r)>maxm):
             maxm=len(r)
- #       print str(len(r)-1)+ " metodos"
     print str(maxm-1)+ " metodos (MAX)"
     print str(len(allresults[0][0])-1)+ " metricas"
     
-#    print str(len(allranks))+"/"+str(len(allresults))
- #   print str(len(allranks[0]))+"/"+str(len(allresults[0]))
-  #  print str(len(allranks[0][0]))+"/"+str(len(allresults[0][0]))
-
     for i in range(0,maxm):
         for k in range(0,len(allresults)):
             r=allresults[k]
@@ -180,6 +187,7 @@ allmetricsnames=["Subset Accuracy","Tempo","Hamming Loss", "Average Precision","
 if __name__ == "__main__":
     methods="ALL"
     metrics=allmetricsnames
+    meanRank=False
 
     if(len(sys.argv)==1):
         print "Usage: " +sys.argv[0]+" DIRPATH [METHODS] [METRICS]" 
@@ -191,9 +199,14 @@ if __name__ == "__main__":
             else:
                 methods=sys.argv[2].split(',')
         if(len(sys.argv)>3):
-            idx=sys.argv[3].split(',')
-            metrics=[allmetricsnames[int(i)] for i in idx]
+            if(sys.argv[3]=="ALL"):
+                metrics=allmetricsnames
+            else:
+                idx=sys.argv[3].split(',')
+                metrics=[allmetricsnames[int(i)] for i in idx]
             print metrics
-            
-        
-        tocsv(sys.argv[1],metrics,methods)
+        if(len(sys.argv)>4):
+            if(sys.argv[4]=="-meanrank"):
+                meanRank=True
+
+        tocsv(sys.argv[1],metrics,methods,True,meanRank)
