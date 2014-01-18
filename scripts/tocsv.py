@@ -34,8 +34,8 @@ def getresults(filepath,metrics,methods="ALL"):
             for i in range(1,len(line)):
                 line[i]=float(line[i][:line[i].find('\xc2\xb1')])
             if(methods!="ALL"):
-#                if(methods.count(line[0].split(' ')[0].strip())>0):
-                if([line[0].split(' ')[0].strip().find(j) for j in methods]>[-1]*len(methods)):
+                if(methods.count(line[0].split(' ')[0].strip())>0):
+#                if([line[0].split(' ')[0].strip().find(j) for j in methods]>[-1]*len(methods)):
                     results.append(getMetrics(line,metricsidx))
             else:
                 results.append(getMetrics(line,metricsidx))
@@ -59,7 +59,8 @@ def indexList(l):
 
 
 def near(x,y):
-    return abs(x-y)<=0.001
+    return min(x,y)/max(x,y) >= 0.99
+    #return abs(x-y)<=0.001
 
 def posprocessRank(rank,result):
     newr=0
@@ -86,7 +87,7 @@ def posprocessRank(rank,result):
 
     return newranks
 
-def makeRank(results):
+def makeRank(results): #results organizado em metodos
     allranks=[]
     j=0
     for expR in results:
@@ -100,11 +101,15 @@ def makeRank(results):
             else:
                 expRsort=sorted(expR,key=lambda k:k[0][i+1])
             ranks.append(zip(*expRsort)[-1])
+        
+        newranks=indexList(ranks)    #newranks organizado em metricas
+        newranksT=zip(*newranks)
+        newranksTzipped=zip(newranksT,range(len(newranksT)))
+        sorted_idx=zip(*sorted(newranksTzipped,key=lambda k:k[0][sa_i]))[-1]
+        
+        newranks=zip(*[zip(*newranks)[i] for i in sorted_idx])
+        results[j]=[results[j][0]]+[results[j][i+1] for i in sorted_idx]
             
-        results[j]=[results[j][0]]+sorted(results[j][1:],key=lambda k:k[sa_i+1])
-        newranks=indexList(ranks)
-
-        newranks=zip(*sorted(zip(*newranks),key=lambda k:k[sa_i],reverse=True))
         for i in range(len(newranks)):
             newranks[i]=posprocessRank(newranks[i],zip(*results[j])[i+1][1:])
         allranks.append(newranks)
