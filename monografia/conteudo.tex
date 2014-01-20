@@ -125,9 +125,9 @@ No entanto, o \MRLMa, ao invés de usar apenas o classificador base $c_0$ para "
 ele usa o próprio $c_1$ para se "alimentar", ou seja, há realimentação pelo próprio classificador.
 A idéia é que cada vez que $c_1$ se realimente, melhores ficam suas estimativas uma vez que ele será baseado
 em estimativas melhores de rótulos do que anteriormente. 
-A alimentação que dizemos é a propagação das 
+A alimentação é a propagação das 
 estimativas dos rótulos de um classificador multirrótulo para o espaço de características expandido de um outro, ou o mesmo,
-classificador multirrótulo. A alimentação e o funcionamento do algoritmo serão formalmente detalhados nas seções seguintes.
+classificador multirrótulo. O funcionamento do algoritmo serão formalmente detalhados nas seções seguintes.
 
 Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 \begin{itemize}
@@ -182,9 +182,10 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa. 
   
   A fase de treinamento do \MRLMa~é bastante semelhante ao DBR.
-  Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado apenas com as características adicionais $Y$.
-  Portanto, apenas a fase de predição do algoritmo será detalhado nessa capítulo.
-  \MRLMa~trabalha
+  Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado somente com as características adicionais $Y$. 
+%   Lembrando que 
+%   ao treinar $c_1$, treina-se um BR que gera $l$ problemas binários onde cada   rótulos a classificar são escondidos 
+%   Portanto, apenas a fase de predição do algoritmo será detalhado nesse capítulo.
   
   
   
@@ -238,6 +239,41 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 
  
  \subsection{Fase de Predição}
+ A fase de predição do \MRLMa~funciona de maneira bem similar ao DBR.
+ Dado uma instância $x$ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^l$, queremos que a função $C:X\rightarrow Y$,
+ representando o método \MRLMa, retorne $y$ quando submetemos $x$, ou seja, $C(x)=y$.
+ 
+ Como no caso do DBR e do Classifier Chain, os rótulos reais $y$, que são usado como características especiais,
+ estão disponíveis apenas durante a fase de treinamento. Dessa forma, para tornar possível a classificação por $c_1$, usou-se o $c_0$ para
+ estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
+ resultando em $\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_l^0) | \hat{y}^0 \in \{0,1\}^l$, que servirá de instância, no lugar de $y$,
+ para o $c_1$.
+ A partir daí, $c_1$ classifica a instância $\hat{y}^0$, gerando a instância $\hat{y}^1$, que poderá novamente servir como
+ instância para $c_1$. Esse processo de classificação de $c_1$ é repetido para um valor pré-definido $n$ de vezes,
+ resultando nas estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^n$, dentre as quais o último é a classificação final do método.
+
+ Aplicando esse processo iterativo, espera-se que a cada iteração $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
+ seu antecessor $\hat{y}^{i-1}$. Teoricamente, essa afirmação se mantém se supormos que a estimativa $\hat{y}^1$ é melhor do que a $\hat{y}^0$, 
+ o que é razoável uma vez que o classificador $c_0$, que o BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
+ ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$), enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
+ estimativas baseadas na probabilidade condicional.
+ Pela suposição teríamos que $\hat{y}^i$ seria melhor do que $\hat{y}^{i-1}$, pois $\hat{y}^{i-1}$ se aproxima
+ mais da distribuição real dos rótulos do que $\hat{y}^{i-2}$. Assim, quando $c_1$ estimar $\hat{y}^i$ usando $\hat{y}^{i-1}$ estaria baseado em 
+ uma distribuição mais próxima daquela em que foi treinado do que usando $\hat{y}^{i-2}$.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
 %  A ideia por detrás de suposição é que o classificador $c_i$ já foi capaz de extrair todas as informações dispo
  
