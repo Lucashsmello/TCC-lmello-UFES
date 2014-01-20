@@ -30,10 +30,11 @@ public class ExperimentLMTCC {
 		// LA!!!
 
 		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
-		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv3/";
+		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv5/";
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
-		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P" };
-		String[] datasnames = new String[] { "Corel5k-P" };
+		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P" ,"medical-P","enron-P"};
+		String[] datasnames = new String[] { "emotions-P","birds-P","scene-P", "yeast-P","medical-P","Corel5k-P"};
+//		String[] datasnames = new String[] { "enron-P","genbase-P","rcv1subset1-P"};
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
 		FileWriter logfile = new FileWriter(new File(expDir + "expLog"
 				+ sdffile.format(new Date())));
@@ -163,7 +164,7 @@ public class ExperimentLMTCC {
 			MRLM mrlm = new MRLM(new ClassifierChain(c), c, 5);
 			mrlm.setInstanceSelection(false);
 			mrlm.setTrainPropagation(false);
-			mrlm.setUseOnlyLabels(true);
+			mrlm.setUseOnlyLabels(false);
 			mrlm.setUseMirrorLabel(false);
 			mrlm.setUseConfiability(false);
 			mrlm.setChainUpdate(true);
@@ -171,7 +172,7 @@ public class ExperimentLMTCC {
 			MRLM mrlm2 = new MRLM(new ClassifierChain(c), c, 5);
 			mrlm2.setInstanceSelection(true);
 			mrlm2.setTrainPropagation(false);
-			mrlm2.setUseOnlyLabels(true);
+			mrlm2.setUseOnlyLabels(false);
 			mrlm2.setUseMirrorLabel(false);
 			mrlm2.setUseConfiability(false);
 			mrlm2.setChainUpdate(true);
@@ -191,17 +192,17 @@ public class ExperimentLMTCC {
 			// 66, 10, 0.5, 2, PrunedSets.Strategy.A, 3, c);
 
 			mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
-			mmm.add(new ECC2(c, 10, true, true));
+//			mmm.add(new ECC2(c, 10, true, true));
 			mmm.add(new MekaWrapperClassifier(mcc));
 			if (mldata.getNumLabels() <= 10) {
 				mmm.add(lpower);
 				mmm.add(new MekaWrapperClassifier(pcc));
 			}
 			mmm.add(cc);
-			mmm.add(cc2);
+//			mmm.add(cc2);
 			mmm.add(br);
 			mmm.add(mrlm);
-			mmm.add(mrlm2);
+//			mmm.add(mrlm2);
 			mmm.add(dbr);
 			// mmm.add(eps);
 		}
