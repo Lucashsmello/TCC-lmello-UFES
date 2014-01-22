@@ -85,6 +85,7 @@ Falar sobre bases separadas de treino,teste e validação.
 \chapter{Métodos Multirrótulos}
 \section{Transformação do Problema}
 \subsection{Relevância Binária - BR}
+\ref{sec:br}
 \subsection{Classifier Chain}
 \subsection{Ensemble of Classifier Chain}
 \subsection{Probabilistic Classifier Chain}
@@ -102,7 +103,7 @@ Falar sobre bases separadas de treino,teste e validação.
 
 
 \chapter{Super Novo Método Revolucionário*}
-A proposta de \MRLM é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014}, explicado
+A proposta de \MRLM~é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014}, que é explicado
 na seção \ref{sec:dbr}. Assim como o DBR, o \MRLMa~é um método baseado na transfomação do problema.
 % portanto,
 % esse capítulo é iniciado com uma seção explicando o funcionamento do DBR, facilitando o entendimento do \MRLMa~na seção seguinte.
@@ -131,28 +132,38 @@ classificador multirrótulo. O funcionamento do algoritmo serão formalmente det
 
 Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 \begin{itemize}
-  \item Assim como o DBR, é composto de dois BRs, o primeiro chamaremos de $c_0$ e o segundo de $c_1$. 
-
+%   \item Assim como o DBR, é composto de dois classificadores multirrotulo, o primeiro, $c_0$, é um BR
+%   e o segundo, $c_1$, é um BR ligeiramente modificado, que chamaremos de $BR^*$.
+  \item Assim como o DBR, é composto de dois BR's, $c_0$ e $c_1$.
   \item O $c_0$ trabalha dentro do espaço de características original do problema, de nome $X$,
   e $c_1$ trabalha dentro de um novo espaço de características do problema, de nome $X_e$ e
-   definido como $X_e=[0,1]^{l}$. O $c_0$ e $c_1$ podem ser
+   definido como $X_e=\{0,1\}^{l}$. Assim, $c_0$ e $c_1$ são
   representados pelas seguintes funções:
   \begin{equation}
   \begin{split}
-   & h_0 : X \rightarrow [0,1]^l \\
-   & h_1 : X_e \rightarrow [0,1]^l
+   & c_0 : X \rightarrow \{0,1\}^l \\
+   & c_1 : X_e \rightarrow \{0,1\}^l
    \end{split}
   \end{equation}
-  \item O método contém duas funções $t_0$ e $t_1$ que mapeiam espaços de características:
-   \begin{equation}
- \begin{split}
-    & t_0 : X \rightarrow X_e \\
-    & t_1 : X_e \rightarrow X_e \\
-    & t_0(x)=(x,h_0(x)) | x \in X \\
-    & t_1(x,y)=(x,h_1(x,y)) | x \in X,  y \in [0,1]^{l}
-%   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
-  \end{split}
- \end{equation}
+  \item Os $l$ classificadores binários $c_1^1,c_1^2...,c_1^l$ que compoêm $c_1$ não trabalham no mesmo
+  espaço de características, contudo,
+  trabalham com uma dimensão reduzida, em $\{0,1\}^{l-1}$. Digamos que $z=(z_1,z_2,...,z_l)$ seja uma instância de $X_e$, então cada instância 
+  de um classificador binário qualquer $c_1^i$ tem $l-1$ características e é definido como sendo $(z_1,...,z_{i-1},z_{i+1},...,z_{l})$.
+
+  
+%   e o resultado da classificação multirrotulo de $c_1$ é construido da seguinte forma:
+%   $c_0(x,y)=(c_1^1(x,y_2$
+%   \item O método contém duas funções $t_0$ e $t_1$ que mapeiam espaços de características:
+%    \begin{equation}
+%  \begin{split}
+%     & t_0 : X \rightarrow X_e \\
+%     & t_1 : X_e \rightarrow X_e \\
+%     & t_0(x)=(c_0(x)) | x \in X \\
+%     & t_1(x,y)=(c_1(x,y)) | x \in X,  y \in [0,1]^{l}
+% %   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
+%   \end{split}
+%  \end{equation}
+%   
   
 \end{itemize}
 
@@ -181,8 +192,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   
   Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa. 
   
-  A fase de treinamento do \MRLMa~é bastante semelhante ao DBR.
-  Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado somente com as características adicionais $Y$. 
+ 
 %   Lembrando que 
 %   ao treinar $c_1$, treina-se um BR que gera $l$ problemas binários onde cada   rótulos a classificar são escondidos 
 %   Portanto, apenas a fase de predição do algoritmo será detalhado nesse capítulo.
@@ -196,10 +206,34 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 
  
  
-%  \subsection{Fase de Treinamento}
+ \subsection{Fase de Treinamento}
+  A fase de treinamento do \MRLMa~é bastante similar ao DBR.
+  Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado somente com as características adicionais $Y$.
+  O objetivo de usar apenas os rótulos como características para treinar $c_1$ ao invés de usá-los juntamente com as
+  características originais é reduzir o espaço de características, reduzindo assim o custo computacional do algoritmo.
+  Essa idéia é baseada na hipótese de $c_1$ pode aprender a classificar corretamente um rótulo sabendo apenas
+  os valores do outros rótulos. É claro que ela nem sempre é verdade e com isso virá erros na classificação, entretanto
+  espera-se que ela se mantenha verdadeira, ou pelo menos que o erro seja pequeno,
+  pela suposição que exista correlação entre os rótulos no problema em que ele
+  for aplicado e também pelo fato de que os rótulos podem ser vistos como resumos das características do problema, e portanto
+  contém algumas informações do espaço de características original $X$, e assim nem toda informação que supostamente
+  é necessária para classificar um rótulo é descartada. Resumindo, espera-se que a queda no desempenho ao treinar $c_1$
+  usando apenas os rótulos seja relativamente pequeno quando comparado a queda no custo computacional do algoritmo.
+  
+  
+  De forma mais formal, o treinamento de \MRLM~funciona da seguinte forma.
+  Dado uma base de dados de treino $D=\{(x_i,y_i)|i=1,...,n\}$ onde $x_i \in X$ e $y_i \in Y$,
+  primeiro treina-se o $c_0$
+  no espaço de características original conforme o treinamento do próprio BR mostrado na seção \ref{sec:br}.
+  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ e que é
+  composta pelas instâncias $\{(y_1),(y_2),...,(y_n)\}$ as quais são os rótulos das instâncias da base de $D$
+  (ver figura \ref{fig:instsRotulos}).
+%   , cada um representado na forma
+%   binária na qual tem o valor $1$ se a instância tem o rótulo e $0$ se o contrário .
+  
 %  Dado uma base de treino $D$ composta de $n$ instâncias 
  
-%  Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1}$ são representados
+%  Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1} são representados
 %  pelas funções $h_0,h_1,...,h_{n-1}$:
 %  \begin{equation}
 %  \begin{split}
@@ -241,30 +275,48 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  \subsection{Fase de Predição}
  A fase de predição do \MRLMa~funciona de maneira bem similar ao DBR.
  Dado uma instância $x$ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^l$, queremos que a função $C:X\rightarrow Y$,
- representando o método \MRLMa, retorne $y$ quando submetemos $x$, ou seja, $C(x)=y$.
+ representando o classificador multirrótulo \MRLMa, retorne $y$ quando o submetemos $x$, ou seja, $C(x)=y$.
  
  Como no caso do DBR e do Classifier Chain, os rótulos reais $y$, que são usado como características especiais,
  estão disponíveis apenas durante a fase de treinamento. Dessa forma, para tornar possível a classificação por $c_1$, usou-se o $c_0$ para
  estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
- resultando em $\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_l^0) | \hat{y}^0 \in \{0,1\}^l$, que servirá de instância, no lugar de $y$,
+ resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_l^0)$, que servirá de instância, no lugar de $y$,
  para o $c_1$.
- A partir daí, $c_1$ classifica a instância $\hat{y}^0$, gerando a instância $\hat{y}^1$, que poderá novamente servir como
+ A partir daí, $c_1$ classifica a instância $\hat{y}^0$, gerando a instância $c_1(\hat{y}^0)=\hat{y}^1$, que poderá novamente servir como
  instância para $c_1$. Esse processo de classificação de $c_1$ é repetido para um valor pré-definido $n$ de vezes,
- resultando nas estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^n$, dentre as quais o último é a classificação final do método.
-
- Aplicando esse processo iterativo, espera-se que a cada iteração $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
+ resultando nas estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^n$, dentre as quais o último ($\hat{y}^n$) é a classificação final do método
+ $C(x)=\hat{y}^n$.
+ 
+ Dessa forma, podemos concluir que \MRLM~é um método recursivo onde
+ a aplicação de $c_1$ $2$ vezes sobre
+ $c_0(x)$ resulta na estimativa $\hat{y}^2=c_1(c_1(c_0(x)))$,
+ a aplicação de $c_1$ $3$ vezes sobre
+ $c_0(x)$ resulta na estimativa $\hat{y}^3=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
+ Aplicando esse processo recursivo, espera-se que a cada chamada de recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
  seu antecessor $\hat{y}^{i-1}$. Teoricamente, essa afirmação se mantém se supormos que a estimativa $\hat{y}^1$ é melhor do que a $\hat{y}^0$, 
  o que é razoável uma vez que o classificador $c_0$, que o BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
- ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$), enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
+ (@@@referenciar equacao de probabilidade marginal@@@)%  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
+ , enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
  estimativas baseadas na probabilidade condicional.
- Pela suposição teríamos que $\hat{y}^i$ seria melhor do que $\hat{y}^{i-1}$, pois $\hat{y}^{i-1}$ se aproxima
+ Com essa suposição teríamos que $\hat{y}^i$ seria melhor do que $\hat{y}^{i-1}$, pois $\hat{y}^{i-1}$ se aproxima
  mais da distribuição real dos rótulos do que $\hat{y}^{i-2}$. Assim, quando $c_1$ estimar $\hat{y}^i$ usando $\hat{y}^{i-1}$ estaria baseado em 
  uma distribuição mais próxima daquela em que foi treinado do que usando $\hat{y}^{i-2}$.
+ Lembrando que $c_1$ foi treinado usando rótulos assumidamente corretos.
+ 
+ Olhando por esse procedimento, o \MRLMa~pode ser simplesmente visto como um método que insere uma inteligência
+ adicional a aplicação e uso do classificador $c_1$ de DBR, afim de que ele seja melhor aproveitado.
  
  
  
- 
- 
+ \subsection{Análise}
+ \begin{verbatim}
+  -Listar as hipoteses/suposições em que MRLM é baseado.
+  -Mostrar experimentos/gráficos que comprovam que as hipoteses bases
+      são verdades(geralmente).
+  -Conclusão rápida em relação a mudança que o MRLM faz com o DBR.
+      (Conclusão mais detalhada será feita no último capitulo da monografia!)
+ \end{verbatim}
+
  
  
  
