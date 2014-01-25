@@ -17,7 +17,11 @@
  */
 package lmello;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import mulan.classifier.MultiLabelLearner;
@@ -38,6 +42,9 @@ import weka.filters.unsupervised.attribute.Remove;
 
 public class MRLM extends TransformationBasedMultiLabelLearner {
 
+	public static final SimpleDateFormat sdf = new SimpleDateFormat(
+			"yyyy-MM-dd HH:mm:ss");
+
 	double mstime(long t) {
 		return (System.nanoTime() - t) / 1e6;
 	}
@@ -50,6 +57,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	 */
 	protected FilteredClassifier[][] ensemble;
 	private int chainSize = 2;
+
 	public boolean isUseTrainPropag() {
 		return useTrainPropag;
 	}
@@ -90,6 +98,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	private boolean useMirrorLabel = true;
 	private boolean useConfiability = true;
 	private boolean chainUpdate = true;
+	private int max_c = -1;
 
 	/**
 	 * Creates a new instance
@@ -523,6 +532,8 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		Instance tempInstance = instance;
 		// System.out.println("makePredictionInternal IN");
 
+		FileWriter fw = new FileWriter(new File("/tmp/debugMRLM"), true);
+
 		for (int j = 0; j < numLabels; j++) {
 			addsattr[j].input(tempInstance);
 			tempInstance = addsattr[j].output();
@@ -533,7 +544,38 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		for (int c = 0; c < realchainSize; c++) {
 			mloensemble[c + 1] = ChainMakePrediction(c, tempInstance,
 					mloensemble[c]);
+
+			if (!useTrainPropag && !instanceSelection) {
+				boolean[] bipart1 = mloensemble[c + 1].getBipartition();
+				boolean[] bipart0 = mloensemble[c].getBipartition();
+				boolean equals = true;
+
+				for (int i = 0; i < bipart0.length; i++) {
+					if (bipart0[i] != bipart1[i]) {
+						equals = false;
+						break;
+					}
+				}
+
+				if (equals) {
+					// System.out.println("stopping propagation at "+c);
+					if (c > max_c) {
+						max_c = c;
+						fw.write(sdf.format(new Date()) + ">" + "max stop="
+								+ max_c + "\n");
+					}
+					fw.close();
+					return mloensemble[c];
+				}
+			}
 		}
+
+		if (max_c < realchainSize) {
+			max_c = realchainSize;
+			fw.write(sdf.format(new Date()) + ">" + "max stop=" + max_c + "\n");
+		}
+
+		fw.close();
 
 		if (instanceSelection) {
 			return combineMLO2(mloensemble);
@@ -636,5 +678,9 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	public void setChainUpdate(boolean b) {
 		chainUpdate = b;
 
+	}
+
+	public int getChainSize() {
+		return chainSize;
 	}
 }
