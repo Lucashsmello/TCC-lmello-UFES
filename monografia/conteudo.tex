@@ -134,10 +134,11 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 \begin{itemize}
 %   \item Assim como o DBR, é composto de dois classificadores multirrotulo, o primeiro, $c_0$, é um BR
 %   e o segundo, $c_1$, é um BR ligeiramente modificado, que chamaremos de $BR^*$.
-  \item Assim como o DBR, é composto de dois BR's, $c_0$ e $c_1$.
+  \item Assim como o DBR, é composto de um BR e um classificador multirrótulo, $c_0$ e $c_1$,
+  cada um composto de $l$ classificadores binários.
   \item O $c_0$ trabalha dentro do espaço de características original do problema, de nome $X$,
   e $c_1$ trabalha dentro de um novo espaço de características do problema, de nome $X_e$ e
-   definido como $X_e=\{0,1\}^{l}$. Assim, $c_0$ e $c_1$ são
+   definido como $X_e=X \cup \{0,1\}^{l}$. Assim, $c_0$ e $c_1$ são
   representados pelas seguintes funções:
   \begin{equation}
   \begin{split}
@@ -147,8 +148,8 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   \end{equation}
   \item Os $l$ classificadores binários $c_1^1,c_1^2...,c_1^l$ que compoêm $c_1$ não trabalham no mesmo
   espaço de características, contudo,
-  trabalham com uma dimensão reduzida, em $\{0,1\}^{l-1}$. Digamos que $z=(z_1,z_2,...,z_l)$ seja uma instância de $X_e$, então cada instância 
-  de um classificador binário qualquer $c_1^i$ tem $l-1$ características e é definido como sendo $(z_1,...,z_{i-1},z_{i+1},...,z_{l})$.
+  trabalham com uma dimensão reduzida, em $X \cup \{0,1\}^{l-1}$. Digamos que $z=(z_1,z_2,...,z_l)$ seja uma instância de $X_e$, então cada instância 
+  de um classificador binário qualquer $c_1^i$ tem $|X|+l-1$ características e é definido como sendo $(x,z_1,...,z_{i-1},z_{i+1},...,z_{l})$.
 
   
 %   e o resultado da classificação multirrotulo de $c_1$ é construido da seguinte forma:
@@ -207,27 +208,34 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  
  
  \subsection{Fase de Treinamento}
-  A fase de treinamento do \MRLMa~é bastante similar ao DBR.
-  Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado somente com as características adicionais $Y$.
-  O objetivo de usar apenas os rótulos como características para treinar $c_1$ ao invés de usá-los juntamente com as
-  características originais é reduzir o espaço de características, reduzindo assim o custo computacional do algoritmo.
-  Essa idéia é baseada na hipótese de $c_1$ pode aprender a classificar corretamente um rótulo sabendo apenas
-  os valores do outros rótulos. É claro que ela nem sempre é verdade e com isso virá erros na classificação, entretanto
-  espera-se que ela se mantenha verdadeira, ou pelo menos que o erro seja pequeno,
-  pela suposição que exista correlação entre os rótulos no problema em que ele
-  for aplicado e também pelo fato de que os rótulos podem ser vistos como resumos das características do problema, e portanto
-  contém algumas informações do espaço de características original $X$, e assim nem toda informação que supostamente
-  é necessária para classificar um rótulo é descartada. Resumindo, espera-se que a queda no desempenho ao treinar $c_1$
-  usando apenas os rótulos seja relativamente pequeno quando comparado a queda no custo computacional do algoritmo.
+  A fase de treinamento do \MRLMa~é exatamente igual ao DBR.
+   
+%   Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado somente com as características adicionais $Y$.
+%   O objetivo de usar apenas os rótulos como características para treinar $c_1$ ao invés de usá-los juntamente com as
+%   características originais é reduzir o espaço de características, reduzindo assim o custo computacional do algoritmo.
+%   Essa idéia é baseada na hipótese de $c_1$ pode aprender a classificar corretamente um rótulo sabendo apenas
+%   os valores do outros rótulos. É claro que ela nem sempre é verdade e com isso virá erros na classificação, entretanto
+%   espera-se que ela se mantenha verdadeira, ou pelo menos que o erro seja pequeno,
+%   pela suposição que exista correlação entre os rótulos no problema em que ele
+%   for aplicado e também pelo fato de que os rótulos podem ser vistos como resumos das características do problema, e portanto
+%   contém algumas informações do espaço de características original $X$, e assim nem toda informação que supostamente
+%   é necessária para classificar um rótulo é descartada. Resumindo, espera-se que a queda no desempenho ao treinar $c_1$
+%   usando apenas os rótulos seja relativamente pequeno quando comparado a queda no custo computacional do algoritmo.
   
   
   De forma mais formal, o treinamento de \MRLM~funciona da seguinte forma.
-  Dado uma base de dados de treino $D=\{(x_i,y_i)|i=1,...,n\}$ onde $x_i \in X$ e $y_i \in Y$,
+  Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ e $y_i \in Y$,
   primeiro treina-se o $c_0$
   no espaço de características original conforme o treinamento do próprio BR mostrado na seção \ref{sec:br}.
-  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ e que é
-  composta pelas instâncias $\{(y_1),(y_2),...,(y_n)\}$ as quais são os rótulos das instâncias da base de $D$
-  (ver figura \ref{fig:instsRotulos}).
+%   Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ e que é
+%   composta pelas instâncias $\{(y_1),(y_2),...,(y_n)\}$ as quais são os rótulos das instâncias da base de $D$
+%   (ver figura \ref{fig:instsRotulos}).
+  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é contruída a partir de $D$ adicionando os rótulos de cada
+  exemplo como características. Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
+  cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,l}),y_{i,j} | i=1,...,n\}$.
+  Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
+  Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
+  estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_l)$.
 %   , cada um representado na forma
 %   binária na qual tem o valor $1$ se a instância tem o rótulo e $0$ se o contrário .
   
@@ -273,28 +281,43 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 
  
  \subsection{Fase de Predição}
- A fase de predição do \MRLMa~funciona de maneira bem similar ao DBR.
+ O funcionamento de \MRLMa~se distingue do DBR apenas na fase de predição.
  Dado uma instância $x$ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^l$, queremos que a função $C:X\rightarrow Y$,
  representando o classificador multirrótulo \MRLMa, retorne $y$ quando o submetemos $x$, ou seja, $C(x)=y$.
  
  Como no caso do DBR e do Classifier Chain, os rótulos reais $y$, que são usado como características especiais,
  estão disponíveis apenas durante a fase de treinamento. Dessa forma, para tornar possível a classificação por $c_1$, usou-se o $c_0$ para
  estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
- resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_l^0)$, que servirá de instância, no lugar de $y$,
- para o $c_1$.
- A partir daí, $c_1$ classifica a instância $\hat{y}^0$, gerando a instância $c_1(\hat{y}^0)=\hat{y}^1$, que poderá novamente servir como
- instância para $c_1$. Esse processo de classificação de $c_1$ é repetido para um valor pré-definido $n$ de vezes,
- resultando nas estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^n$, dentre as quais o último ($\hat{y}^n$) é a classificação final do método
- $C(x)=\hat{y}^n$.
+ resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_l^0)$, que servirá como parte da instância de $c_1$
+ no lugar de $y$. 
+ A partir daí, $c_1$ classifica a instância $(x,\hat{y}^0)$ de uma forma bem similar ao BR:
+ cada classificador binário do método é responsável pela predição de um rótulo da instância.
+%  \begin{equation}
+%   c_1(x)=(c_1^1(x),c_1^2(x),...,c_1^l(x))
+%  \end{equation}
+ No entanto, o \MRLMa~adota uma técnica inspirada no Classifier Chain que consiste em, para
+ cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
+ a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{l}$,
+ classificarão suas instâncias baseados em estimativas de rótulos melhores.
+
+ Assim que $c_1$ classifica a instância $(x,\hat{y}^0)$, gerando portanto a estimativa de rótulos $\hat{y}^1=c_1(x,\hat{y}^0)$,
+ $\hat{y}^1$ é usado para atualizar as características da instância $x$, tomando assim o lugar de $\hat{y}^0$.
+ Esse processo é chamado de ``realimentação'' pois, o classificador $c_1$ classifica baseado na sua própria classificação.
+ A realimentação de $c_1$ é repetido $r$ vezes,
+ onde $r$ é determinado por um valor máximo de realimentações, definido a priori, ou quando é detectado a convergência.
+ Com $r$ realimentações, tem-se $r$ estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^r$, dentre as quais o último ($\hat{y}^r$)
+ é a classificação final do método $C(x)=\hat{y}^r$.
  
- Dessa forma, podemos concluir que \MRLM~é um método recursivo onde
- a aplicação de $c_1$ $2$ vezes sobre
- $c_0(x)$ resulta na estimativa $\hat{y}^2=c_1(c_1(c_0(x)))$,
- a aplicação de $c_1$ $3$ vezes sobre
- $c_0(x)$ resulta na estimativa $\hat{y}^3=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
- Aplicando esse processo recursivo, espera-se que a cada chamada de recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
+ Dessa forma, podemos concluir que \MRLM~é um método recursivo que
+ para $r=1$, $C(x)=c_1(c_0(x))$,
+ para $r=2$, $C(x)=c_1(c_1(c_0(x)))$,
+ para $r=3$, $C(x)=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
+ Note que para $r=0$, o \MRLMa~é exatamente o BR, $C(x)=c_0(x)$.
+%  a aplicação de $c_1$ $3$ vezes sobre
+%  $c_0(x)$ resulta na estimativa $\hat{y}^3=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
+ Aplicando esse processo recursivo, espera-se que a cada recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
  seu antecessor $\hat{y}^{i-1}$. Teoricamente, essa afirmação se mantém se supormos que a estimativa $\hat{y}^1$ é melhor do que a $\hat{y}^0$, 
- o que é razoável uma vez que o classificador $c_0$, que o BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
+ o que é razoável uma vez que o classificador $c_0$, que é um BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
  (@@@referenciar equacao de probabilidade marginal@@@)%  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
  , enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
  estimativas baseadas na probabilidade condicional.
@@ -316,41 +339,6 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   -Conclusão rápida em relação a mudança que o MRLM faz com o DBR.
       (Conclusão mais detalhada será feita no último capitulo da monografia!)
  \end{verbatim}
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-%  A ideia por detrás de suposição é que o classificador $c_i$ já foi capaz de extrair todas as informações dispo
- 
-
-% No entanto,
-% o \MRLMa~depende de duas novas hipóteses. A primeira é que 
-
-% A primeira é que as estimativas dos rótulos em $Y-\{y_i\}$ podem ser usados para estimar
-% o rótulo $y_i$ e quanto melhor forem as estimativas dos rótulos em $Y-\{y_i\}$, melhor é a de $y_i$. 
-% A idéia de que ao supor que essa hipótese é
-% verdade, o 
-% A segunda é que a estimativa de um rótulo
-%   \begin{enumerate}
-%    \item 
-%    
-%    
-%    Em outras palavras, 
-%    
-%    
-%    A estimativa de um rótulo $y_i$ para uma instância qualquer pode ser feita, com uma certa taxa de erro $E$~
-%    usando apenas as estimativas marginais de todos os rótulos, inclusive $y_i$, de tal forma que $E<e_i$, onde $e_i$ é taxa de erro
-%    para estimativa marginal do rótulo .
-%   \end{enumerate}
-
- 
 
 
 
@@ -378,8 +366,6 @@ Para quantificar a qualidade de predição, foram escolhidas as seguintes métri
 um aspecto diferente da classificação.
 No entanto, uma vez que é impossível obter uma única ordenação dos métodos
 usando múltiplos critérios,
-% e isso é necessário para
-% observar a característica de rankeamento constante, citada na seção anterior,
 optou-se por usar a da média dos ranking das métricas como
 o único critério de ordenação ao levantar pontos conclusivos sobre os métodos. 
 
@@ -388,8 +374,6 @@ A comparação é antecedida por um estudo dos parâmetros dos métodos
 cujo objetivo principal é encontrar os parâmetros que devem ser usadas na comparação dos métodos. Objetivos secundários são
 espeficicados nas seções \ref{sec:study1} e \ref{sec:study2}, especialmente dedicadas para esse estudo.
 O objetivo principal é alcançado ao analisar a alteração do comportamento dos métodos quando seus parâmetros são alterados.
-% , por exemplo,
-% se são muito sensíveis aos seus parâmetros ou não. 
 O estudo dos parâmetros foi dividido em dois subestudos:
 \begin{enumerate}
  \item estudo individual, que tem por objetivo analisar os parâmetros únicos de cada método individualmente.
@@ -397,18 +381,11 @@ O estudo dos parâmetros foi dividido em dois subestudos:
   Nesse caso o parâmetro que representa a escolha do classificador binário base para os método baseados em transformação é
   analisado. 
 \end{enumerate}
- No estudo de grupo há duas características principais que se desejam observar:
-  
-  \begin{enumerate}
-  
-  \item a variação do ranking do método segundo um critério de qualidade ao variar o classificador base
-  para uma base específica.
-  \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
-%    \item rankeamento constante, que acontece se a ordem dos métodos permanece a mesma independente
-%    do valor do parâmetro quando ordenados por um critério de qualidade a uma base específica.
-%    \item parâmetro ótimo, que é o classificador base que causa o melhor desempenho no \MMLs em uma base específica.
-%    Caso o rankeamento seja inconstante, será um parâmetro ótimo para cada \MML.
-  \end{enumerate}
+
+O estudo de grupo tem como objetivo principal descobrir a melhor forma de comparar esses métodos entre si e
+entre outros métodos, por exemplo, compara-los usando o mesmo parâmetro em cada um ou compara-los usando o melhor parâmetro
+de cada um.
+
 
   Para mais detalhes sobre os motivos desse estudo bem como seus resultados e conclusões na seção \ref{sec:study1}.
   
@@ -426,9 +403,14 @@ Nessa seção os \NmlT~\MMLs~de transformação são estudados com relação a s
 A escolha do classificador base para cada um dos métodos foi reestrito para \Ncb~classificadores: @@@.
 Esse subestudo tem como objetivo principal encontrar os classificadores $c_1^*,c_2^*,c_3^*,c_4^*,c_5^*$ que serão utilizados pelos
 métodos $T_1,T_2,T_3,T_4,T_5$.
+Para isso, analisou-se duas características:
+  \begin{enumerate}
+  
+  \item a variação do ranking do método segundo um critério de qualidade ao variar o classificador base
+  para uma base específica.
+  \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
+  \end{enumerate}
 
-% Como forma de comprovar a hipótese 1 aplicou-se o teste estatístico @@@.
-% Assim, a
 A comparação é realizada pelo rankeamento dos métodos, ou seja, os \MMLs~de transformação são submetidos a testes experimentais
 e ordenados segundo seus desempenhos de tal forma que para cada métrica e classificador base,
 é atribuído ao \MML~um valor correspondente a sua ordem, entre 1 e \NmlT. A ordenação por uma métrica
