@@ -73,7 +73,7 @@ public class ExperimentLM {
 	private boolean useCSVMethodName = true;
 	private String dataname = "???";
 
-	private int rotationseed = 1;
+	private int rotationseed = 4;
 
 	public static int globalseed = 1;
 
@@ -363,9 +363,11 @@ public class ExperimentLM {
 
 		String s = ml.getClass().getSimpleName();
 		if (ml instanceof MRLM) {
-			if (((MRLM) ml).isInstanceSelection()) {
+			MRLM mrlm = (MRLM) ml;
+			if (mrlm.isInstanceSelection()) {
 				s += "-I";
 			}
+			s += "-" + mrlm.getChainSize();
 		}
 
 		if (ml instanceof TransformationBasedMultiLabelLearner) {
@@ -400,9 +402,11 @@ public class ExperimentLM {
 		String s = ml.getClass().getSimpleName();
 
 		if (ml instanceof MRLM) {
-			if (((MRLM) ml).isInstanceSelection()) {
+			MRLM mrlm = (MRLM) ml;
+			if (mrlm.isInstanceSelection()) {
 				s += "-I";
 			}
+			s += "-" + mrlm.getChainSize();
 		}
 
 		if (ml instanceof TransformationBasedMultiLabelLearner) {

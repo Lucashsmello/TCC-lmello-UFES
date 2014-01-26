@@ -12,34 +12,32 @@ import java.util.List;
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
-import mulan.classifier.transformation.EnsembleOfClassifierChains;
-import mulan.classifier.transformation.LabelPowerset;
 import mulan.data.MultiLabelInstances;
-import weka.classifiers.Classifier;
+import weka.classifiers	.Classifier;
 import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
-import weka.classifiers.multilabel.MCC;
-import weka.classifiers.multilabel.PCC;
 import weka.classifiers.trees.J48;
 
-public class ExperimentLMTCC {
+public class ExperimentLMTCC_MRLM {
 	public static void superPowerLucasExperiment() throws Exception { // VAMOS
 		// LA!!!
 
 		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
-		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv7/";
+		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv1_MRLM/";
+//		String[] datasnames = new String[] { "yeast-P" };
+		 String[] datasnames = new String[] { "enron-P" };
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
-		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
-		// "enron-P" };
+		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P"
+		// ,"medical-P","enron-P"};
 		// String[] datasnames = new String[] {
 		// "emotions-P","birds-P","scene-P", "yeast-P","medical-P","Corel5k-P"};
-		String[] datasnames = new String[] { "enron-P", "genbase-P",
-				"rcv1subset1-P" };
+		// String[] datasnames = new String[] {
+		// "enron-P","genbase-P","rcv1subset1-P"};
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
-		FileWriter logfile = new FileWriter(new File(expDir + "expLog2-"
+		FileWriter logfile = new FileWriter(new File(expDir + "expLog"
 				+ sdffile.format(new Date())));
 
 		List<Classifier> baseclassifs = createBaseClassifiers();
@@ -66,13 +64,13 @@ public class ExperimentLMTCC {
 				mmm = null;
 			} catch (Exception ex) {
 				System.out.println("ERROR, skipping data " + dataname);
-				ExperimentLMTCC.logError(logfile, ex);
+				ExperimentLMTCC_MRLM.logError(logfile, ex);
 			}
 
 			String msg = "Experiment " + i + "/" + datasnames.length
 					+ " Finished";
 			System.out.println(msg);
-			ExperimentLMTCC.log(logfile, msg);
+			ExperimentLMTCC_MRLM.log(logfile, msg);
 
 			i++;
 			System.gc();
@@ -135,20 +133,20 @@ public class ExperimentLMTCC {
 		mlp.setTrainingTime(10);
 		NaiveBayes nb = new NaiveBayes();
 		weka.classifiers.functions.Logistic logi = new Logistic();
-		try {
-			logi.setOptions(new String[] { "-M", "10" });
-			baseclassifs.add(logi);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// try {
+		// logi.setOptions(new String[] { "-M", "10" });
+		// baseclassifs.add(logi);
+		// } catch (Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 
 		// baseclassifs.add(mlp);
 
-		baseclassifs.add(nb);
+		// baseclassifs.add(nb);
 		baseclassifs.add(j48);
 		baseclassifs.add(knn);
-		baseclassifs.add(svm);
+//		baseclassifs.add(svm);
 
 		return baseclassifs;
 	}
@@ -158,58 +156,23 @@ public class ExperimentLMTCC {
 		List<MultiLabelLearner> mmm = new ArrayList<MultiLabelLearner>();
 
 		for (Classifier c : baseclassifs) {
-			ClassifierChain cc = new ClassifierChain(c);
-			// CC2 cc2 = new CC2(c);
-			BinaryRelevance br = new BinaryRelevance(c);
-			PCC pcc = new PCC();
-			pcc.setClassifier(c);
-			pcc.setSeed(ExperimentLM.globalseed);
-			MRLM mrlm = new MRLM(new BinaryRelevance(c), c, 5);
-			mrlm.setInstanceSelection(false);
-			mrlm.setTrainPropagation(false);
-			mrlm.setUseOnlyLabels(false);
-			mrlm.setUseMirrorLabel(false);
-			mrlm.setUseConfiability(false);
-			mrlm.setChainUpdate(true);
-
-			// MRLM mrlm2 = new MRLM(new ClassifierChain(c), c, 5);
-			// mrlm2.setInstanceSelection(true);
-			// mrlm2.setTrainPropagation(false);
-			// mrlm2.setUseOnlyLabels(false);
-			// mrlm2.setUseMirrorLabel(false);
-			// mrlm2.setUseConfiability(false);
-			// mrlm2.setChainUpdate(true);
-
-			DBR dbr = new DBR(c);
-
-			// mrlm.setDebug(true);
-			weka.classifiers.multilabel.MCC mcc = new MCC();
-			mcc.setOptions(new String[] { "-Iy", "20" });
-			mcc.setClassifier(c);
-			mulan.classifier.transformation.LabelPowerset lpower = new LabelPowerset(
-					c);
-			lpower.setSeed(ExperimentLM.globalseed);
-			lpower.setConfidenceCalculationMethod(1);
-			// mulan.classifier.transformation.EnsembleOfPrunedSets eps = new
-			// EnsembleOfPrunedSets(
-			// 66, 10, 0.5, 2, PrunedSets.Strategy.A, 3, c);
-
-			mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
-			// mmm.add(new ECC2(c, 10, true, true));
-			mmm.add(new MekaWrapperClassifier(mcc));
-			if (mldata.getNumLabels() <= 10) {
-				mmm.add(lpower);
-				mmm.add(new MekaWrapperClassifier(pcc));
+			for (int i = 0; i <= 5; i++) {
+				mmm.add(createMRLM(c, i));
 			}
-			mmm.add(cc);
-			// mmm.add(cc2);
-			mmm.add(br);
-			mmm.add(mrlm);
-			// mmm.add(mrlm2);
-			mmm.add(dbr);
-			// mmm.add(eps);
 		}
 
 		return mmm;
+	}
+
+	private static MRLM createMRLM(Classifier c, int chainsize) {
+		MRLM mrlm = new MRLM(new BinaryRelevance(c), c, chainsize);
+		mrlm.setInstanceSelection(false);
+		mrlm.setTrainPropagation(false);
+		mrlm.setUseOnlyLabels(false);
+		mrlm.setUseMirrorLabel(false);
+		mrlm.setUseConfiability(false);
+		mrlm.setChainUpdate(true);
+
+		return mrlm;
 	}
 }
