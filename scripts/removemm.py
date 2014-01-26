@@ -51,12 +51,12 @@ def removemm_DIR(dirpath,cDel=';'):
 if __name__ == "__main__":
     if(len(sys.argv)>1):
         if(os.path.isdir(sys.argv[1])):
-            if(len(sys.argv)==2):
+            if(len(sys.argv)==3):
                 removemm_DIR(sys.argv[1],sys.argv[2])
             else:
                 removemm_DIR(sys.argv[1])
         else:
-            if(len(sys.argv)==2):
+            if(len(sys.argv)==3):
                 removemm(sys.argv[1],sys.argv[2])
             else:
                 removemm(sys.argv[1])

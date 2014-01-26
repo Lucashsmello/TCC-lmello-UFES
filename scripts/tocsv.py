@@ -297,7 +297,7 @@ def tocsv(dirpath, metrics, methods="ALL",makerank=True,makeMergeResults=False,m
 
 
 
-allmetricsnames=["Hamming Loss","Subset Accuracy","Example-Based Precision","Example-Based Recall","Example-Based F Measure","Example-Based Accuracy","Example-Based Specificity","Micro-averaged Precision","Micro-averaged Recall","Micro-averaged F-Measure","Micro-averaged Specificity","Macro-averaged Precision","Macro-averaged Recall","Macro-averaged F-Measure","Macro-averaged Specificity","Average Precision","Coverage","OneError","IsError","ErrorSetSize","Ranking Loss","Mean Average Precision","Micro-averaged AUC","Tempo(seg)"]
+allmetricsnames=["Hamming Loss","Subset Accuracy","Example-Based Precision","Example-Based Recall","Example-Based F Measure","Example-Based Accuracy","Example-Based Specificity","Micro-averaged Precision","Micro-averaged Recall","Micro-averaged F-Measure","Micro-averaged Specificity","Macro-averaged Precision","Macro-averaged Recall","Macro-averaged F-Measure","Macro-averaged Specificity","Average Precision","Coverage","OneError","IsError","ErrorSetSize","Ranking Loss","Mean Average Precision","Micro-averaged AUC","Tempo(seg)","Tempo2(seg)"]
 
 if __name__ == "__main__":
     methods="ALL"

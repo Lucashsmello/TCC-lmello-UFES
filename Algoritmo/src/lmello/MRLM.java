@@ -532,7 +532,7 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		Instance tempInstance = instance;
 		// System.out.println("makePredictionInternal IN");
 
-		FileWriter fw = new FileWriter(new File("/tmp/debugMRLM"), true);
+//		FileWriter fw = new FileWriter(new File("/tmp/debugMRLM"), true);
 
 		for (int j = 0; j < numLabels; j++) {
 			addsattr[j].input(tempInstance);
@@ -559,23 +559,23 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 
 				if (equals) {
 					// System.out.println("stopping propagation at "+c);
-					if (c > max_c) {
-						max_c = c;
-						fw.write(sdf.format(new Date()) + ">" + "max stop="
-								+ max_c + "\n");
-					}
-					fw.close();
+//					if (c > max_c) {
+//						max_c = c;
+//						fw.write(sdf.format(new Date()) + ">" + "max stop="
+//								+ max_c + "\n");
+//					}
+//					fw.close();
 					return mloensemble[c];
 				}
 			}
 		}
 
-		if (max_c < realchainSize) {
-			max_c = realchainSize;
-			fw.write(sdf.format(new Date()) + ">" + "max stop=" + max_c + "\n");
-		}
+//		if (max_c < realchainSize) {
+//			max_c = realchainSize;
+//			fw.write(sdf.format(new Date()) + ">" + "max stop=" + max_c + "\n");
+//		}
 
-		fw.close();
+//		fw.close();
 
 		if (instanceSelection) {
 			return combineMLO2(mloensemble);
