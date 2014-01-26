@@ -104,12 +104,12 @@ Falar sobre bases separadas de treino,teste e validação.
 
 \chapter{Super Novo Método Revolucionário*}
 A proposta de \MRLM~é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014}, que é explicado
-na seção \ref{sec:dbr}. Assim como o DBR, o \MRLMa~é um método baseado na transfomação do problema.
+na seção \ref{sec:dbr}. Assim como o DBR, o \MRLMa~é um método baseado na transformação do problema.
 % portanto,
 % esse capítulo é iniciado com uma seção explicando o funcionamento do DBR, facilitando o entendimento do \MRLMa~na seção seguinte.
 
 
-\section{Algoritmo \MRLM~-~\MRLMa}
+\section{Algoritmo de \MRLM~-~\MRLMa}
 Como foi dito anteriormente, o \MRLM~é baseado no DBR. 
 % Ambos se baseiam na expansão do espaço de características
 % com características que representam a estimativas dos rótulos como forma de explorar
@@ -138,7 +138,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   cada um composto de $l$ classificadores binários.
   \item O $c_0$ trabalha dentro do espaço de características original do problema, de nome $X$,
   e $c_1$ trabalha dentro de um novo espaço de características do problema, de nome $X_e$ e
-   definido como $X_e=X \cup \{0,1\}^{l}$. Assim, $c_0$ e $c_1$ são
+   definido como $X_e=X \times \{0,1\}^{l}$. Assim, $c_0$ e $c_1$ são
   representados pelas seguintes funções:
   \begin{equation}
   \begin{split}
@@ -148,8 +148,9 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   \end{equation}
   \item Os $l$ classificadores binários $c_1^1,c_1^2...,c_1^l$ que compoêm $c_1$ não trabalham no mesmo
   espaço de características, contudo,
-  trabalham com uma dimensão reduzida, em $X \cup \{0,1\}^{l-1}$. Digamos que $z=(z_1,z_2,...,z_l)$ seja uma instância de $X_e$, então cada instância 
-  de um classificador binário qualquer $c_1^i$ tem $|X|+l-1$ características e é definido como sendo $(x,z_1,...,z_{i-1},z_{i+1},...,z_{l})$.
+  trabalham com uma dimensão reduzida, em $X \times \{0,1\}^{l-1}$. Digamos que $(x,y)$ seja uma instância de $X_e$
+  onde $x \in X$ e $y \in \{0,1\}$, então cada instância 
+  do classificador binário $c_1^i$ tem $|X|+l-1$ características e é definido como sendo $(x,z_1,...,z_{i-1},z_{i+1},...,z_{l})$.
 
   
 %   e o resultado da classificação multirrotulo de $c_1$ é construido da seguinte forma:
@@ -167,61 +168,12 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   
   
 \end{itemize}
-
-%  No entanto, o \MRLMa, ao invés de usar apenas dois classificadores, como o DBR, 
-%  usa $n$ classificadores multirrótulo $c_0,c_1,...,c_{n-1}$ organizados em uma cadeia de tal forma que
-%  as predições do classificador $c_{i-1}$ , para $1\leq i<n$, são usados como características para o classificador $c_{i}$. 
-%  Dessa forma, o classificador $c_{i}$ será baseado em estimativas melhores de rótulos do que seus antecessores $c_{i-1},c_{i-2},...,c_0$ e ainda
-%  o classificador $c_{i}$ será capaz de aprender sobre os erros e acertos do classificador $c_{i-1}$ e alcançar resultados melhores.
-%  
-%  Adicionalmente, o \MRLMa~assume que as características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$, estimados por um classificador multirrótulo,
-%  são suficientes ou quase suficientes para predizer corretamente os valores reais dos rótulos em $Y$.
-%  Baseado nessa suposição, o \MRLMa~substitue todas as características do espaço original pelas características $\hat{y}_1,\hat{y}_2,...,\hat{y}_l$,
-%  para todos os seus classificadores, exceto para o classificador base $c_0$, uma vez que não existe ainda uma estimativa dos rótulos a usar.
-%  Isso reduz o espaço de características o que diminui o custo computacional dos algoritmos.
-%  Por outro lado, essa suposição nem sempre se mantém, podendo prejudicar a qualidade de predição dos algoritmos, mas espera-se que em média se mantenha.
- 
-%  Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
-%  \begin{itemize}
-%   \item Para um valor pré-definido de n tal que $n\in \mathbb{N}, n>0$, o algoritmo é composto de
-%   $n$ classsificadores BR que formam o conjunto $C=\{c_0,c_1,...,c_{n-1}\}$. 
-%   \item Os classificadores em $C$ estão ordenados e dispostos em uma cadeia de tal forma que o 
-%   classificador $c_i$ está ligado a saída (estimativas dos rótulos) do classificador $c_{i-1}$ e apenas a ele.
-%   \item Cada classificador multirrótulo $c_i$ é composto de $l$ classificadores binários $h_{i1},h_{i2},h_{i3},...,h_{il}$
-%   dispostos em uma cadeia.
-%   
   
   Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa. 
-  
- 
-%   Lembrando que 
-%   ao treinar $c_1$, treina-se um BR que gera $l$ problemas binários onde cada   rótulos a classificar são escondidos 
-%   Portanto, apenas a fase de predição do algoritmo será detalhado nesse capítulo.
-  
-  
-  
-  
-%   de tal forma que , para um $j\in \mathbb{N}, 0<j\leq l$, o $h_{ij}$ está ligado a $h_{i(j-1)}$ e somente a ele.
-  
-%  \end{itemize}
-
  
  
  \subsection{Fase de Treinamento}
   A fase de treinamento do \MRLMa~é exatamente igual ao DBR.
-   
-%   Diferencia-se apenas no classificador $c_1$, o qual no \MRLMa~é treinado somente com as características adicionais $Y$.
-%   O objetivo de usar apenas os rótulos como características para treinar $c_1$ ao invés de usá-los juntamente com as
-%   características originais é reduzir o espaço de características, reduzindo assim o custo computacional do algoritmo.
-%   Essa idéia é baseada na hipótese de $c_1$ pode aprender a classificar corretamente um rótulo sabendo apenas
-%   os valores do outros rótulos. É claro que ela nem sempre é verdade e com isso virá erros na classificação, entretanto
-%   espera-se que ela se mantenha verdadeira, ou pelo menos que o erro seja pequeno,
-%   pela suposição que exista correlação entre os rótulos no problema em que ele
-%   for aplicado e também pelo fato de que os rótulos podem ser vistos como resumos das características do problema, e portanto
-%   contém algumas informações do espaço de características original $X$, e assim nem toda informação que supostamente
-%   é necessária para classificar um rótulo é descartada. Resumindo, espera-se que a queda no desempenho ao treinar $c_1$
-%   usando apenas os rótulos seja relativamente pequeno quando comparado a queda no custo computacional do algoritmo.
-  
   
   De forma mais formal, o treinamento de \MRLM~funciona da seguinte forma.
   Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ e $y_i \in Y$,
@@ -230,7 +182,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ e que é
 %   composta pelas instâncias $\{(y_1),(y_2),...,(y_n)\}$ as quais são os rótulos das instâncias da base de $D$
 %   (ver figura \ref{fig:instsRotulos}).
-  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é contruída a partir de $D$ adicionando os rótulos de cada
+  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ adicionando os rótulos de cada
   exemplo como características. Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
   cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,l}),y_{i,j} | i=1,...,n\}$.
   Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
@@ -331,7 +283,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  
  
  
- \subsection{Análise}
+ \section{Análise}
  \begin{verbatim}
   -Listar as hipoteses/suposições em que MRLM é baseado.
   -Mostrar experimentos/gráficos que comprovam que as hipoteses bases
@@ -339,6 +291,45 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   -Conclusão rápida em relação a mudança que o MRLM faz com o DBR.
       (Conclusão mais detalhada será feita no último capitulo da monografia!)
  \end{verbatim}
+ 
+ Nessa seção o método \MRLMa~é posto em prova.
+ A principal hipótese em que o \MRLMa~é baseado será testado nessa seção com o intuito de validar o método.
+ Com a finalidade de tornar os testes mais objetivos, a hipótese é melhor formalizado:
+ \begin{itemize}
+
+  \item Dados uma métrica $M$, uma base de Teste $D=\{x_1,x_2,...,x_n\}$,
+  um DBR induzido composto pelos classificadores multirrótulos $c_0$ e $c_1$ e
+  dois vetores de predições de $l$ rótulos:
+  \begin{equation}
+  \begin{split}
+  & p=(p_1,p_2,...,p_n) : p_i \in {\{0,1\}}^l |1 \leq i \leq n \\
+  & b=(b_1,b_2,...,b_n) : b_i \in {\{0,1\}}^l |1 \leq i \leq n
+  \end{split}
+  \end{equation}
+  tal que $M(p_2) \geq M(p_1)$,
+  então:
+  \begin{equation}
+  M((c_1(x_i,p_1) | 1 \leq i \leq n)) \leq M((c_1(x_i,p_2) | 1 \leq i \leq n))
+  \end{equation}
+ 
+ \end{itemize}
+
+De uma forma bem resumida, a hipótese é que erros de predições pelo
+classificador $c_0$ do DBR afetam negativamente a classificação do classificador $c_1$.
+A comprovação dessa hipótese é feita da seguinte forma. Experimentos com o \MRLMa~são realizados
+usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica \textit{Subset Accuracy}
+quando o método é submetido a validação cruzada de 10 \textit{folds}.
+O experimento é repetido com o número máximo de realimentações do
+\MRLMa~variando de 0 a 10. Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
+De fato, é o que ocorre na maioria dos casos, no entanto o método estabiliza/converge rapidamente em relação a realimentação.
+O gráfico da figura \ref{fig:Gmrlm_1} é um exemplo do que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
+até o valor máximo de realimentações chegar a 2, depois disso o método não tem seu desempenho alterado.
+Portanto 2 foi o valor máximo de realimentações necessárias para o método convergir nesses casos.
+Nos outros dois casos ou o método convergiu com apenas uma realimentação ou piorou 
+com duas realimentações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
+Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor que o DBR e em apenas um dos casos
+alcançou o mesmo desempenho do DBR.
+
 
 
 
