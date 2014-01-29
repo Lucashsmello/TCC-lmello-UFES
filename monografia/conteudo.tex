@@ -1,14 +1,14 @@
 
 \newcommand{\NbasesV}{\textit{N}}
-\newcommand{\Nbases}{123}
-\newcommand{\Nml}{6}
-\newcommand{\NmlT}{4}
+\newcommand{\Nbases}{7}
+\newcommand{\Nml}{7}
+\newcommand{\NmlT}{5}
 \newcommand{\NmlA}{2}
 \newcommand{\Ncb}{4}
 \newcommand{\MML}{método multirrótulo}
 \newcommand{\MMLs}{métodos multirrótulo}
-\newcommand{\MRLM}{Método Revolucionário de Lucas Mello}
-\newcommand{\MRLMa}{MRLM}
+\newcommand{\MRLM}{Recursive Dependent Binary Relevance}
+\newcommand{\MRLMa}{RDBR}
 
 \chapter{Introdução}
 \begin{verbatim}
@@ -22,7 +22,7 @@
 
 
 \section{Motivações}
-% Análises dos métodos multirrótulo trazem os seguintes benefícios:
+% A análise dos métodos multirrótulo traz os seguintes benefícios:
 O melhor entendimento do funcionamento dos métodos multirrótulo permite:
 \begin{itemize}
  \item descobrir atributos destes que se alterados, aproveitados
@@ -34,11 +34,13 @@ O melhor entendimento do funcionamento dos métodos multirrótulo permite:
 \end{itemize}
 
 \section{Objetivos}
-O objetivo geral deste trabalho é analisar e comparar métodos multirrótulos distintos.
+O objetivo geral deste trabalho é analisar e comparar métodos multirrótulos distintos e 
+desenvolver um novo algoritmo de classificação multirrótulo.
 Mais formalmente, a análise deve implicar em conclusões matemáticas ou estatísticas sobre o desempenho dos métodos multirrótulo.
-Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
+O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 \begin{itemize}
  \item Comparação estatística e análise crítica dos métodos multirrótulos;
+ \item Elaboração de um algoritmo de um novo método multirrótulo.
  \item Implementação dos métodos multirrótulos em uma biblioteca que integra técnicas de reconhecimento de padrões.
 \end{itemize}
 
@@ -102,14 +104,19 @@ Falar sobre bases separadas de treino,teste e validação.
 \subsection{MAIS...}
 
 
-\chapter{Super Novo Método Revolucionário*}
-A proposta de \MRLM~é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014}, que é explicado
-na seção \ref{sec:dbr}. Assim como o DBR, o \MRLMa~é um método baseado na transformação do problema.
-% portanto,
-% esse capítulo é iniciado com uma seção explicando o funcionamento do DBR, facilitando o entendimento do \MRLMa~na seção seguinte.
+\chapter{Recursive Dependent Binary Relevance - RDBR}
+A proposta de \MRLM~(\MRLMa)~é fundamentada no \MML~\textit{dependent binary relevance} (DBR) \cite{dbr2014}, que é explicado
+na seção \ref{sec:dbr}. Assim como o DBR e o CC, o \MRLMa~é um método baseado na transformação do problema que dividem o problema
+multirrótulo em vários problemas classificação binária. Todos eles exploram a correlação entre os rótulos por meio da adição de
+características especiais que representam os rótulos reais ou estimativas dos rótulos reais ao espaço de características original. 
+Mas, diferentemente dos outros, o \MRLMa~adiciona uma inteligência na adição dessas características especiais na fase de predição do método.
+A forma de como isso é feito bem como o funcionamento completo do algoritmo de classificação e a fundamentação teórica
+do \MRLMa~são detalhados na seção \ref{sec:mrlm_algo}. 
+A seção \ref{sec:mrlm_analise} analisa o funcionamento e o desempenho do \MRLMa~de forma prática, por meio de experimentos.
 
 
 \section{Algoritmo de \MRLM~-~\MRLMa}
+\label{sec:mrlm_algo}
 Como foi dito anteriormente, o \MRLM~é baseado no DBR. 
 % Ambos se baseiam na expansão do espaço de características
 % com características que representam a estimativas dos rótulos como forma de explorar
@@ -168,8 +175,10 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   
   
 \end{itemize}
-  
-  Veja a figura \ref{fig:mrlm_struct} para visualizar a estrutura do \MRLMa. 
+  A figura \ref{fig:mrlm_struct} exibe uma imagem que permite visualizar a estrutura do \MRLMa.
+  As seções seguintes formalizam e detalham tanto a fase de treinamento quanto a fase de predição do algoritmo.
+  É importante observar que a fase de treinamento do \MRLMa~é exatamente o mesmo do que o DBR.
+  A diferença de ambos os métodos se dá na fase de predição, descrita na seção \ref{sec:mrlm_prediction}.
  
  
  \subsection{Fase de Treinamento}
@@ -233,7 +242,8 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 
  
  \subsection{Fase de Predição}
- O funcionamento de \MRLMa~se distingue do DBR apenas na fase de predição.
+ \label{sec:mrlm_prediction}
+ O funcionamento do \MRLMa~distingue-se do DBR apenas na fase de predição.
  Dado uma instância $x$ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^l$, queremos que a função $C:X\rightarrow Y$,
  representando o classificador multirrótulo \MRLMa, retorne $y$ quando o submetemos $x$, ou seja, $C(x)=y$.
  
@@ -250,17 +260,19 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  No entanto, o \MRLMa~adota uma técnica inspirada no Classifier Chain que consiste em, para
  cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
  a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{l}$,
- classificarão suas instâncias baseados em estimativas de rótulos melhores.
+ classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores.
 
  Assim que $c_1$ classifica a instância $(x,\hat{y}^0)$, gerando portanto a estimativa de rótulos $\hat{y}^1=c_1(x,\hat{y}^0)$,
  $\hat{y}^1$ é usado para atualizar as características da instância $x$, tomando assim o lugar de $\hat{y}^0$.
  Esse processo é chamado de ``realimentação'' pois, o classificador $c_1$ classifica baseado na sua própria classificação.
  A realimentação de $c_1$ é repetido $r$ vezes,
  onde $r$ é determinado por um valor máximo de realimentações, definido a priori, ou quando é detectado a convergência.
+ A convergência é alcançada quando a estimativa de rótulos não muda, independente do número de realimentações.
+%  Isso acontece, por exemplo, quando $c_1(c_1(c_0))=c_1(c_0)$.
  Com $r$ realimentações, tem-se $r$ estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^r$, dentre as quais o último ($\hat{y}^r$)
  é a classificação final do método $C(x)=\hat{y}^r$.
  
- Dessa forma, podemos concluir que \MRLM~é um método recursivo que
+ Dessa forma, podemos concluir que \MRLM~é um método recursivo de tal forma que
  para $r=1$, $C(x)=c_1(c_0(x))$,
  para $r=2$, $C(x)=c_1(c_1(c_0(x)))$,
  para $r=3$, $C(x)=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
@@ -270,7 +282,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  Aplicando esse processo recursivo, espera-se que a cada recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
  seu antecessor $\hat{y}^{i-1}$. Teoricamente, essa afirmação se mantém se supormos que a estimativa $\hat{y}^1$ é melhor do que a $\hat{y}^0$, 
  o que é razoável uma vez que o classificador $c_0$, que é um BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
- (@@@referenciar equacao de probabilidade marginal@@@)%  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
+ (??REFERENCIAR A EQUACAO DE PROBABILIDADE MARGINAL??)%  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
  , enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
  estimativas baseadas na probabilidade condicional.
  Com essa suposição teríamos que $\hat{y}^i$ seria melhor do que $\hat{y}^{i-1}$, pois $\hat{y}^{i-1}$ se aproxima
@@ -278,16 +290,20 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  uma distribuição mais próxima daquela em que foi treinado do que usando $\hat{y}^{i-2}$.
  Lembrando que $c_1$ foi treinado usando rótulos assumidamente corretos.
  
- Olhando por esse procedimento, o \MRLMa~pode ser simplesmente visto como um método que insere uma inteligência
+ Olhando por esse procedimento, o \MRLMa~pode ser simplesmente visto como uma generalização do BR e do DBR
+ que insere uma inteligência
  adicional a aplicação e uso do classificador $c_1$ de DBR, afim de que ele seja melhor aproveitado.
  
  
  
  \section{Análise}
+ \label{sec:mrlm_analise}
  \begin{verbatim}
+ ESBOÇO:
   -Listar as hipoteses/suposições em que MRLM é baseado.
   -Mostrar experimentos/gráficos que comprovam que as hipoteses bases
       são verdades(geralmente).
+  -Mostrar complexidade algorítma.
   -Conclusão rápida em relação a mudança que o MRLM faz com o DBR.
       (Conclusão mais detalhada será feita no último capitulo da monografia!)
  \end{verbatim}
@@ -319,30 +335,51 @@ classificador $c_0$ do DBR afetam negativamente a classificação do classificad
 A comprovação dessa hipótese é feita da seguinte forma. Experimentos com o \MRLMa~são realizados
 usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica \textit{Subset Accuracy}
 quando o método é submetido a validação cruzada de 10 \textit{folds}.
-O experimento é repetido com o número máximo de realimentações do
-\MRLMa~variando de 0 a 10. Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
-De fato, é o que ocorre na maioria dos casos, no entanto o método estabiliza/converge rapidamente em relação a realimentação.
+O experimento é repetido com o número máximo de alimentações do
+\MRLMa~variando de 0 a 10 (Note que para o valor 0, o \MRLMa~se torna exatamente o BR).
+Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
+De fato, é o que ocorre na maioria dos casos, apesar de que o método estabiliza/converge rapidamente em relação a realimentação.
 O gráfico da figura \ref{fig:Gmrlm_1} é um exemplo do que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
 até o valor máximo de realimentações chegar a 2, depois disso o método não tem seu desempenho alterado.
 Portanto 2 foi o valor máximo de realimentações necessárias para o método convergir nesses casos.
-Nos outros dois casos ou o método convergiu com apenas uma realimentação ou piorou 
-com duas realimentações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
+Nos outros dois casos o método convergiu com apenas uma realimentação ou piorou 
+com duas ou mais realimentações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
 Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor que o DBR e em apenas um dos casos
 alcançou o mesmo desempenho do DBR.
 
 
+\begin{figure}[h]
+\label{fig:Gmrlm_1}
+\caption{Gráfico do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de realimentações (eixo horizontal)
+representado na linha azul.
+A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR}
+\centering
+\includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
+\end{figure}
 
+\begin{figure}[h]
+\label{fig:Gmrlm_2}
+\caption{Gráficos do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de realimentações (eixo horizontal)
+representado nas linha azuis.
+A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR.}
+\centering
+\includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
+\includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
+\end{figure}
+
+
+TO BE CONTINUED...
 
 \chapter{Avaliação e Análise Experimental}
 \section{Método de Comparação}
 \label{sec:methodcomp}
 
 A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
-A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 \textit{folds}
-sobre as \Nbases~bases de dados, todas apresentadas pela tabela \ref{tab:datas}.
+A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 grupos
+(\textit{10-fold cross-validation}) sobre as \Nbases~bases de dados, todas apresentadas pela tabela \ref{tab:datas}.
 Todas as bases de dados foram obtidas de repositórios públicos pelo seguinte
-endereço virtual @@@.
-Para quantificar a qualidade de predição, foram escolhidas as seguintes métricas, todas detalhadas na seção \ref{sec:metrics}:
+endereço virtual ??.
+Para quantificar a qualidade de predição, foram escolhidas as seguintes métricas:
 % Hamming Loss, Accuracy, Subset Accuracy, Ranking Loss, ...@@@.
 
 % As métrica escolhidas e os motivos pela qual foram escolhidas são os seguintes:
@@ -353,62 +390,76 @@ Para quantificar a qualidade de predição, foram escolhidas as seguintes métri
  \item Tempo computacional, pois é @@@ etc...
 \end{itemize}
 
-É insteressante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
+As fórmulas para o cálculo de cada uma das métricas são apresentadas na seção \ref{sec:metrics}.
+É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
 um aspecto diferente da classificação.
-No entanto, uma vez que é impossível obter uma única ordenação dos métodos
-usando múltiplos critérios,
-optou-se por usar a da média dos ranking das métricas como
-o único critério de ordenação ao levantar pontos conclusivos sobre os métodos. 
 
-Num total, foram comparados \Nml~\MML, \NmlT~da categoria de transformação e \NmlA~de adaptação @@@.
-A comparação é antecedida por um estudo dos parâmetros dos métodos
-cujo objetivo principal é encontrar os parâmetros que devem ser usadas na comparação dos métodos. Objetivos secundários são
-espeficicados nas seções \ref{sec:study1} e \ref{sec:study2}, especialmente dedicadas para esse estudo.
-O objetivo principal é alcançado ao analisar a alteração do comportamento dos métodos quando seus parâmetros são alterados.
-O estudo dos parâmetros foi dividido em dois subestudos:
-\begin{enumerate}
- \item estudo individual, que tem por objetivo analisar os parâmetros únicos de cada método individualmente.
-  \item estudo de grupo, que tem por objetivo analisar os parâmetros que são idênticos para um grupo de métodos.
-  Nesse caso o parâmetro que representa a escolha do classificador binário base para os método baseados em transformação é
-  analisado. 
-\end{enumerate}
-
-O estudo de grupo tem como objetivo principal descobrir a melhor forma de comparar esses métodos entre si e
-entre outros métodos, por exemplo, compara-los usando o mesmo parâmetro em cada um ou compara-los usando o melhor parâmetro
-de cada um.
+Este capítulo se encontra dividido em duas seções, na primeira foram analisados os
+resultados dos métodos de transfomação para cada classificador base.
+Já na segunda seção cada combinação de método multirrótulo com classificador base foi considerado
+um método de transformação e seus resultados são comparados entre si juntamente com os métodos multirrótulos
+de adaptação.
+Num total, foram utilizados \Nml~\MML, \NmlT~da categoria de transformação e \NmlA~de adaptação: ??
 
 
-  Para mais detalhes sobre os motivos desse estudo bem como seus resultados e conclusões na seção \ref{sec:study1}.
+\section{}
+
+% No entanto, uma vez que é impossível obter uma única ordenação dos métodos
+% usando múltiplos critérios,
+% optou-se por usar a média dos ranking das métricas como
+% o único critério de ordenação ao levantar pontos conclusivos sobre os métodos. 
+
+
+
+
+% A comparação é antecedida por um estudo dos parâmetros dos métodos
+% cujo objetivo principal é encontrar os parâmetros que devem ser usadas na comparação dos métodos. Objetivos secundários são
+% espeficicados nas seções \ref{sec:study1} e \ref{sec:study2}, especialmente dedicadas para esse estudo.
+% O objetivo principal é alcançado ao analisar a alteração do comportamento dos métodos quando seus parâmetros são alterados.
+% O estudo dos parâmetros foi dividido em dois subestudos:
+% \begin{enumerate}
+%  \item estudo individual, que tem por objetivo analisar os parâmetros únicos de cada método individualmente.
+%   \item estudo de grupo, que tem por objetivo analisar os parâmetros que são idênticos para um grupo de métodos.
+%   Nesse caso o parâmetro que representa a escolha do classificador binário base para os método baseados em transformação é
+%   analisado. 
+% \end{enumerate}
+% 
+% O estudo de grupo tem como objetivo principal descobrir a melhor forma de comparar esses métodos entre si e
+% entre outros métodos, por exemplo, compara-los usando o mesmo parâmetro em cada um ou compara-los usando o melhor parâmetro
+% de cada um.
+% 
+% 
+%   Para mais detalhes sobre os motivos desse estudo bem como seus resultados e conclusões na seção \ref{sec:study1}.
   
-
-\section{Estudo dos Métodos baseados em Transformação}
-\label{sec:study1}
-\begin{verbatim}
- -Listar métodos.
- -Falar como vai ser comparado cada método (teste estatístico, rankeamento, métrica boa) para comprovar a hipotese.
- -Apresentar resultados. (experimentos,tabela, gráficos...)
- -Conclusão sobre os resultados
-\end{verbatim}
-
-Nessa seção os \NmlT~\MMLs~de transformação são estudados com relação a suas qualidades. (@@@ listar os métodos de transfomação.)
-A escolha do classificador base para cada um dos métodos foi reestrito para \Ncb~classificadores: @@@.
-Esse subestudo tem como objetivo principal encontrar os classificadores $c_1^*,c_2^*,c_3^*,c_4^*,c_5^*$ que serão utilizados pelos
-métodos $T_1,T_2,T_3,T_4,T_5$.
-Para isso, analisou-se duas características:
-  \begin{enumerate}
-  
-  \item a variação do ranking do método segundo um critério de qualidade ao variar o classificador base
-  para uma base específica.
-  \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
-  \end{enumerate}
-
-A comparação é realizada pelo rankeamento dos métodos, ou seja, os \MMLs~de transformação são submetidos a testes experimentais
-e ordenados segundo seus desempenhos de tal forma que para cada métrica e classificador base,
-é atribuído ao \MML~um valor correspondente a sua ordem, entre 1 e \NmlT. A ordenação por uma métrica
-é independente da ordenação da outra. 
-Os resultados experimentais são apresentados nas tabelas \ref{tab:study1-R-emotions},\ref{tab:study1-R-birds},..., uma para cada base de dados utilizada.
-Por essas tabelas, já podemos observar as duas características desejadas, enumeradas anteriormente na seção \ref{sec:methodcomp},
-mas para facilitar, construiu-se também as tabelas \ref{tab:study1-resumo}, que são resumos das tabelas ???.
+% 
+% \section{Estudo dos Métodos baseados em Transformação}
+% \label{sec:study1}
+% \begin{verbatim}
+%  -Listar métodos.
+%  -Falar como vai ser comparado cada método (teste estatístico, rankeamento, métrica boa) para comprovar a hipotese.
+%  -Apresentar resultados. (experimentos,tabela, gráficos...)
+%  -Conclusão sobre os resultados
+% \end{verbatim}
+% 
+% Nessa seção os \NmlT~\MMLs~de transformação são estudados com relação a suas qualidades. (@@@ listar os métodos de transfomação.)
+% A escolha do classificador base para cada um dos métodos foi reestrito para \Ncb~classificadores: @@@.
+% Esse subestudo tem como objetivo principal encontrar os classificadores $c_1^*,c_2^*,c_3^*,c_4^*,c_5^*$ que serão utilizados pelos
+% métodos $T_1,T_2,T_3,T_4,T_5$.
+% Para isso, analisou-se duas características:
+%   \begin{enumerate}
+%   
+%   \item a variação do ranking do método segundo um critério de qualidade ao variar o classificador base
+%   para uma base específica.
+%   \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
+%   \end{enumerate}
+% 
+% A comparação é realizada pelo rankeamento dos métodos, ou seja, os \MMLs~de transformação são submetidos a testes experimentais
+% e ordenados segundo seus desempenhos de tal forma que para cada métrica e classificador base,
+% é atribuído ao \MML~um valor correspondente a sua ordem, entre 1 e \NmlT. A ordenação por uma métrica
+% é independente da ordenação da outra. 
+% Os resultados experimentais são apresentados nas tabelas \ref{tab:study1-R-emotions},\ref{tab:study1-R-birds},..., uma para cada base de dados utilizada.
+% Por essas tabelas, já podemos observar as duas características desejadas, enumeradas anteriormente na seção \ref{sec:methodcomp},
+% mas para facilitar, construiu-se também as tabelas \ref{tab:study1-resumo}, que são resumos das tabelas ???.
 
 
 
