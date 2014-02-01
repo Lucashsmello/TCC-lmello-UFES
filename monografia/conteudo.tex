@@ -156,8 +156,8 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   \item Os $l$ classificadores binários $c_1^1,c_1^2...,c_1^l$ que compoêm $c_1$ não trabalham no mesmo
   espaço de características, contudo,
   trabalham com uma dimensão reduzida, em $X \times \{0,1\}^{l-1}$. Digamos que $(x,y)$ seja uma instância de $X_e$
-  onde $x \in X$ e $y \in \{0,1\}$, então cada instância 
-  do classificador binário $c_1^i$ tem $|X|+l-1$ características e é definido como sendo $(x,z_1,...,z_{i-1},z_{i+1},...,z_{l})$.
+  onde $x \in X$ e $y \in {\{0,1\}}^l$, então cada instância 
+  do classificador binário $c_1^i$ tem $|x|+l-1$ características e é definido como sendo $(x,y_1,...,y_{i-1},y_{i+1},...,y_{l})$.
 
   
 %   e o resultado da classificação multirrotulo de $c_1$ é construido da seguinte forma:
@@ -308,7 +308,8 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
       (Conclusão mais detalhada será feita no último capitulo da monografia!)
  \end{verbatim}
  
- Nessa seção o método \MRLMa~é posto em prova.
+ Nessa seção o método \MRLMa~é posto em prova. Com objetivo de analisar o método, implementou-se o algoritmo
+ na linguagem de programação Java e na biblioteca Weka \cite{weka} que integra técnicas de reconhecimento de padrões.
  A principal hipótese em que o \MRLMa~é baseado será testado nessa seção com o intuito de validar o método.
  Com a finalidade de tornar os testes mais objetivos, a hipótese é melhor formalizado:
  \begin{itemize}
@@ -354,7 +355,7 @@ alcançou o mesmo desempenho do DBR.
 representado na linha azul.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR}
 \centering
-\includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
+% \includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
 \end{figure}
 
 \begin{figure}[h]
@@ -363,12 +364,27 @@ A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenh
 representado nas linha azuis.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR.}
 \centering
-\includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
-\includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
+% \includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
+% \includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
 \end{figure}
 
 
-TO BE CONTINUED...
+
+É importante analisar o quanto o método aumenta o tamanho da base de dados uma vez que isso acarreta no aumento
+do tempo de execução do algoritmo. Sendo $l$ o número de rótulos, $n$ o número de instâncias de treino
+e $m$ o número de atributos da base original, na fase de treinamento do \MRLMa, o número de base de dados utilizadas são
+$2l$, cada uma contendo $n$ instâncias. Em metade delas, as instâncias contidas tem $m$ atributos e na outra metade $m+l$ atributos.
+Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(r+1)l$ bases de dados de $n$ instâncias onde na primeira base, o
+número de atributos é igual a $m$ e nas restantes é igual $m+l$. Vale ressaltar que nem todas essas bases de dados são
+armazenados explicitamente na mémoria em espaços diferentes, algumas são reutilizadas no processo de predição.
+
+% Em relação a complexidade algorítma do \MRLMa, ela pode ser
+% aproximada pelo número de atributos destinados ao classificador base, uma vez que é um método de transfomação
+% e a maior parte do custo computacional se encontra no classificador base.
+% A complexidade 
+
+
+
 
 \chapter{Avaliação e Análise Experimental}
 \section{Método de Comparação}
@@ -402,7 +418,13 @@ de adaptação.
 Num total, foram utilizados \Nml~\MML, \NmlT~da categoria de transformação e \NmlA~de adaptação: ??
 
 
-\section{}
+\section{Classificadores Bases}
+Nesta seção, são apresentados várias tabelas dos experimentos citados na seção anterior.
+Para cada tabela é apresentado os resultados métricos de todos os métodos multirrótulo quando aplicados para
+com um único classificador base. Em cada uma é analisado qual método multirrótulo combina melhor com o classificador
+base escolhido. Em todas as tabelas o valor em negrito
+representa o melhor valor obtido dentre os métodos multirótulos. 	
+
 
 % No entanto, uma vez que é impossível obter uma única ordenação dos métodos
 % usando múltiplos critérios,
