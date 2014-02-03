@@ -309,7 +309,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  \end{verbatim}
  
  Nessa seção o método \MRLMa~é posto em prova. Com objetivo de analisar o método, implementou-se o algoritmo
- na linguagem de programação Java e na biblioteca Weka \cite{weka} que integra técnicas de reconhecimento de padrões.
+ na linguagem de programação Java e no Weka \cite{weka}, que é uma biblioteca que integra técnicas de reconhecimento de padrões.
  A principal hipótese em que o \MRLMa~é baseado será testado nessa seção com o intuito de validar o método.
  Com a finalidade de tornar os testes mais objetivos, a hipótese é melhor formalizado:
  \begin{itemize}
@@ -345,7 +345,7 @@ até o valor máximo de realimentações chegar a 2, depois disso o método não
 Portanto 2 foi o valor máximo de realimentações necessárias para o método convergir nesses casos.
 Nos outros dois casos o método convergiu com apenas uma realimentação ou piorou 
 com duas ou mais realimentações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
-Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor que o DBR e em apenas um dos casos
+Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor do que o DBR e em apenas um dos casos
 alcançou o mesmo desempenho do DBR.
 
 
@@ -409,79 +409,81 @@ Para quantificar a qualidade de predição, foram escolhidas as seguintes métri
 As fórmulas para o cálculo de cada uma das métricas são apresentadas na seção \ref{sec:metrics}.
 É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
 um aspecto diferente da classificação.
-
-Este capítulo se encontra dividido em duas seções, na primeira foram analisados os
-resultados dos métodos de transfomação para cada classificador base.
-Já na segunda seção cada combinação de método multirrótulo com classificador base foi considerado
-um método de transformação e seus resultados são comparados entre si juntamente com os métodos multirrótulos
-de adaptação.
+% 
+% Este capítulo se encontra dividido em duas seções, na primeira foram analisados os
+% resultados dos métodos de transfomação para cada classificador base.
+% Já na segunda seção cada combinação de método multirrótulo com classificador base foi considerado
+% um método de transformação e seus resultados são comparados entre si juntamente com os métodos multirrótulos
+% de adaptação.
 Num total, foram utilizados \Nml~\MML, \NmlT~da categoria de transformação e \NmlA~de adaptação: ??
 
-
-\section{Classificadores Bases}
-Nesta seção, são apresentados várias tabelas dos experimentos citados na seção anterior.
-Para cada tabela é apresentado os resultados métricos de todos os métodos multirrótulo quando aplicados para
-com um único classificador base. Em cada uma é analisado qual método multirrótulo combina melhor com o classificador
-base escolhido. Em todas as tabelas o valor em negrito
-representa o melhor valor obtido dentre os métodos multirótulos. 	
-
-
-% No entanto, uma vez que é impossível obter uma única ordenação dos métodos
-% usando múltiplos critérios,
-% optou-se por usar a média dos ranking das métricas como
-% o único critério de ordenação ao levantar pontos conclusivos sobre os métodos. 
+\section{Resultados Experimentais}
+Nesta seção é feita uma análise geral do desempenho dos métodos multirrótulos em cada uma das bases de dados.
+Para fins experimentais, somente nessa seção, um método multirrótulo é definido como um sendo a combinação
+de um modelo de classificação multirrótulo com uma configuração de parâmetros já definida. Assim, por exemplo,
+o classificador BR com KNN é considerado um método diferente do classificador BR com SVM. Isso, por um lado é bom
+pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
+Por outro lado é ruim uma vez que considera os ...??
+Por fim, foram considerados ?? métodos multirrótulos, ...??
 
 
+Para cada base de dados é apresentado uma tabela
+% duas tabelas, 
+% a primeira
+contendo os valores das métricas escolhidas para cada um dos métodos multirrótulo e o
+o ranking dos métodos multirrótulos para cada métrica.
+
+\subsection{Emotions}
+
+\begin{table}[h]
+\label{tab:emotionsExps}
+\begin{tabular}{l|llll}
+                           & Hamming Loss  & Subset Accuracy & Example-Based Accuracy & \\ \hline
+ECC (Logistic)             & 0.2100\textpm 0.0285 (1) & 0.2577\textpm 0.0718   & 0.5205\textpm 0.0508          &  \\
+MCC (Logistic)             & 0.2323\textpm 0.0228 (3) & 0.2476\textpm 0.0466   & 0.5101\textpm 0.0425          &  \\
+LabelPowerset (Logistic)   & 0.2664\textpm 0.0203 (2) & 0.2175\textpm 0.0304   & 0.4593\textpm 0.0289          &  \\
+PCC (Logistic)             & 0.2277\textpm 0.0238 (6) & 0.2459\textpm 0.0580   & 0.5150\textpm 0.0462          &  \\
+CC (Logistic)              & 0.2342\textpm 0.0274 (4) & 0.2442\textpm 0.0642   & 0.5032\textpm 0.0462          &  \\
+BR (Logistic)              & 0.2193\textpm 0.0275 (12) & 0.2241\textpm 0.0555   & 0.4944\textpm 0.0410          &  \\
+MRLM (Logistic)            & 0.2471\textpm 0.0183 (13) & 0.2358\textpm 0.0493   & 0.4879\textpm 0.0369          &  \\
+DBR (Logistic)             & 0.2547\textpm 0.0203 (9) & 0.2038\textpm 0.0401   & 0.4851\textpm 0.0323          &  \\
+ECC (NaiveBayes)           & 0.2445\textpm 0.0198 (8) & 0.2360\textpm 0.0458   & 0.5326\textpm 0.0303          &  \\
+MCC (NaiveBayes)           & 0.2546\textpm 0.0162 (21) & 0.2176\textpm 0.0419   & 0.5225\textpm 0.0255          &  \\
+LabelPowerset (NaiveBayes) & 0.2325\textpm 0.0230 (14) & 0.2679\textpm 0.0535   & 0.5121\textpm 0.0406          &  \\
+PCC (NaiveBayes)           & 0.2543\textpm 0.0178 (5) & 0.2209\textpm 0.0442   & 0.5248\textpm 0.0270          &  \\
+CC (NaiveBayes)            & 0.2470\textpm 0.0213 (7) & 0.2260\textpm 0.0497   & 0.5364\textpm 0.0314          &  \\
+BR (NaiveBayes)            & 0.2521\textpm 0.0204 (3) & 0.2057\textpm 0.0549   & 0.5292\textpm 0.0332          &  \\
+MRLM (NaiveBayes)          & 0.2526\textpm 0.0276 (3) & 0.2463\textpm 0.0495   & 0.5258\textpm 0.0398          &  \\
+DBR (NaiveBayes)           & 0.2501\textpm 0.0232 (3) & 0.2378\textpm 0.0459   & 0.5158\textpm 0.0411          &  \\
+ECC (J48)                  & 0.2021\textpm 0.0231 (3) & 0.2832\textpm 0.0417   & 0.5097\textpm 0.0442          &  \\
+MCC (J48)                  & 0.2479\textpm 0.0300 (3) & 0.2427\textpm 0.0547   & 0.4826\textpm 0.0447          &  \\
+LabelPowerset (J48)        & 0.2777\textpm 0.0258 (3) & 0.2056\textpm 0.0477   & 0.4369\textpm 0.0412          &  \\
+PCC (J48)                  & 0.2474\textpm 0.0249 (3) & 0.2476\textpm 0.0552   & 0.4770\textpm 0.0408          &  \\
+CC (J48)                   & 0.2550\textpm 0.0181 (3) & 0.2478\textpm 0.0259   & 0.4703\textpm 0.0350          &  \\
+BR (J48)                   & 0.2474\textpm 0.0248 (3) & 0.1838\textpm 0.0500   & 0.4623\textpm 0.0352          &  \\
+MRLM (J48)                 & 0.2612\textpm 0.0274 (3) & 0.2561\textpm 0.0506   & 0.4700\textpm 0.0431          &  \\
+DBR (J48)                  & 0.2561\textpm 0.0298 (3) & 0.1737\textpm 0.0564   & 0.4402\textpm 0.0548          &  \\
+ECC (IBk)                  & 0.1996\textpm 0.0235 (3) & 0.3133\textpm 0.0562   & 0.5489\textpm 0.0440          &  \\
+MCC (IBk)                  & 0.2080\textpm 0.0254 (3) & 0.3403\textpm 0.0618   & 0.5676\textpm 0.0502          &  \\
+LabelPowerset (IBk)        & 0.2092\textpm 0.0255 (3) & 0.3319\textpm 0.0556   & 0.5660\textpm 0.0528          &  \\
+PCC (IBk)                  & 0.2016\textpm 0.0281 (3) & 0.3538\textpm 0.0656   & 0.5809\textpm 0.0523          &  \\
+CC (IBk)                   & 0.2013\textpm 0.0261 (3) & 0.3421\textpm 0.0459   & 0.5765\textpm 0.0418          &  \\
+BR (IBk)                   & 0.1903\textpm 0.0228 (3) & 0.3151\textpm 0.0448   & 0.5503\textpm 0.0400          &  \\
+MRLM (IBk)                 & 0.2055\textpm 0.0251 (3) & 0.3420\textpm 0.0494   & 0.5749\textpm 0.0442          &  \\
+DBR (IBk)                  & 0.2170\textpm 0.0201 (3) & 0.3066\textpm 0.0509   & 0.5740\textpm 0.0424          &  \\
+ECC (SMO)                  & 0.1850\textpm 0.0274 (3) & 0.3337\textpm 0.0612   & 0.5794\textpm 0.0517          &  \\
+MCC (SMO)                  & 0.2013\textpm 0.0262 (3) & 0.3284\textpm 0.0618   & 0.5747\textpm 0.0482          &  \\
+LabelPowerset (SMO)        & 0.2252\textpm 0.0263 (3) & 0.2696\textpm 0.0457   & 0.5320\textpm 0.0432          &  \\
+PCC (SMO)                  & 0.2038\textpm 0.0221 (3) & 0.3335\textpm 0.0569   & 0.5755\textpm 0.0407          &  \\
+CC (SMO)                   & 0.2038\textpm 0.0251 (3) & 0.3100\textpm 0.0570   & 0.5558\textpm 0.0446          &  \\
+BR (SMO)                   & 0.1909\textpm 0.0244 (3) & 0.2933\textpm 0.0381   & 0.5408\textpm 0.0449          &  \\
+MRLM (SMO)                 & 0.2047\textpm 0.0207 (3) & 0.3437\textpm 0.0643   & 0.5783\textpm 0.0419          &  \\
+DBR (SMO)                  & 0.2156\textpm 0.0273 (3) & 0.3101\textpm 0.0494   & 0.5849\textpm 0.0403          & 
+\end{tabular}
+\end{table}
 
 
-% A comparação é antecedida por um estudo dos parâmetros dos métodos
-% cujo objetivo principal é encontrar os parâmetros que devem ser usadas na comparação dos métodos. Objetivos secundários são
-% espeficicados nas seções \ref{sec:study1} e \ref{sec:study2}, especialmente dedicadas para esse estudo.
-% O objetivo principal é alcançado ao analisar a alteração do comportamento dos métodos quando seus parâmetros são alterados.
-% O estudo dos parâmetros foi dividido em dois subestudos:
-% \begin{enumerate}
-%  \item estudo individual, que tem por objetivo analisar os parâmetros únicos de cada método individualmente.
-%   \item estudo de grupo, que tem por objetivo analisar os parâmetros que são idênticos para um grupo de métodos.
-%   Nesse caso o parâmetro que representa a escolha do classificador binário base para os método baseados em transformação é
-%   analisado. 
-% \end{enumerate}
-% 
-% O estudo de grupo tem como objetivo principal descobrir a melhor forma de comparar esses métodos entre si e
-% entre outros métodos, por exemplo, compara-los usando o mesmo parâmetro em cada um ou compara-los usando o melhor parâmetro
-% de cada um.
-% 
-% 
-%   Para mais detalhes sobre os motivos desse estudo bem como seus resultados e conclusões na seção \ref{sec:study1}.
-  
-% 
-% \section{Estudo dos Métodos baseados em Transformação}
-% \label{sec:study1}
-% \begin{verbatim}
-%  -Listar métodos.
-%  -Falar como vai ser comparado cada método (teste estatístico, rankeamento, métrica boa) para comprovar a hipotese.
-%  -Apresentar resultados. (experimentos,tabela, gráficos...)
-%  -Conclusão sobre os resultados
-% \end{verbatim}
-% 
-% Nessa seção os \NmlT~\MMLs~de transformação são estudados com relação a suas qualidades. (@@@ listar os métodos de transfomação.)
-% A escolha do classificador base para cada um dos métodos foi reestrito para \Ncb~classificadores: @@@.
-% Esse subestudo tem como objetivo principal encontrar os classificadores $c_1^*,c_2^*,c_3^*,c_4^*,c_5^*$ que serão utilizados pelos
-% métodos $T_1,T_2,T_3,T_4,T_5$.
-% Para isso, analisou-se duas características:
-%   \begin{enumerate}
-%   
-%   \item a variação do ranking do método segundo um critério de qualidade ao variar o classificador base
-%   para uma base específica.
-%   \item a variação do ranking do classificador base segundo um critério de qualidade ao variar o método multirrotulo.
-%   \end{enumerate}
-% 
-% A comparação é realizada pelo rankeamento dos métodos, ou seja, os \MMLs~de transformação são submetidos a testes experimentais
-% e ordenados segundo seus desempenhos de tal forma que para cada métrica e classificador base,
-% é atribuído ao \MML~um valor correspondente a sua ordem, entre 1 e \NmlT. A ordenação por uma métrica
-% é independente da ordenação da outra. 
-% Os resultados experimentais são apresentados nas tabelas \ref{tab:study1-R-emotions},\ref{tab:study1-R-birds},..., uma para cada base de dados utilizada.
-% Por essas tabelas, já podemos observar as duas características desejadas, enumeradas anteriormente na seção \ref{sec:methodcomp},
-% mas para facilitar, construiu-se também as tabelas \ref{tab:study1-resumo}, que são resumos das tabelas ???.
+\subsection{Medical}
 
 
 
