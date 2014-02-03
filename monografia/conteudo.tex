@@ -1,7 +1,7 @@
 
 \newcommand{\NbasesV}{\textit{N}}
-\newcommand{\Nbases}{7}
-\newcommand{\Nml}{7}
+\newcommand{\Nbases}{6}
+\newcommand{\Nml}{6}
 \newcommand{\NmlT}{5}
 \newcommand{\NmlA}{2}
 \newcommand{\Ncb}{4}
@@ -66,20 +66,23 @@ de tamanho igual ao número de rótulos.
 
 \section{Avaliação de Desempenho}
 \begin{verbatim}
+ESBOÇO:
 -Apresentar matematicamente o que pode indicar correlação entre rótulos e outras coisas
 conforme o artigo: "Bayes Optimal Multilabel Classification via Probabilistic Classifier Chains".
--Falar que é diferente do multiclasse
+-Falar que é diferente do multiclasse e a razao disso
 \end{verbatim}
 \subsection{Métricas}
 \label{sec:metrics}
 \subsubsection{Accuracy}
 \subsubsection{Hamming-Loss}
 \subsubsection{Subset Accuracy}
+\subsubsection{Example Based Accuracy}
 \subsubsection{Ranking Loss}
 \subsection{Modelo de Avaliação}
 \label{sec:modelav}
 
 \begin{verbatim}
+ESBOÇO:
 Falar do Holdout,Cross-validation estratificado.
 Falar sobre bases separadas de treino,teste e validação.
 \end{verbatim}
@@ -87,21 +90,20 @@ Falar sobre bases separadas de treino,teste e validação.
 \chapter{Métodos Multirrótulos}
 \section{Transformação do Problema}
 \subsection{Relevância Binária - BR}
-\ref{sec:br}
+\label{sec:br}
 \subsection{Classifier Chain}
 \subsection{Ensemble of Classifier Chain}
 \subsection{Probabilistic Classifier Chain}
-\subsection{LEAD}
-\subsection{Dependent Binary Relevance - DBR}
+\subsection{Relevância Binária Dependente - DBR}
 \label{sec:dbr}
-\subsection{MAIS MÉTODOS...}
+\subsection{Monte Carlo Classifier Chain}
 
-\section{Adaptação de classificadores}
-\subsection{ML-KNN}
-\subsection{Rede Neural Artificial}
-\subsection{C4.5 multirrótulo}
-\subsection{CRankSVM}
-\subsection{MAIS...}
+% \section{Adaptação de classificadores}
+% \subsection{ML-KNN}
+% \subsection{Rede Neural Artificial}
+% \subsection{C4.5 multirrótulo}
+% \subsection{CRankSVM}
+% \subsection{MAIS...}
 
 
 \chapter{Recursive Dependent Binary Relevance - RDBR}
@@ -110,9 +112,9 @@ na seção \ref{sec:dbr}. Assim como o DBR e o CC, o \MRLMa~é um método basead
 multirrótulo em vários problemas classificação binária. Todos eles exploram a correlação entre os rótulos por meio da adição de
 características especiais que representam os rótulos reais ou estimativas dos rótulos reais ao espaço de características original. 
 Mas, diferentemente dos outros, o \MRLMa~adiciona uma inteligência na adição dessas características especiais na fase de predição do método.
-A forma de como isso é feito bem como o funcionamento completo do algoritmo de classificação e a fundamentação teórica
+A forma de como isso é feito, bem como o funcionamento completo do algoritmo de classificação e a fundamentação teórica
 do \MRLMa~são detalhados na seção \ref{sec:mrlm_algo}. 
-A seção \ref{sec:mrlm_analise} analisa o funcionamento e o desempenho do \MRLMa~de forma prática, por meio de experimentos.
+A seção \ref{sec:mrlm_analise} analisa o funcionamento e o desempenho do \MRLMa~de forma empírica.
 
 
 \section{Algoritmo de \MRLM~-~\MRLMa}
@@ -197,49 +199,6 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
   Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
   estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_l)$.
-%   , cada um representado na forma
-%   binária na qual tem o valor $1$ se a instância tem o rótulo e $0$ se o contrário .
-  
-%  Dado uma base de treino $D$ composta de $n$ instâncias 
- 
-%  Formalmente, o \MRLMa~funciona da seguinte forma. Os classificadores em $c_0,c_1,...,c_{n-1} são representados
-%  pelas funções $h_0,h_1,...,h_{n-1}$:
-%  \begin{equation}
-%  \begin{split}
-%     & h_0 : X \rightarrow [0,1]^l \\
-%     & h_i : [0,1]^l \rightarrow [0,1]^l | i=1,...,n-1
-% %   h_0 : X \rightarrow \mathbb{R}^l &\\
-% %   h_i : \mathbb{R}^l \rightarrow \mathbb{R}^l & | i=1,...,n-1
-%   \end{split}
-%  \end{equation}
-%  
-%  onde a imagem de cada função $h_i$ é um vetor $(\hat{y}_1,\hat{y}_2,...,\hat{y}_l)$ de tamanho $l$ onde cada elemento
-%  $\hat{y}_i$ é um valor entre 0 e 1 que representa a pertinência de uma instância $t$ para o rótulo $i$ ou a probabilidade da instância $t$ pertencer
-%  ao rótulo $i$.
-%  
-%  Primeiramente, treinamos o classificador BR $c_0$ no espaço de
-%  características original $X$, resultando na construção da função $h_0(\bf{x})$:
-%  \begin{equation}
-%   h_0 : X \rightarrow \{0,1\}^l\.{z} 
-%  \end{equation}
-%  Em seguida, aplica-se a função $h_0$ sobre todas as instâncias da base de treino, resultando nas saídas
-%  $h_0(x_1), h_0(x_2),...,h_0(x_n)$. A partir daí as instâncias são transformadas e mapeadas para um novo espaço de
-%  características, criando a nova base de dados $D'$:
-%  \begin{equation}
-%   D'=\{(h_0(x_i),y_i)|i=1,...,n\}
-%  \end{equation}
-
- 
-%  \begin{equation}
-% \label{eq:funcT}
-%   T : X \times Y \rightarrow \hat{Y} \times Y,~T(x,y)=(h_0(x),y)
-%  \end{equation}
-%  onde $\hat{Y}$ é composto por instâncias da forma:
-%  \begin{equation}
-%   x'=(h_0(\bf{x}))
-%  \end{equation}
-
-
  
  \subsection{Fase de Predição}
  \label{sec:mrlm_prediction}
@@ -257,7 +216,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %  \begin{equation}
 %   c_1(x)=(c_1^1(x),c_1^2(x),...,c_1^l(x))
 %  \end{equation}
- No entanto, o \MRLMa~adota uma técnica inspirada no Classifier Chain que consiste em, para
+ No entanto, o \MRLMa~adota uma técnica extra, inspirada no Classifier Chain que consiste em, para
  cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
  a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{l}$,
  classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores.
@@ -331,7 +290,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  
  \end{itemize}
 
-De uma forma bem resumida, a hipótese é que erros de predições pelo
+De uma forma bem resumida e informal, a hipótese é que erros de predições pelo
 classificador $c_0$ do DBR afetam negativamente a classificação do classificador $c_1$.
 A comprovação dessa hipótese é feita da seguinte forma. Experimentos com o \MRLMa~são realizados
 usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica \textit{Subset Accuracy}
@@ -355,7 +314,7 @@ alcançou o mesmo desempenho do DBR.
 representado na linha azul.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR}
 \centering
-% \includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
+\includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
 \end{figure}
 
 \begin{figure}[h]
@@ -364,14 +323,14 @@ A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenh
 representado nas linha azuis.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR.}
 \centering
-% \includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
-% \includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
+\includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
+\includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
 \end{figure}
 
 
 
 É importante analisar o quanto o método aumenta o tamanho da base de dados uma vez que isso acarreta no aumento
-do tempo de execução do algoritmo. Sendo $l$ o número de rótulos, $n$ o número de instâncias de treino
+do tempo de execução do algoritmo. Seja $l$ o número de rótulos, $n$ o número de instâncias de treino
 e $m$ o número de atributos da base original, na fase de treinamento do \MRLMa, o número de base de dados utilizadas são
 $2l$, cada uma contendo $n$ instâncias. Em metade delas, as instâncias contidas tem $m$ atributos e na outra metade $m+l$ atributos.
 Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(r+1)l$ bases de dados de $n$ instâncias onde na primeira base, o
@@ -387,49 +346,88 @@ armazenados explicitamente na mémoria em espaços diferentes, algumas são reut
 
 
 \chapter{Avaliação e Análise Experimental}
+Nesta seção é descrito as bases de dados multirrótulo usadas nos experimentos, as medidas de avaliação escolhidas e a escolha
+dos parâmetros dos classificadores. 
+
+\section{Base de dados}
+Todas as 7 bases de dados utilizadas nos experimentos foram obtidas de repositórios públicos pelo seguinte endereço virtual ??.
+As bases de dados são apresentadas a seguir:
+
+\begin{itemize}
+\item \bf{Emotions}: ??
+\item \bf{Scene}: ??
+\item \bf{Yeast}: ??
+\item \bf{Birds}: ??
+\item \bf{Genbase}: ??
+\item \bf{Medical}: ??
+\item \bf{Enron}: ??	
+
+\end{itemize}
+\label{tab:datas}
+\begin{table}[h]
+\caption{Resumo das bases de dados multirrótulos}
+\begin{tabular}{|c|ccccccc|}
+\hline
+% \textbf{}         & \textbf{}        & \textbf{}         & \multicolumn{2}{c}{\textbf{ATRIBUTOS}} & \textbf{}        & \textbf{}              & \textbf{}          \\
+\textbf{BASE}     & \textbf{DOMÍNIO} & \textbf{EXEMPLOS} & \textbf{DIS} & \textbf{NUM} & \textbf{RÓTULOS} & \textbf{CARD} & \textbf{DENS} \\ \hline
+\textbf{Emotions} & Música           & 593               & 0                 & 72                 & 6                & 1.869                  & 0.311              \\
+\textbf{Scene}    & Imagem           & 2407              & 0                 & 294                & 6                & 1.074                  & 0.179              \\
+\textbf{Yeast}    & Biologia         & 2417              & 0                 & 103                & 14               & 4.237                  & 0.303              \\
+\textbf{Birds}    & Audio            & 645               & 2                 & 258                & 19               & 1.014                  & 0.053              \\
+\textbf{Genbase}  & Biologia         & 662               & 1186              & 0                  & 27               & 1.252                  & 0.046              \\
+\textbf{Medical}  & Texto            & 978               & 1449              & 0                  & 45               & 1.245                  & 0.028              \\
+\textbf{Enron}    & Texto            & 1702              & 1001              & 0                  & 53               & 3.378                  & 0.064             \\ \hline
+\end{tabular}
+\end{table}
+
+A tabela \ref{tab:datas} apresenta algumas estatísticas das bases de dados adquiridas.
+Nessa tabela são apresentadas as seguintes informações de cada base de dados:
+\begin{itemize}
+  \item \textit{DIS}: número de atributos discretos;
+  \item \textit{NUM}: número de atributos numéricos;
+  \item \textit{CARD}: cardinalidade de rótulos na base de dados;
+  \item \textit{DENS}: densidade de rótulos na base de dados.
+\end{itemize}
+
+
 \section{Método de Comparação}
 \label{sec:methodcomp}
-
 A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
 A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 grupos
-(\textit{10-fold cross-validation}) sobre as \Nbases~bases de dados, todas apresentadas pela tabela \ref{tab:datas}.
-Todas as bases de dados foram obtidas de repositórios públicos pelo seguinte
-endereço virtual ??.
-Para quantificar a qualidade de predição, foram escolhidas as seguintes métricas:
-% Hamming Loss, Accuracy, Subset Accuracy, Ranking Loss, ...@@@.
+(\textit{10-fold cross-validation}) sobre \Nbases~bases de dados, todas apresentadas e descritas na subseção seguinte.
 
-% As métrica escolhidas e os motivos pela qual foram escolhidas são os seguintes:
+
+Para quantificar a qualidade de predição, foram escolhidas as seguintes métricas:
 \begin{itemize}
- \item Subset Accuracy, pois é rígida @@@ etc...
- \item @@@
- \item @@@
- \item Tempo computacional, pois é @@@ etc...
+ \item Subset Accuracy, pois é mostrado que captura bem a correlação entre rótulos;
+ \item Example Based Accuracy, pois é bem mais sensível que o Subset Accuracy;
+ \item ??
+%  \item Tempo computacional, pois é @@@ etc...
 \end{itemize}
 
 As fórmulas para o cálculo de cada uma das métricas são apresentadas na seção \ref{sec:metrics}.
 É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
-um aspecto diferente da classificação.
+um aspecto diferente da classificação. 
+Num total, foram utilizados \Nml~modelos de classificação multirrótulos: BR, DBR, RDBR, CC, ECC e MCC.
+Para cada um deles utilizou-se os seguintes classificadores base: KNN, SVM, J48 e Regressão Logística. 
+Para o melhor entendimento, neste capítulo um método multirrótulo é definido como sendo a combinação
+de um modelo de classificação multirrótulo com uma configuração de parâmetros pré-definida. Assim, por exemplo,
+o classificador BR com KNN é considerado um método diferente do classificador BR com SVM. Isso, por um lado é bom
+pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
+Por outro lado é ruim uma vez que considera os mesmos modelos de classificação como sendo completamente diferentes.
+Dessa forma, foram considerados 24 métodos multirrótulos e comparados entre si de forma experimental.
+
 % 
 % Este capítulo se encontra dividido em duas seções, na primeira foram analisados os
 % resultados dos métodos de transfomação para cada classificador base.
 % Já na segunda seção cada combinação de método multirrótulo com classificador base foi considerado
 % um método de transformação e seus resultados são comparados entre si juntamente com os métodos multirrótulos
 % de adaptação.
-Num total, foram utilizados \Nml~\MML, \NmlT~da categoria de transformação e \NmlA~de adaptação: ??
+
 
 \section{Resultados Experimentais}
 Nesta seção é feita uma análise geral do desempenho dos métodos multirrótulos em cada uma das bases de dados.
-Para fins experimentais, somente nessa seção, um método multirrótulo é definido como um sendo a combinação
-de um modelo de classificação multirrótulo com uma configuração de parâmetros já definida. Assim, por exemplo,
-o classificador BR com KNN é considerado um método diferente do classificador BR com SVM. Isso, por um lado é bom
-pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
-Por outro lado é ruim uma vez que considera os ...??
-Por fim, foram considerados ?? métodos multirrótulos, ...??
-
-
 Para cada base de dados é apresentado uma tabela
-% duas tabelas, 
-% a primeira
 contendo os valores das métricas escolhidas para cada um dos métodos multirrótulo e o
 o ranking dos métodos multirrótulos para cada métrica.
 
@@ -437,25 +435,20 @@ o ranking dos métodos multirrótulos para cada métrica.
 
 \begin{table}[h]
 \label{tab:emotionsExps}
+
+\caption{EXEMPLO DE TABELA, NAO É DE VERDADE AINDA!}
+
 \begin{tabular}{l|llll}
                            & Hamming Loss  & Subset Accuracy & Example-Based Accuracy & \\ \hline
-ECC (Logistic)             & 0.2100\textpm 0.0285 (1) & 0.2577\textpm 0.0718   & 0.5205\textpm 0.0508          &  \\
-MCC (Logistic)             & 0.2323\textpm 0.0228 (3) & 0.2476\textpm 0.0466   & 0.5101\textpm 0.0425          &  \\
-LabelPowerset (Logistic)   & 0.2664\textpm 0.0203 (2) & 0.2175\textpm 0.0304   & 0.4593\textpm 0.0289          &  \\
-PCC (Logistic)             & 0.2277\textpm 0.0238 (6) & 0.2459\textpm 0.0580   & 0.5150\textpm 0.0462          &  \\
-CC (Logistic)              & 0.2342\textpm 0.0274 (4) & 0.2442\textpm 0.0642   & 0.5032\textpm 0.0462          &  \\
+ECC (Logistic)             & 0.2100\textpm 0.0285 (1) & 0.2577\textpm 0.0718 (2)  & 0.5205\textpm 0.0508          &  \\
+MCC (Logistic)             & 0.2323\textpm 0.0228 (3) & 0.2476\textpm 0.0466 (1)  & 0.5101\textpm 0.0425          &  \\
+LabelPowerset (Logistic)   & 0.2664\textpm 0.0203 (2) & 0.2175\textpm 0.0304 (4)  & 0.4593\textpm 0.0289          &  \\
+PCC (Logistic)             & 0.2277\textpm 0.0238 (6.5) & 0.2459\textpm 0.0580 (6)  & 0.5150\textpm 0.0462          &  \\
+CC (Logistic)              & 0.2342\textpm 0.0274 (4) & 0.2442\textpm 0.0642 (5)  & 0.5032\textpm 0.0462          &  \\
 BR (Logistic)              & 0.2193\textpm 0.0275 (12) & 0.2241\textpm 0.0555   & 0.4944\textpm 0.0410          &  \\
 MRLM (Logistic)            & 0.2471\textpm 0.0183 (13) & 0.2358\textpm 0.0493   & 0.4879\textpm 0.0369          &  \\
 DBR (Logistic)             & 0.2547\textpm 0.0203 (9) & 0.2038\textpm 0.0401   & 0.4851\textpm 0.0323          &  \\
-ECC (NaiveBayes)           & 0.2445\textpm 0.0198 (8) & 0.2360\textpm 0.0458   & 0.5326\textpm 0.0303          &  \\
-MCC (NaiveBayes)           & 0.2546\textpm 0.0162 (21) & 0.2176\textpm 0.0419   & 0.5225\textpm 0.0255          &  \\
-LabelPowerset (NaiveBayes) & 0.2325\textpm 0.0230 (14) & 0.2679\textpm 0.0535   & 0.5121\textpm 0.0406          &  \\
-PCC (NaiveBayes)           & 0.2543\textpm 0.0178 (5) & 0.2209\textpm 0.0442   & 0.5248\textpm 0.0270          &  \\
-CC (NaiveBayes)            & 0.2470\textpm 0.0213 (7) & 0.2260\textpm 0.0497   & 0.5364\textpm 0.0314          &  \\
-BR (NaiveBayes)            & 0.2521\textpm 0.0204 (3) & 0.2057\textpm 0.0549   & 0.5292\textpm 0.0332          &  \\
-MRLM (NaiveBayes)          & 0.2526\textpm 0.0276 (3) & 0.2463\textpm 0.0495   & 0.5258\textpm 0.0398          &  \\
-DBR (NaiveBayes)           & 0.2501\textpm 0.0232 (3) & 0.2378\textpm 0.0459   & 0.5158\textpm 0.0411          &  \\
-ECC (J48)                  & 0.2021\textpm 0.0231 (3) & 0.2832\textpm 0.0417   & 0.5097\textpm 0.0442          &  \\
+ECC (J48)                  & 0.2268\textpm 0.0231 (6.5) & 0.2832\textpm 0.0417   & 0.5097\textpm 0.0442          &  \\
 MCC (J48)                  & 0.2479\textpm 0.0300 (3) & 0.2427\textpm 0.0547   & 0.4826\textpm 0.0447          &  \\
 LabelPowerset (J48)        & 0.2777\textpm 0.0258 (3) & 0.2056\textpm 0.0477   & 0.4369\textpm 0.0412          &  \\
 PCC (J48)                  & 0.2474\textpm 0.0249 (3) & 0.2476\textpm 0.0552   & 0.4770\textpm 0.0408          &  \\
@@ -482,10 +475,14 @@ DBR (SMO)                  & 0.2156\textpm 0.0273 (3) & 0.3101\textpm 0.0494   &
 \end{tabular}
 \end{table}
 
-
 \subsection{Medical}
+\subsection{Yeast}
+\subsection{Scene}
+\subsection{Genbase}
+\subsection{Enron}
+\subsection{Birds}
 
-
+\section{Complexidade Algorítima}
 
 
 
