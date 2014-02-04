@@ -46,6 +46,7 @@ def getresults(filepath,metrics,methods="ALL",makeMergeResults=False,mergeMetric
                 break
             break
     for line in f:
+        if(line.find('NaiveBayes')>=0): continue
         line=line.strip('\n')
         if(len(line.strip())>0):
             line=line[:-1].split(';')
