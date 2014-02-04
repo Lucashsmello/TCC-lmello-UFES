@@ -30,14 +30,14 @@ public class ExperimentLMTCC {
 		// LA!!!
 
 		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
-		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv7/";
+		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/MA/";
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
 		// "enron-P" };
-		// String[] datasnames = new String[] {
-		// "emotions-P","birds-P","scene-P", "yeast-P","medical-P","Corel5k-P"};
-		String[] datasnames = new String[] { "enron-P", "genbase-P",
-				"rcv1subset1-P" };
+		String[] datasnames = new String[] { "emotions-P", "birds-P",
+				"scene-P", "yeast-P", "medical-P" };
+		// String[] datasnames = new String[] { "enron-P", "genbase-P",
+		// "rcv1subset1-P" };
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
 		FileWriter logfile = new FileWriter(new File(expDir + "expLog2-"
 				+ sdffile.format(new Date())));
@@ -126,13 +126,13 @@ public class ExperimentLMTCC {
 
 	static List<Classifier> createBaseClassifiers() {
 		List<Classifier> baseclassifs = new ArrayList<Classifier>();
-		IBk knn = new IBk(11);
+		IBk knn = new IBk(5);
 		SMO svm = new SMO();
 		svm.setBuildLogisticModels(true);
 		J48 j48 = new J48();
-		MultilayerPerceptron mlp = new MultilayerPerceptron();
-		mlp.setSeed(ExperimentLM.globalseed);
-		mlp.setTrainingTime(10);
+//		MultilayerPerceptron mlp = new MultilayerPerceptron();
+//		mlp.setSeed(ExperimentLM.globalseed);
+//		mlp.setTrainingTime(10);
 		NaiveBayes nb = new NaiveBayes();
 		weka.classifiers.functions.Logistic logi = new Logistic();
 		try {
@@ -195,10 +195,10 @@ public class ExperimentLMTCC {
 			// 66, 10, 0.5, 2, PrunedSets.Strategy.A, 3, c);
 
 			mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
+			mmm.add(lpower);
 			// mmm.add(new ECC2(c, 10, true, true));
 			mmm.add(new MekaWrapperClassifier(mcc));
 			if (mldata.getNumLabels() <= 10) {
-				mmm.add(lpower);
 				mmm.add(new MekaWrapperClassifier(pcc));
 			}
 			mmm.add(cc);
@@ -207,6 +207,7 @@ public class ExperimentLMTCC {
 			mmm.add(mrlm);
 			// mmm.add(mrlm2);
 			mmm.add(dbr);
+
 			// mmm.add(eps);
 		}
 
