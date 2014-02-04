@@ -126,18 +126,22 @@ Como foi dito anteriormente, o \MRLM~é baseado no DBR.
 % Ou seja, 
 Ambos dependem da hipótese de que as estimativas dos rótulos em $Y$ por um classificador multirrótulo $c_0$
 são boas características para aprimorar as estimativas dos mesmos rótulos por um novo classificador $c_1$
-e que quanto melhor forem as estimativas dos rótulos por $c_0$, melhores são as de $c_1$. Nesse caso, podemos dizer
-que o classificador $c_0$ é usado para "alimentar" o classificador $c_1$.
+e que quanto melhor forem as estimativas dos rótulos por $c_0$, melhores são as de $c_1$.
+% Nesse caso, podemos dizer
+% que o classificador $c_0$ é usado por $c_1$ como parâmetro para .
 E ainda ambos usam o BR como classificador multirrótulo base, que servirá para realizar as primeiras estimativas dos 
 rótulos.
 
-No entanto, o \MRLMa, ao invés de usar apenas o classificador base $c_0$ para "alimentar" $c_1$, como o DBR,
-ele usa o próprio $c_1$ para se "alimentar", ou seja, há realimentação pelo próprio classificador.
-A idéia é que cada vez que $c_1$ se realimente, melhores ficam suas estimativas uma vez que ele será baseado
+No entanto, o \MRLMa, ao invés de usar apenas o classificador base $c_0$ como função para contruir
+as características adicionais que o $c_1$ usa, como o DBR,
+ele também usa o próprio $c_1$ para essa finalidade, ou seja, há uma atualização das estimativas das características
+pelo próprio classificador que as usam.
+A idéia é que cada vez que $c_1$ as atualiza, melhores ficam suas estimativas uma vez que ele será baseado
 em estimativas melhores de rótulos do que anteriormente. 
-A alimentação é a propagação das 
-estimativas dos rótulos de um classificador multirrótulo para o espaço de características expandido de um outro, ou o mesmo,
-classificador multirrótulo. O funcionamento do algoritmo serão formalmente detalhados nas seções seguintes.
+% A alimentação é a propagação das 
+% estimativas dos rótulos de um classificador multirrótulo para o espaço de características expandido de um outro, ou o mesmo,
+% classificador multirrótulo.
+O funcionamento do algoritmo é formalmente detalhado nas seções seguintes.
 
 Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 \begin{itemize}
@@ -223,12 +227,11 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 
  Assim que $c_1$ classifica a instância $(x,\hat{y}^0)$, gerando portanto a estimativa de rótulos $\hat{y}^1=c_1(x,\hat{y}^0)$,
  $\hat{y}^1$ é usado para atualizar as características da instância $x$, tomando assim o lugar de $\hat{y}^0$.
- Esse processo é chamado de ``realimentação'' pois, o classificador $c_1$ classifica baseado na sua própria classificação.
- A realimentação de $c_1$ é repetido $r$ vezes,
- onde $r$ é determinado por um valor máximo de realimentações, definido a priori, ou quando é detectado a convergência.
- A convergência é alcançada quando a estimativa de rótulos não muda, independente do número de realimentações.
+ Esse processo de atualização das características é iterativo e é repetido $r$ vezes,
+ onde $r$ é determinado por um valor máximo de iterações, definido a priori, ou quando é detectado a convergência.
+ A convergência é alcançada quando a estimativa de rótulos não muda, independente do número de iterações.
 %  Isso acontece, por exemplo, quando $c_1(c_1(c_0))=c_1(c_0)$.
- Com $r$ realimentações, tem-se $r$ estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^r$, dentre as quais o último ($\hat{y}^r$)
+ Com $r$ iterações, tem-se $r$ estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^r$, dentre as quais o último ($\hat{y}^r$)
  é a classificação final do método $C(x)=\hat{y}^r$.
  
  Dessa forma, podemos concluir que \MRLM~é um método recursivo de tal forma que
@@ -295,36 +298,37 @@ classificador $c_0$ do DBR afetam negativamente a classificação do classificad
 A comprovação dessa hipótese é feita da seguinte forma. Experimentos com o \MRLMa~são realizados
 usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica \textit{Subset Accuracy}
 quando o método é submetido a validação cruzada de 10 \textit{folds}.
-O experimento é repetido com o número máximo de alimentações do
+O experimento é repetido com o número máximo de iterações do
 \MRLMa~variando de 0 a 10 (Note que para o valor 0, o \MRLMa~se torna exatamente o BR).
 Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
-De fato, é o que ocorre na maioria dos casos, apesar de que o método estabiliza/converge rapidamente em relação a realimentação.
+De fato, é o que ocorre na maioria dos casos, apesar de que o método estabiliza/converge rapidamente em relação ao
+número máximo de iterações.
 O gráfico da figura \ref{fig:Gmrlm_1} é um exemplo do que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
-até o valor máximo de realimentações chegar a 2, depois disso o método não tem seu desempenho alterado.
-Portanto 2 foi o valor máximo de realimentações necessárias para o método convergir nesses casos.
-Nos outros dois casos o método convergiu com apenas uma realimentação ou piorou 
-com duas ou mais realimentações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
+até o valor máximo de iterações chegar a 2, depois disso o método não tem seu desempenho alterado.
+Portanto 2 foi o valor máximo de iterações necessárias para o método convergir nesses casos.
+Nos outros dois casos o método convergiu com apenas uma iterações ou piorou 
+com duas ou mais iterações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
 Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor do que o DBR e em apenas um dos casos
 alcançou o mesmo desempenho do DBR.
 
 
 \begin{figure}[h]
 \label{fig:Gmrlm_1}
-\caption{Gráfico do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de realimentações (eixo horizontal)
+\caption{Gráfico do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de iterações (eixo horizontal)
 representado na linha azul.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR}
 \centering
-\includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
+% \includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
 \end{figure}
 
 \begin{figure}[h]
 \label{fig:Gmrlm_2}
-\caption{Gráficos do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de realimentações (eixo horizontal)
+\caption{Gráficos do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de iterações (eixo horizontal)
 representado nas linha azuis.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR.}
 \centering
-\includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
-\includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
+% \includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
+% \includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
 \end{figure}
 
 
