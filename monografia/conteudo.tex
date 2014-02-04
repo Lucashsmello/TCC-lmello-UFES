@@ -244,8 +244,8 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  Aplicando esse processo recursivo, espera-se que a cada recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
  seu antecessor $\hat{y}^{i-1}$. Teoricamente, essa afirmação se mantém se supormos que a estimativa $\hat{y}^1$ é melhor do que a $\hat{y}^0$, 
  o que é razoável uma vez que o classificador $c_0$, que é um BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
- (??REFERENCIAR A EQUACAO DE PROBABILIDADE MARGINAL??)%  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
- , enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
+ %  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
+  enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
  estimativas baseadas na probabilidade condicional.
  Com essa suposição teríamos que $\hat{y}^i$ seria melhor do que $\hat{y}^{i-1}$, pois $\hat{y}^{i-1}$ se aproxima
  mais da distribuição real dos rótulos do que $\hat{y}^{i-2}$. Assim, quando $c_1$ estimar $\hat{y}^i$ usando $\hat{y}^{i-1}$ estaria baseado em 
@@ -302,7 +302,7 @@ O experimento é repetido com o número máximo de iterações do
 \MRLMa~variando de 0 a 10 (Note que para o valor 0, o \MRLMa~se torna exatamente o BR).
 Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
 De fato, é o que ocorre na maioria dos casos, apesar de que o método estabiliza/converge rapidamente em relação ao
-número máximo de iterações.
+número de iterações.
 O gráfico da figura \ref{fig:Gmrlm_1} é um exemplo do que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
 até o valor máximo de iterações chegar a 2, depois disso o método não tem seu desempenho alterado.
 Portanto 2 foi o valor máximo de iterações necessárias para o método convergir nesses casos.
@@ -318,7 +318,7 @@ alcançou o mesmo desempenho do DBR.
 representado na linha azul.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR}
 \centering
-% \includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
+\includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
 \end{figure}
 
 \begin{figure}[h]
@@ -327,8 +327,8 @@ A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenh
 representado nas linha azuis.
 A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR.}
 \centering
-% \includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
-% \includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
+\includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
+\includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
 \end{figure}
 
 
