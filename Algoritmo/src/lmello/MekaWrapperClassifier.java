@@ -3,7 +3,7 @@ package lmello;
 import mulan.classifier.InvalidDataException;
 import mulan.classifier.MultiLabelOutput;
 import mulan.data.MultiLabelInstances;
-import weka.classifiers.multilabel.MultilabelClassifier;
+import meka.classifiers.multilabel.MultilabelClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.TechnicalInformation;
@@ -15,7 +15,7 @@ public class MekaWrapperClassifier extends
 	private int numLabels;
 
 	public MekaWrapperClassifier(
-			weka.classifiers.multilabel.MultilabelClassifier mlc) {
+			meka.classifiers.multilabel.MultilabelClassifier mlc) {
 		this.mlclassif = mlc;
 	}
 

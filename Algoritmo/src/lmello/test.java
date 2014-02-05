@@ -7,33 +7,21 @@ package lmello;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
+import meka.classifiers.multilabel.PCC;
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.MultiLabelOutput;
-import mulan.classifier.lazy.MLkNN;
-import mulan.classifier.meta.RAkEL;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
 import mulan.classifier.transformation.EnsembleOfClassifierChains;
-import mulan.classifier.transformation.LabelPowerset;
 import mulan.data.MultiLabelInstances;
 import mulan.evaluation.Evaluator;
 import mulan.evaluation.MultipleEvaluation;
-import weka.classifiers.lazy.IBk;
-import weka.classifiers.multilabel.PCC;
-import weka.classifiers.trees.J48;
-import weka.core.Instance;
-import weka.core.Instances;
-import weka.core.NormalizableDistance;
-import weka.core.SelectedTag;
-import weka.core.Summarizable;
-import weka.filters.unsupervised.attribute.Normalize;
-import mulan.evaluation.loss.HammingLoss;
-import mulan.evaluation.measure.AveragePrecision;
 import mulan.evaluation.measure.SubsetAccuracy;
-//import weka.classifiers.multitarget.meta.*;
+import weka.classifiers.lazy.IBk;
+import weka.core.Instances;
+import weka.core.SelectedTag;
 
 /**
  * 

@@ -21,21 +21,20 @@ import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
 import weka.classifiers.lazy.IBk;
-import weka.classifiers.multilabel.MCC;
-import weka.classifiers.multilabel.PCC;
+import meka.classifiers.multilabel.MCC;
+import meka.classifiers.multilabel.PCC;
 import weka.classifiers.trees.J48;
 
 public class ExperimentLMTCC {
 	public static void superPowerLucasExperiment() throws Exception { // VAMOS
 		// LA!!!
 
-		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
-		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/MA/";
+		String dataDir = "/home/lmello/mulan-1.4.0/data/";
+		String expDir = "/home/lmello/ufes/10periodo/POC2/Algoritmo/exps/expV3-1/";
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
 		// "enron-P" };
-		String[] datasnames = new String[] { "emotions-P", "birds-P",
-				"scene-P", "yeast-P", "medical-P" };
+		String[] datasnames = new String[] { "emotions" };
 		// String[] datasnames = new String[] { "enron-P", "genbase-P",
 		// "rcv1subset1-P" };
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
@@ -49,11 +48,12 @@ public class ExperimentLMTCC {
 			try {
 				MultiLabelInstances dataset = new MultiLabelInstances(dataDir
 						+ dataname + ".arff", dataDir + dataname + ".xml");
-				List<MultiLabelLearner> mmm = createMLLs(baseclassifs, dataset);
+				List<MultiLabelLearner> mmm = createMLLs2(baseclassifs, dataset);
 
-				configureClassifiers(baseclassifs, dataset);
+				// configureClassifiers(baseclassifs, dataset);
 
 				ExperimentLM exp1 = new ExperimentLM(mmm, dataset, dataname);
+				exp1.setDymParameters(baseclassifs);
 				exp1.setAllMeasures();
 				exp1.execute();
 
@@ -130,9 +130,9 @@ public class ExperimentLMTCC {
 		SMO svm = new SMO();
 		svm.setBuildLogisticModels(true);
 		J48 j48 = new J48();
-//		MultilayerPerceptron mlp = new MultilayerPerceptron();
-//		mlp.setSeed(ExperimentLM.globalseed);
-//		mlp.setTrainingTime(10);
+		// MultilayerPerceptron mlp = new MultilayerPerceptron();
+		// mlp.setSeed(ExperimentLM.globalseed);
+		// mlp.setTrainingTime(10);
 		NaiveBayes nb = new NaiveBayes();
 		weka.classifiers.functions.Logistic logi = new Logistic();
 		try {
@@ -183,7 +183,7 @@ public class ExperimentLMTCC {
 			DBR dbr = new DBR(c);
 
 			// mrlm.setDebug(true);
-			weka.classifiers.multilabel.MCC mcc = new MCC();
+			MCC mcc = new MCC();
 			mcc.setOptions(new String[] { "-Iy", "20" });
 			mcc.setClassifier(c);
 			mulan.classifier.transformation.LabelPowerset lpower = new LabelPowerset(
@@ -210,6 +210,49 @@ public class ExperimentLMTCC {
 
 			// mmm.add(eps);
 		}
+
+		return mmm;
+	}
+
+	static List<MultiLabelLearner> createMLLs2(List<Classifier> baseclassifs,
+			MultiLabelInstances mldata) throws Exception {
+		List<MultiLabelLearner> mmm = new ArrayList<MultiLabelLearner>();
+
+		Classifier c = new LmelloClassifier(null);
+
+		ClassifierChain cc = new ClassifierChain(c);
+		BinaryRelevance br = new BinaryRelevance(c);
+		PCC pcc = new PCC();
+		pcc.setClassifier(c);
+		pcc.setSeed(ExperimentLM.globalseed);
+		MRLM mrlm = new MRLM(new BinaryRelevance(c), c, 5);
+		mrlm.setInstanceSelection(false);
+		mrlm.setTrainPropagation(false);
+		mrlm.setUseOnlyLabels(false);
+		mrlm.setUseMirrorLabel(false);
+		mrlm.setUseConfiability(false);
+		mrlm.setChainUpdate(true);
+
+		DBR dbr = new DBR(c);
+
+		MCC mcc = new MCC();
+		mcc.setOptions(new String[] { "-Iy", "20" });
+		mcc.setClassifier(c);
+		mulan.classifier.transformation.LabelPowerset lpower = new LabelPowerset(
+				c);
+		lpower.setSeed(ExperimentLM.globalseed);
+		lpower.setConfidenceCalculationMethod(1);
+
+		// mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
+		// mmm.add(lpower);
+		// mmm.add(new MekaWrapperClassifier(mcc));
+		// if (mldata.getNumLabels() <= 10) {
+		// mmm.add(new MekaWrapperClassifier(pcc));
+		// }
+		// mmm.add(cc);
+		// mmm.add(br);
+		mmm.add(mrlm);
+		// mmm.add(dbr);
 
 		return mmm;
 	}

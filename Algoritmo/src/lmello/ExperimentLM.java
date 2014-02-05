@@ -50,7 +50,7 @@ import mulan.evaluation.measure.SubsetAccuracy;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.lazy.IBk;
-import weka.classifiers.multilabel.MultilabelClassifier;
+import meka.classifiers.multilabel.MultilabelClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.TechnicalInformation;
@@ -75,6 +75,8 @@ public class ExperimentLM {
 
 	private int rotationseed = 4;
 
+	private List<Classifier> dym_parameters = null;
+
 	public static int globalseed = 1;
 
 	public ExperimentLM(MultiLabelInstances mldata) {
@@ -89,6 +91,22 @@ public class ExperimentLM {
 		measures.add(new SubsetAccuracy());
 		measures.add(new mulan.evaluation.measure.RankingLoss());
 		measures.add(new mulan.evaluation.measure.AveragePrecision());
+	}
+
+	public ExperimentLM(MultiLabelLearner ml, MultiLabelInstances mldata) {
+		this(mldata);
+		mlls.add(ml);
+	}
+
+	public ExperimentLM(List<MultiLabelLearner> mls, MultiLabelInstances mldata) {
+		this(mldata);
+		mlls.addAll(mls);
+	}
+
+	public ExperimentLM(List<MultiLabelLearner> mls,
+			MultiLabelInstances mldata, String dataname) {
+		this(mls, mldata);
+		setDataName(dataname);
 	}
 
 	public void setAllMeasures() {
@@ -134,22 +152,6 @@ public class ExperimentLM {
 
 	}
 
-	public ExperimentLM(MultiLabelLearner ml, MultiLabelInstances mldata) {
-		this(mldata);
-		mlls.add(ml);
-	}
-
-	public ExperimentLM(List<MultiLabelLearner> mls, MultiLabelInstances mldata) {
-		this(mldata);
-		mlls.addAll(mls);
-	}
-
-	public ExperimentLM(List<MultiLabelLearner> mls,
-			MultiLabelInstances mldata, String dataname) {
-		this(mls, mldata);
-		setDataName(dataname);
-	}
-
 	public void addMethod(MultiLabelLearner ml) {
 		mlls.add(ml);
 	}
@@ -178,7 +180,7 @@ public class ExperimentLM {
 			nothingStream = System.out;
 		}
 
-		Evaluator eval = new Evaluator();
+		Evaluator eval = new LmelloEvaluator(dym_parameters);
 		eval.setSeed(rotationseed);
 		begin = new Date();
 
@@ -374,7 +376,13 @@ public class ExperimentLM {
 			s += " [";
 			TransformationBasedMultiLabelLearner tbml = (TransformationBasedMultiLabelLearner) ml;
 			Classifier c = tbml.getBaseClassifier();
+
+			// if (c instanceof LmelloClassifier) {
+			// c = ((LmelloClassifier) c).getClassifier();
+			// s += "baseClassifier=LMC -> " + c.getClass().getSimpleName();
+			// } else {
 			s += "baseClassifier=" + c.getClass().getSimpleName();
+			// }
 			if (c instanceof IBk) {
 				s += "(" + ((IBk) c).getKNN() + ")";
 			}
@@ -412,6 +420,9 @@ public class ExperimentLM {
 		if (ml instanceof TransformationBasedMultiLabelLearner) {
 			TransformationBasedMultiLabelLearner tbml = (TransformationBasedMultiLabelLearner) ml;
 			Classifier c = tbml.getBaseClassifier();
+			if (c instanceof LmelloClassifier) {
+				c = ((LmelloClassifier) c).getClassifier();
+			}
 
 			if (ml instanceof ClassifierChain) {
 				s = "CC";
@@ -446,6 +457,10 @@ public class ExperimentLM {
 		}
 
 		return s;
+	}
+
+	public void setDymParameters(List<Classifier> dp) {
+		dym_parameters = dp;
 	}
 
 	private class OOMmethod extends MultiLabelLearnerBase {
