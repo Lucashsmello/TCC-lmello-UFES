@@ -37,6 +37,8 @@ import weka.filters.unsupervised.attribute.Remove;
 
 public class MRLM extends TransformationBasedMultiLabelLearner {
 
+	protected int num_attrs_submitted = 0;
+
 	public static final SimpleDateFormat sdf = new SimpleDateFormat(
 			"yyyy-MM-dd HH:mm:ss");
 
@@ -525,9 +527,10 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	protected MultiLabelOutput makePredictionInternal(Instance instance)
 			throws Exception {
 		Instance tempInstance = instance;
+		int num_feats = instance.numAttributes() - numLabels;
 		// System.out.println("makePredictionInternal IN");
 
-//		FileWriter fw = new FileWriter(new File("/tmp/debugMRLM"), true);
+		// FileWriter fw = new FileWriter(new File("/tmp/debugMRLM"), true);
 
 		for (int j = 0; j < numLabels; j++) {
 			addsattr[j].input(tempInstance);
@@ -535,10 +538,12 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 		}
 		MultiLabelOutput[] mloensemble = new MultiLabelOutput[realchainSize + 1];
 		mloensemble[0] = baseml.makePrediction(instance);
+		num_attrs_submitted += num_feats * numLabels;
 
 		for (int c = 0; c < realchainSize; c++) {
 			mloensemble[c + 1] = ChainMakePrediction(c, tempInstance,
 					mloensemble[c]);
+			num_attrs_submitted += (num_feats + numLabels - 1) * numLabels;
 
 			if (!useTrainPropag && !instanceSelection) {
 				boolean[] bipart1 = mloensemble[c + 1].getBipartition();
@@ -554,23 +559,23 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 
 				if (equals) {
 					// System.out.println("stopping propagation at "+c);
-//					if (c > max_c) {
-//						max_c = c;
-//						fw.write(sdf.format(new Date()) + ">" + "max stop="
-//								+ max_c + "\n");
-//					}
-//					fw.close();
+					// if (c > max_c) {
+					// max_c = c;
+					// fw.write(sdf.format(new Date()) + ">" + "max stop="
+					// + max_c + "\n");
+					// }
+					// fw.close();
 					return mloensemble[c];
 				}
 			}
 		}
 
-//		if (max_c < realchainSize) {
-//			max_c = realchainSize;
-//			fw.write(sdf.format(new Date()) + ">" + "max stop=" + max_c + "\n");
-//		}
+		// if (max_c < realchainSize) {
+		// max_c = realchainSize;
+		// fw.write(sdf.format(new Date()) + ">" + "max stop=" + max_c + "\n");
+		// }
 
-//		fw.close();
+		// fw.close();
 
 		if (instanceSelection) {
 			return combineMLO2(mloensemble);
@@ -673,6 +678,10 @@ public class MRLM extends TransformationBasedMultiLabelLearner {
 	public void setChainUpdate(boolean b) {
 		chainUpdate = b;
 
+	}
+
+	public int getNum_attrs_submitted() {
+		return num_attrs_submitted;
 	}
 
 	public int getChainSize() {

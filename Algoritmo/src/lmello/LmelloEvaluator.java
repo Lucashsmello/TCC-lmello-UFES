@@ -6,8 +6,11 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import meka.classifiers.multilabel.BR;
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.transformation.BinaryRelevance;
+import mulan.classifier.transformation.ClassifierChain;
+import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
 import mulan.data.MultiLabelInstances;
 import mulan.evaluation.Evaluation;
@@ -24,6 +27,7 @@ public class LmelloEvaluator extends Evaluator {
 
 	private int seed2 = 1;
 	protected List<Classifier> baseclassifers = new ArrayList<>();
+	protected int numattrssub = 0;
 
 	public LmelloEvaluator(List<Classifier> baseclassifers) {
 		if (baseclassifers == null) {
@@ -71,6 +75,7 @@ public class LmelloEvaluator extends Evaluator {
 		}
 		checkLearner(learner);
 		checkData(data);
+		numattrssub = 0;
 
 		return innerCrossValidate(learner, data, false, null, someFolds);
 	}
@@ -80,6 +85,7 @@ public class LmelloEvaluator extends Evaluator {
 		if (baseclassifers == null) {
 			return super.crossValidate(learner, data, measures, someFolds);
 		}
+		numattrssub = 0;
 
 		checkLearner(learner);
 		checkData(data);
@@ -157,17 +163,21 @@ public class LmelloEvaluator extends Evaluator {
 						LmelloClassifier lmbc = (LmelloClassifier) bc;
 						if (bestc == null) {
 							bestc = getBestParameter(clone, mlTrain);
+							System.out.println(bestc.getClass().getSimpleName());
 						}
 						lmbc.setClassifier(bestc);
 						((LmelloClassifier) ((TransformationBasedMultiLabelLearner) learner)
 								.getBaseClassifier()).setClassifier(bestc);
 					}
 				}
+
 				clone.build(mlTrain);
 				if (hasMeasures)
 					evaluation[i] = evaluate(clone, mlTest, measures);
 				else
 					evaluation[i] = evaluate(clone, mlTest);
+
+				numattrssub += getNumAttrsSubmitted(clone, mlTest);
 			} catch (Exception ex) {
 				Logger.getLogger(Evaluator.class.getName()).log(Level.SEVERE,
 						null, ex);
@@ -176,6 +186,45 @@ public class LmelloEvaluator extends Evaluator {
 		MultipleEvaluation me = new MultipleEvaluation(evaluation, data);
 		me.calculateStatistics();
 		return me;
+	}
+
+	public int getNumAttrsSubmitted() {
+		return numattrssub;
+	}
+
+	/**
+	 * Em media por instancia.
+	 * 
+	 * @param mll
+	 * @param data
+	 * @return
+	 */
+	public static int getNumAttrsSubmitted(MultiLabelLearner mll,
+			MultiLabelInstances data) {
+		final int numlabels = data.getNumLabels();
+		final int numfeats = data.getDataSet().numAttributes() - numlabels;
+		final int numinsts = data.getNumInstances();
+
+		if (mll instanceof MRLM) {
+			return ((MRLM) mll).getNum_attrs_submitted();
+		}
+		if (mll instanceof BinaryRelevance) {
+			return numfeats * numlabels * numinsts;
+		}
+
+		if (mll instanceof ClassifierChain) {
+			return (numfeats + (numlabels - 1) / 2) * numlabels * numinsts;
+		}
+
+		if (mll instanceof EnsembleOfClassifierChains) {
+			// EnsembleOfClassifierChains ecc=(EnsembleOfClassifierChains)mll;
+
+			return ((numfeats + (numlabels - 1) / 2) * numlabels) * 10
+					* numinsts;
+		}
+
+		return -1;
+
 	}
 
 	// public static void main(String[] args) throws Exception {

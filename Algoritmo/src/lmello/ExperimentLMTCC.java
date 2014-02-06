@@ -34,7 +34,7 @@ public class ExperimentLMTCC {
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
 		// "enron-P" };
-		String[] datasnames = new String[] { "emotions-P","birds-P" };
+		String[] datasnames = new String[] { "emotions-P", "birds-P" };
 		// String[] datasnames = new String[] { "enron-P", "genbase-P",
 		// "rcv1subset1-P" };
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
@@ -126,7 +126,7 @@ public class ExperimentLMTCC {
 
 	static List<Classifier> createBaseClassifiers() {
 		List<Classifier> baseclassifs = new ArrayList<Classifier>();
-		IBk knn = new IBk(5);
+		IBk knn = new IBk(7);
 		SMO svm = new SMO();
 		svm.setBuildLogisticModels(true);
 		J48 j48 = new J48();
@@ -218,13 +218,12 @@ public class ExperimentLMTCC {
 			MultiLabelInstances mldata) throws Exception {
 		List<MultiLabelLearner> mmm = new ArrayList<MultiLabelLearner>();
 
-		Classifier c = new LmelloClassifier(null);
-
-		ClassifierChain cc = new ClassifierChain(c);
-		BinaryRelevance br = new BinaryRelevance(c);
+		ClassifierChain cc = new ClassifierChain(new LmelloClassifier(null));
+		BinaryRelevance br = new BinaryRelevance(new LmelloClassifier(null));
 		PCC pcc = new PCC();
-		pcc.setClassifier(c);
+		pcc.setClassifier(new LmelloClassifier(null));
 		pcc.setSeed(ExperimentLM.globalseed);
+		Classifier c = new LmelloClassifier(null);
 		MRLM mrlm = new MRLM(new BinaryRelevance(c), c, 5);
 		mrlm.setInstanceSelection(false);
 		mrlm.setTrainPropagation(false);
@@ -233,26 +232,28 @@ public class ExperimentLMTCC {
 		mrlm.setUseConfiability(false);
 		mrlm.setChainUpdate(true);
 
-		DBR dbr = new DBR(c);
+		DBR dbr = new DBR(new LmelloClassifier(null));
 
 		MCC mcc = new MCC();
 		mcc.setOptions(new String[] { "-Iy", "20" });
-		mcc.setClassifier(c);
+		mcc.setClassifier(new LmelloClassifier(null));
 		mulan.classifier.transformation.LabelPowerset lpower = new LabelPowerset(
-				c);
+				new LmelloClassifier(null));
 		lpower.setSeed(ExperimentLM.globalseed);
 		lpower.setConfidenceCalculationMethod(1);
 
-		 mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
-		 mmm.add(lpower);
-		 mmm.add(new MekaWrapperClassifier(mcc));
-		 if (mldata.getNumLabels() <= 10) {
-		 mmm.add(new MekaWrapperClassifier(pcc));
-		 }
-		 mmm.add(cc);
-		 mmm.add(br);
+		// mmm.add(new EnsembleOfClassifierChains(new LmelloClassifier(null),
+		// 10,
+		// true, true));
+		// // mmm.add(lpower);
+		// mmm.add(new MekaWrapperClassifier(mcc));
+		// if (mldata.getNumLabels() <= 10) {
+		// mmm.add(new MekaWrapperClassifier(pcc));
+		// }
+		// mmm.add(cc);
+		mmm.add(br);
 		mmm.add(mrlm);
-		 mmm.add(dbr);
+		mmm.add(dbr);
 
 		return mmm;
 	}

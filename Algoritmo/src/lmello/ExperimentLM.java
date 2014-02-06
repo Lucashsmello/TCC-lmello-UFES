@@ -77,6 +77,8 @@ public class ExperimentLM {
 
 	private List<Classifier> dym_parameters = null;
 
+	private List<Integer> numattrssub;
+
 	public static int globalseed = 1;
 
 	public ExperimentLM(MultiLabelInstances mldata) {
@@ -85,6 +87,7 @@ public class ExperimentLM {
 		results = new ArrayList<MultipleEvaluation>();
 		timeExec = new ArrayList<Long>();
 		timeExec2 = new ArrayList<Long>();
+		numattrssub = new ArrayList<Integer>();
 
 		measures = new ArrayList<Measure>();
 		measures.add(new HammingLoss());
@@ -180,7 +183,7 @@ public class ExperimentLM {
 			nothingStream = System.out;
 		}
 
-		Evaluator eval = new LmelloEvaluator(dym_parameters);
+		LmelloEvaluator eval = new LmelloEvaluator(dym_parameters);
 		eval.setSeed(rotationseed);
 		begin = new Date();
 
@@ -218,6 +221,8 @@ public class ExperimentLM {
 					timeelapsed = System.nanoTime() - timeelapsed;
 
 				}
+
+				numattrssub.add(eval.getNumAttrsSubmitted());
 
 				System.setOut(stdout);
 				System.out.println(getMethodDescription(mll) + " FINISHED ("
@@ -331,14 +336,20 @@ public class ExperimentLM {
 		}
 
 		s += "Tempo(seg);";
-		s += "Tempo2(seg) \n";
+		s += "Tempo2(seg);";
+		s += "FeatsSub;";
+		s += "FeatsSub(perInst);";
+		s += "FeatsSub(perInstFeat);\n";
 		for (int i = 0; i < results.size(); i++) {
 			if (useCSVMethodName) {
 				s += getMethodAbbrv(mlls.get(i)) + ";";
 			}
 			s += results.get(i).toCSV();
 			s += ((double) timeExec.get(i)) / 1e9 + ";";
-			s += ((double) timeExec2.get(i)) / 1e9 + ";\n";
+			s += ((double) timeExec2.get(i)) / 1e9 + ";";
+			s += numattrssub.get(i) + ";";
+			s += (float)(numattrssub.get(i)) / mldata.getNumInstances() + ";";
+			s += ((float)(numattrssub.get(i)) / mldata.getNumInstances()) / (mldata.getDataSet().numAttributes()-mldata.getNumLabels()) + ";\n";
 		}
 		// } else {
 		// s += results.get(0).toString();
