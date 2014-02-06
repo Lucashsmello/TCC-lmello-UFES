@@ -17,18 +17,13 @@
  */
 package lmello;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.MultiLabelOutput;
 import mulan.classifier.transformation.BinaryRelevance;
-import mulan.classifier.transformation.ClassifierChain;
-import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
 import mulan.data.MultiLabelInstances;
 import weka.classifiers.AbstractClassifier;

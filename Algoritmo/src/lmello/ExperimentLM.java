@@ -376,6 +376,9 @@ public class ExperimentLM {
 			s += " [";
 			TransformationBasedMultiLabelLearner tbml = (TransformationBasedMultiLabelLearner) ml;
 			Classifier c = tbml.getBaseClassifier();
+			if (c instanceof LmelloClassifier) {
+				c = ((LmelloClassifier) c).getClassifier();
+			}
 
 			// if (c instanceof LmelloClassifier) {
 			// c = ((LmelloClassifier) c).getClassifier();

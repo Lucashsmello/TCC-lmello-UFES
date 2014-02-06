@@ -29,12 +29,12 @@ public class ExperimentLMTCC {
 	public static void superPowerLucasExperiment() throws Exception { // VAMOS
 		// LA!!!
 
-		String dataDir = "/home/lmello/mulan-1.4.0/data/";
-		String expDir = "/home/lmello/ufes/10periodo/POC2/Algoritmo/exps/expV3-1/";
+		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
+		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expV3-1/";
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
 		// "enron-P" };
-		String[] datasnames = new String[] { "emotions" };
+		String[] datasnames = new String[] { "emotions-P","birds-P" };
 		// String[] datasnames = new String[] { "enron-P", "genbase-P",
 		// "rcv1subset1-P" };
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
@@ -243,16 +243,16 @@ public class ExperimentLMTCC {
 		lpower.setSeed(ExperimentLM.globalseed);
 		lpower.setConfidenceCalculationMethod(1);
 
-		// mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
-		// mmm.add(lpower);
-		// mmm.add(new MekaWrapperClassifier(mcc));
-		// if (mldata.getNumLabels() <= 10) {
-		// mmm.add(new MekaWrapperClassifier(pcc));
-		// }
-		// mmm.add(cc);
-		// mmm.add(br);
+		 mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
+		 mmm.add(lpower);
+		 mmm.add(new MekaWrapperClassifier(mcc));
+		 if (mldata.getNumLabels() <= 10) {
+		 mmm.add(new MekaWrapperClassifier(pcc));
+		 }
+		 mmm.add(cc);
+		 mmm.add(br);
 		mmm.add(mrlm);
-		// mmm.add(dbr);
+		 mmm.add(dbr);
 
 		return mmm;
 	}

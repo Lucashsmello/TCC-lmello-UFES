@@ -159,6 +159,8 @@ public class LmelloEvaluator extends Evaluator {
 							bestc = getBestParameter(clone, mlTrain);
 						}
 						lmbc.setClassifier(bestc);
+						((LmelloClassifier) ((TransformationBasedMultiLabelLearner) learner)
+								.getBaseClassifier()).setClassifier(bestc);
 					}
 				}
 				clone.build(mlTrain);
