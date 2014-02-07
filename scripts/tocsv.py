@@ -27,7 +27,7 @@ def mergeResults(results,metricI):
     return [results[0]]+newresults
     
 
-def getresults(filepath,metrics,methods="ALL",makeMergeResults=False,mergeMetricIndex=1):
+def getresults(filepath,metrics,methods="ALL",baseClassifs="ALL",makeMergeResults=False,mergeMetricIndex=1):
     f=open(filepath,'r')
     results=[]
     basename="???"
@@ -52,12 +52,20 @@ def getresults(filepath,metrics,methods="ALL",makeMergeResults=False,mergeMetric
             line=line[:-1].split(';')
             for i in range(1,len(line)):
                 line[i]=float(line[i][:line[i].find('\xc2\xb1')])
-            if(methods!="ALL"):
-                if(methods.count(line[0].split(' ')[0].strip())>0):
-#                if([line[0].split(' ')[0].strip().find(j) for j in methods]>[-1]*len(methods)):
+            cangetmethod=True
+            if(baseClassifs!="ALL"):
+                for basec in baseClassifs:
+                    if(line[0].find(basec)>=0):
+                        break
+                else:
+                    cangetmethod=False
+            if(cangetmethod==True):                    
+                if(methods!="ALL"):
+                    if(methods.count(line[0].split(' ')[0].strip())>0):
+    #                if([line[0].split(' ')[0].strip().find(j) for j in methods]>[-1]*len(methods)):
+                        results.append(getMetrics(line,metricsidx))
+                else:
                     results.append(getMetrics(line,metricsidx))
-            else:
-                results.append(getMetrics(line,metricsidx))
 
     f.close()
 
@@ -240,7 +248,7 @@ def saveResults(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeMe
 
     fout.close()
 
-def tocsv(dirpath, metrics, methods="ALL",makerank=True,makeMergeResults=False,mergeMetricIndex=1):
+def tocsv(dirpath, metrics, methods="ALL",baseClassifs="ALL",makerank=True,makeMergeResults=False,mergeMetricIndex=1):
     if(not os.path.exists(dirpath+"/csv")):
         os.mkdir(dirpath+"/csv",0777)
     allresults=[]
@@ -259,7 +267,7 @@ def tocsv(dirpath, metrics, methods="ALL",makerank=True,makeMergeResults=False,m
             if(f.find('expLog')<0):
                 if(f.find('~')<0):
                     try:
-                        r=getresults(dirpath+f,metricsNames,methods,makeMergeResults,mergeMetricIndex)
+                        r=getresults(dirpath+f,metricsNames,methods,baseClassifs,makeMergeResults,mergeMetricIndex)
                         basenames.append(r[0])
                         allresults.append(r[1])
                     except Exception as e:
@@ -302,13 +310,14 @@ allmetricsnames=["Hamming Loss","Subset Accuracy","Example-Based Precision","Exa
 
 if __name__ == "__main__":
     methods="ALL"
+    baseClassifs="ALL"
     metrics=allmetricsnames
     meanRank=[]
     makeMergeResults=False
     mergeMetricIndex=1
 
     if(len(sys.argv)==1):
-        print "Usage: " +sys.argv[0]+" DIRPATH [METHODS] [METRICS]" 
+        print "Usage: " +sys.argv[0]+" DIRPATH [METHODS] [BASECLASSIFIERS] [METRICS]" 
         print zip(range(len(allmetricsnames)),allmetricsnames)
     else:
         if(len(sys.argv)>2):
@@ -318,11 +327,16 @@ if __name__ == "__main__":
                 methods=sys.argv[2].split(',')
         if(len(sys.argv)>3):
             if(sys.argv[3]=="ALL"):
+                baseClassifs="ALL"
+            else:
+                baseClassifs=sys.argv[3].split(',')
+        if(len(sys.argv)>4):
+            if(sys.argv[4]=="ALL"):
                 metrics=allmetricsnames
             else:
-                idx=sys.argv[3].split(',')
+                idx=sys.argv[4].split(',')
                 metrics=[allmetricsnames[int(i)] for i in idx]
-        for i in range(4,len(sys.argv)):
+        for i in range(5,len(sys.argv)):
             if(sys.argv[i].find("-meanrank")>=0):
                 pesos=sys.argv[4][len("-meanrank"):]
                 pesos=pesos.strip('[')
@@ -337,4 +351,4 @@ if __name__ == "__main__":
                 print mergeMetricIndex
 
         print metrics
-        tocsv(sys.argv[1],metrics,methods,True,makeMergeResults,mergeMetricIndex)
+        tocsv(sys.argv[1],metrics,methods,baseClassifs,True,makeMergeResults,mergeMetricIndex)
