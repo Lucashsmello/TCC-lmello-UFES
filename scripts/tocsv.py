@@ -51,7 +51,12 @@ def getresults(filepath,metrics,methods="ALL",baseClassifs="ALL",makeMergeResult
         if(len(line.strip())>0):
             line=line[:-1].split(';')
             for i in range(1,len(line)):
-                line[i]=float(line[i][:line[i].find('\xc2\xb1')])
+                xi=line[i].find('\xc2\xb1')
+                if(xi>=0):
+                    line[i]=line[i][:xi]
+                line[i]=float(line[i])
+                if(line[i]<0):
+                    line[i]=0
             cangetmethod=True
             if(baseClassifs!="ALL"):
                 for basec in baseClassifs:
@@ -127,7 +132,7 @@ def makeRank(results,meanRankPesos=[]): #results organizado em metodos
             sa_i=metrics.index("Subset Accuracy")
         expR=zip(expR[1:],range(len(expR[1:])))
         for i in range(0,len(metrics)):
-            if(metrics[i].find("Loss")<0 and metrics[i].find("Tempo")<0 and metrics[i].find("Mean Rank")<0):
+            if(metrics[i].find("Loss")<0 and metrics[i].find("Tempo")<0 and metrics[i].find("Mean Rank")<0 and metrics[i].find("FeatsSub")<0):
                 expRsort=sorted(expR,key=lambda k:k[0][i+1],reverse=True)
             else:
                 expRsort=sorted(expR,key=lambda k:k[0][i+1])
@@ -302,11 +307,11 @@ def tocsv(dirpath, metrics, methods="ALL",baseClassifs="ALL",makerank=True,makeM
         [methodsnames,meanRankAllExps]=getAllDataMeanRank(allranks,methodsnames,allridx)
     
 
-    saveResults(allresults,dirpath+"/csv/"+"exps.csv",basenames,allranks,meanRankAllExps,makeMeanRank,methodsnames,makerank)
+    saveResults(allresults,dirpath+"/csv/"+"exps-"+str(baseClassifs)[1:-1]+".csv",basenames,allranks,meanRankAllExps,makeMeanRank,methodsnames,makerank)
 
 
 
-allmetricsnames=["Hamming Loss","Subset Accuracy","Example-Based Precision","Example-Based Recall","Example-Based F Measure","Example-Based Accuracy","Example-Based Specificity","Micro-averaged Precision","Micro-averaged Recall","Micro-averaged F-Measure","Micro-averaged Specificity","Macro-averaged Precision","Macro-averaged Recall","Macro-averaged F-Measure","Macro-averaged Specificity","Average Precision","Coverage","OneError","IsError","ErrorSetSize","Ranking Loss","Mean Average Precision","Micro-averaged AUC","Tempo(seg)","Tempo2(seg)"]
+allmetricsnames=["Hamming Loss","Subset Accuracy","Example-Based Precision","Example-Based Recall","Example-Based F Measure","Example-Based Accuracy","Example-Based Specificity","Micro-averaged Precision","Micro-averaged Recall","Micro-averaged F-Measure","Micro-averaged Specificity","Macro-averaged Precision","Macro-averaged Recall","Macro-averaged F-Measure","Macro-averaged Specificity","Average Precision","Coverage","OneError","IsError","ErrorSetSize","Ranking Loss","Mean Average Precision","Micro-averaged AUC","Tempo(seg)","Tempo2(seg)","FeatsSub","FeatsSub(perInst)","FeatsSub(perInstFeat)"]
 
 if __name__ == "__main__":
     methods="ALL"
@@ -334,6 +339,7 @@ if __name__ == "__main__":
             if(sys.argv[4]=="ALL"):
                 metrics=allmetricsnames
             else:
+
                 idx=sys.argv[4].split(',')
                 metrics=[allmetricsnames[int(i)] for i in idx]
         for i in range(5,len(sys.argv)):
@@ -341,10 +347,10 @@ if __name__ == "__main__":
                 pesos=sys.argv[4][len("-meanrank"):]
                 pesos=pesos.strip('[')
                 pesos=pesos.strip(']')
-                if(len(pesos)>0):
-                    metrics=zip(metrics,pesos.split(','))
-                else:
-                    metrics=zip(metrics,[1]*len(metrics))
+             #   if(len(pesos)>0):
+              #      metrics=zip(metrics,pesos.split(','))
+               # else:
+                metrics=zip(metrics,[1]*len(metrics))
             if(sys.argv[i].startswith("-merge")):
                 makeMergeResults=True
                 mergeMetricIndex=int(sys.argv[i][len("-merge"):])

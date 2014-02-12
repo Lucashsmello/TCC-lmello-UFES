@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import meka.classifiers.multilabel.MultilabelClassifier;
 import mulan.classifier.InvalidDataException;
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.MultiLabelLearnerBase;
@@ -21,7 +22,6 @@ import mulan.classifier.transformation.ClassifierChain;
 import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.TransformationBasedMultiLabelLearner;
 import mulan.data.MultiLabelInstances;
-import mulan.evaluation.Evaluator;
 import mulan.evaluation.MultipleEvaluation;
 import mulan.evaluation.measure.AveragePrecision;
 import mulan.evaluation.measure.Coverage;
@@ -50,7 +50,6 @@ import mulan.evaluation.measure.SubsetAccuracy;
 import weka.classifiers.Classifier;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.lazy.IBk;
-import meka.classifiers.multilabel.MultilabelClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.TechnicalInformation;
@@ -73,7 +72,7 @@ public class ExperimentLM {
 	private boolean useCSVMethodName = true;
 	private String dataname = "???";
 
-	private int rotationseed = 4;
+	private int rotationseed = 5;
 
 	private List<Classifier> dym_parameters = null;
 
@@ -348,8 +347,10 @@ public class ExperimentLM {
 			s += ((double) timeExec.get(i)) / 1e9 + ";";
 			s += ((double) timeExec2.get(i)) / 1e9 + ";";
 			s += numattrssub.get(i) + ";";
-			s += (float)(numattrssub.get(i)) / mldata.getNumInstances() + ";";
-			s += ((float)(numattrssub.get(i)) / mldata.getNumInstances()) / (mldata.getDataSet().numAttributes()-mldata.getNumLabels()) + ";\n";
+			s += (float) (numattrssub.get(i)) / mldata.getNumInstances() + ";";
+			s += ((float) (numattrssub.get(i)) / mldata.getNumInstances())
+					/ (mldata.getDataSet().numAttributes() - mldata
+							.getNumLabels()) + ";\n";
 		}
 		// } else {
 		// s += results.get(0).toString();
@@ -376,11 +377,13 @@ public class ExperimentLM {
 
 		String s = ml.getClass().getSimpleName();
 		if (ml instanceof MRLM) {
-			MRLM mrlm = (MRLM) ml;
-			if (mrlm.isInstanceSelection()) {
-				s += "-I";
+			if (!(ml instanceof DBR)) {
+				MRLM mrlm = (MRLM) ml;
+				if (mrlm.isInstanceSelection()) {
+					s += "-I";
+				}
+				s += "-" + mrlm.getChainSize();
 			}
-			s += "-" + mrlm.getChainSize();
 		}
 
 		if (ml instanceof TransformationBasedMultiLabelLearner) {
@@ -424,11 +427,13 @@ public class ExperimentLM {
 		String s = ml.getClass().getSimpleName();
 
 		if (ml instanceof MRLM) {
-			MRLM mrlm = (MRLM) ml;
-			if (mrlm.isInstanceSelection()) {
-				s += "-I";
+			if (!(ml instanceof DBR)) {
+				MRLM mrlm = (MRLM) ml;
+				if (mrlm.isInstanceSelection()) {
+					s += "-I";
+				}
+				s += "-" + mrlm.getChainSize();
 			}
-			s += "-" + mrlm.getChainSize();
 		}
 
 		if (ml instanceof TransformationBasedMultiLabelLearner) {
@@ -479,6 +484,10 @@ public class ExperimentLM {
 
 	private class OOMmethod extends MultiLabelLearnerBase {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private String methodname;
 
 		public OOMmethod(String methodname) {

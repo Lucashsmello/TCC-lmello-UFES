@@ -91,12 +91,15 @@ Falar sobre bases separadas de treino,teste e validação.
 \section{Transformação do Problema}
 \subsection{Relevância Binária - BR}
 \label{sec:br}
+\cite{br2010}
 \subsection{Classifier Chain}
+\cite{cc2009}
 \subsection{Ensemble of Classifier Chain}
 \subsection{Probabilistic Classifier Chain}
 \subsection{Relevância Binária Dependente - DBR}
 \label{sec:dbr}
 \subsection{Monte Carlo Classifier Chain}
+\cite{mcc2012}
 
 % \section{Adaptação de classificadores}
 % \subsection{ML-KNN}
@@ -350,10 +353,35 @@ armazenados explicitamente na mémoria em espaços diferentes, algumas são reut
 
 
 \chapter{Avaliação e Análise Experimental}
-Nesta seção é descrito as bases de dados multirrótulo usadas nos experimentos, as medidas de avaliação escolhidas e a escolha
+Neste capítulo é descrito as bases de dados multirrótulo usadas nos experimentos, as medidas de avaliação escolhidas e a escolha
 dos parâmetros dos classificadores. 
+A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
+A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 grupos
+(\textit{10-fold cross-validation}) sobre \Nbases~bases de dados, todas apresentadas e descritas na subseção \ref{sec:datas}.
+
+Para quantificar a qualidade de predição, 3 métricas foram utilizadas. As métricas escolhidas, bem como o motivo das escolhas,
+são listadas:
+\begin{itemize}
+ \item Subset Accuracy, pois é mostrado que captura bem a correlação entre rótulos;
+ \item Hamming Loss, pois é bem mais sensível que o Subset Accuracy;
+ \item Example Based Accuracy, é o meio termo entre o Hamming Loss e o Subset Accuracy.
+%  \item Tempo computacional, pois é @@@ etc...
+\end{itemize}
+
+As fórmulas para o cálculo de cada uma das métricas são apresentadas na seção \ref{sec:metrics}.
+É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
+um aspecto diferente da classificação. 
+Num total, foram utilizados \Nml~modelos de classificação multirrótulos: BR, DBR, RDBR, CC, ECC e MCC.
+Para cada um deles utilizou-se os seguintes classificadores base: KNN, SVM, J48 e Regressão Logística. 
+Para o melhor entendimento, neste capítulo um método multirrótulo é definido como sendo a combinação
+de um modelo de classificação multirrótulo com uma configuração de parâmetros pré-definida. Assim, por exemplo,
+o classificador BR com KNN é considerado um método diferente do classificador BR com SVM. Isso, por um lado é bom
+pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
+Por outro lado é ruim uma vez que considera os mesmos modelos de classificação como sendo completamente diferentes.
+Dessa forma, foram considerados 24 métodos multirrótulos e comparados entre si de forma experimental.
 
 \section{Base de dados}
+\label{sec:datas}
 Todas as 7 bases de dados utilizadas nos experimentos foram obtidas de repositórios públicos pelo seguinte endereço virtual ??.
 As bases de dados são apresentadas a seguir:
 
@@ -394,32 +422,9 @@ Nela são apresentadas as seguintes informações de cada base de dados:
 \end{itemize}
 
 
-\section{Método de Comparação}
-\label{sec:methodcomp}
-A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
-A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 grupos
-(\textit{10-fold cross-validation}) sobre \Nbases~bases de dados, todas apresentadas e descritas na subseção seguinte.
+% \section{Método de Comparação}
+% \label{sec:methodcomp}
 
-
-Para quantificar a qualidade de predição, foram escolhidas as seguintes métricas:
-\begin{itemize}
- \item Subset Accuracy, pois é mostrado que captura bem a correlação entre rótulos;
- \item Example Based Accuracy, pois é bem mais sensível que o Subset Accuracy;
- \item ??
-%  \item Tempo computacional, pois é @@@ etc...
-\end{itemize}
-
-As fórmulas para o cálculo de cada uma das métricas são apresentadas na seção \ref{sec:metrics}.
-É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
-um aspecto diferente da classificação. 
-Num total, foram utilizados \Nml~modelos de classificação multirrótulos: BR, DBR, RDBR, CC, ECC e MCC.
-Para cada um deles utilizou-se os seguintes classificadores base: KNN, SVM, J48 e Regressão Logística. 
-Para o melhor entendimento, neste capítulo um método multirrótulo é definido como sendo a combinação
-de um modelo de classificação multirrótulo com uma configuração de parâmetros pré-definida. Assim, por exemplo,
-o classificador BR com KNN é considerado um método diferente do classificador BR com SVM. Isso, por um lado é bom
-pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
-Por outro lado é ruim uma vez que considera os mesmos modelos de classificação como sendo completamente diferentes.
-Dessa forma, foram considerados 24 métodos multirrótulos e comparados entre si de forma experimental.
 
 % 
 % Este capítulo se encontra dividido em duas seções, na primeira foram analisados os

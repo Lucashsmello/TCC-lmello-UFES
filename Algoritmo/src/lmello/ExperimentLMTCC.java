@@ -16,7 +16,6 @@ import mulan.classifier.transformation.EnsembleOfClassifierChains;
 import mulan.classifier.transformation.LabelPowerset;
 import mulan.data.MultiLabelInstances;
 import weka.classifiers.Classifier;
-import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.functions.Logistic;
 import weka.classifiers.functions.MultilayerPerceptron;
 import weka.classifiers.functions.SMO;
@@ -30,15 +29,17 @@ public class ExperimentLMTCC {
 		// LA!!!
 
 		String dataDir = "/home/lucasmello/mulan-1.4.0/data/";
-		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expV3-1/";
+		String expDir = "/home/lucasmello/ufes/10periodo/POC2hg/Algoritmo/exps/expv8/";
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
 		// "enron-P" };
-		String[] datasnames = new String[] { "emotions-P", "birds-P" };
-		// String[] datasnames = new String[] { "enron-P", "genbase-P",
-		// "rcv1subset1-P" };
+		String[] datasnames = new String[] { "bibtex-P", "mediamill-P" };
+		// String[] datasnames = new String[]
+		// {"motorpump-P","bibtex-P","mediamill-P","SLASHDOT-F"};
+//		String[] datasnames = new String[] { "enron-P",
+//				"genbase-P", "SLASHDOT-F" };
 		SimpleDateFormat sdffile = new SimpleDateFormat("yy-MM-dd");
-		FileWriter logfile = new FileWriter(new File(expDir + "expLog2-"
+		FileWriter logfile = new FileWriter(new File(expDir + "expLog1-"
 				+ sdffile.format(new Date())));
 
 		List<Classifier> baseclassifs = createBaseClassifiers();
@@ -48,7 +49,7 @@ public class ExperimentLMTCC {
 			try {
 				MultiLabelInstances dataset = new MultiLabelInstances(dataDir
 						+ dataname + ".arff", dataDir + dataname + ".xml");
-				List<MultiLabelLearner> mmm = createMLLs2(baseclassifs, dataset);
+				List<MultiLabelLearner> mmm = createMLLs(baseclassifs, dataset);
 
 				// configureClassifiers(baseclassifs, dataset);
 
@@ -133,7 +134,7 @@ public class ExperimentLMTCC {
 		// MultilayerPerceptron mlp = new MultilayerPerceptron();
 		// mlp.setSeed(ExperimentLM.globalseed);
 		// mlp.setTrainingTime(10);
-		NaiveBayes nb = new NaiveBayes();
+		// NaiveBayes nb = new NaiveBayes();
 		weka.classifiers.functions.Logistic logi = new Logistic();
 		try {
 			logi.setOptions(new String[] { "-M", "10" });
@@ -145,7 +146,7 @@ public class ExperimentLMTCC {
 
 		// baseclassifs.add(mlp);
 
-		baseclassifs.add(nb);
+		// baseclassifs.add(nb);
 		baseclassifs.add(j48);
 		baseclassifs.add(knn);
 		baseclassifs.add(svm);
@@ -194,16 +195,17 @@ public class ExperimentLMTCC {
 			// EnsembleOfPrunedSets(
 			// 66, 10, 0.5, 2, PrunedSets.Strategy.A, 3, c);
 
-			mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
-			mmm.add(lpower);
+			mmm.add(br);
+			// mmm.add(lpower);
 			// mmm.add(new ECC2(c, 10, true, true));
 			mmm.add(new MekaWrapperClassifier(mcc));
 			if (mldata.getNumLabels() <= 10) {
 				mmm.add(new MekaWrapperClassifier(pcc));
 			}
+			mmm.add(new EnsembleOfClassifierChains(c, 10, true, true));
 			mmm.add(cc);
 			// mmm.add(cc2);
-			mmm.add(br);
+
 			mmm.add(mrlm);
 			// mmm.add(mrlm2);
 			mmm.add(dbr);
@@ -214,47 +216,47 @@ public class ExperimentLMTCC {
 		return mmm;
 	}
 
-	static List<MultiLabelLearner> createMLLs2(List<Classifier> baseclassifs,
-			MultiLabelInstances mldata) throws Exception {
-		List<MultiLabelLearner> mmm = new ArrayList<MultiLabelLearner>();
-
-		ClassifierChain cc = new ClassifierChain(new LmelloClassifier(null));
-		BinaryRelevance br = new BinaryRelevance(new LmelloClassifier(null));
-		PCC pcc = new PCC();
-		pcc.setClassifier(new LmelloClassifier(null));
-		pcc.setSeed(ExperimentLM.globalseed);
-		Classifier c = new LmelloClassifier(null);
-		MRLM mrlm = new MRLM(new BinaryRelevance(c), c, 5);
-		mrlm.setInstanceSelection(false);
-		mrlm.setTrainPropagation(false);
-		mrlm.setUseOnlyLabels(false);
-		mrlm.setUseMirrorLabel(false);
-		mrlm.setUseConfiability(false);
-		mrlm.setChainUpdate(true);
-
-		DBR dbr = new DBR(new LmelloClassifier(null));
-
-		MCC mcc = new MCC();
-		mcc.setOptions(new String[] { "-Iy", "20" });
-		mcc.setClassifier(new LmelloClassifier(null));
-		mulan.classifier.transformation.LabelPowerset lpower = new LabelPowerset(
-				new LmelloClassifier(null));
-		lpower.setSeed(ExperimentLM.globalseed);
-		lpower.setConfidenceCalculationMethod(1);
-
-		// mmm.add(new EnsembleOfClassifierChains(new LmelloClassifier(null),
-		// 10,
-		// true, true));
-		// // mmm.add(lpower);
-		// mmm.add(new MekaWrapperClassifier(mcc));
-		// if (mldata.getNumLabels() <= 10) {
-		// mmm.add(new MekaWrapperClassifier(pcc));
-		// }
-		// mmm.add(cc);
-		mmm.add(br);
-		mmm.add(mrlm);
-		mmm.add(dbr);
-
-		return mmm;
-	}
+	// static List<MultiLabelLearner> createMLLs2(List<Classifier> baseclassifs,
+	// MultiLabelInstances mldata) throws Exception {
+	// List<MultiLabelLearner> mmm = new ArrayList<MultiLabelLearner>();
+	//
+	// ClassifierChain cc = new ClassifierChain(new LmelloClassifier(null));
+	// BinaryRelevance br = new BinaryRelevance(new LmelloClassifier(null));
+	// PCC pcc = new PCC();
+	// pcc.setClassifier(new LmelloClassifier(null));
+	// pcc.setSeed(ExperimentLM.globalseed);
+	// Classifier c = new LmelloClassifier(null);
+	// MRLM mrlm = new MRLM(new BinaryRelevance(c), c, 5);
+	// mrlm.setInstanceSelection(false);
+	// mrlm.setTrainPropagation(false);
+	// mrlm.setUseOnlyLabels(false);
+	// mrlm.setUseMirrorLabel(false);
+	// mrlm.setUseConfiability(false);
+	// mrlm.setChainUpdate(true);
+	//
+	// DBR dbr = new DBR(new LmelloClassifier(null));
+	//
+	// MCC mcc = new MCC();
+	// mcc.setOptions(new String[] { "-Iy", "20" });
+	// mcc.setClassifier(new LmelloClassifier(null));
+	// mulan.classifier.transformation.LabelPowerset lpower = new LabelPowerset(
+	// new LmelloClassifier(null));
+	// lpower.setSeed(ExperimentLM.globalseed);
+	// lpower.setConfidenceCalculationMethod(1);
+	//
+	// // mmm.add(new EnsembleOfClassifierChains(new LmelloClassifier(null),
+	// // 10,
+	// // true, true));
+	// // // mmm.add(lpower);
+	// // mmm.add(new MekaWrapperClassifier(mcc));
+	// // if (mldata.getNumLabels() <= 10) {
+	// // mmm.add(new MekaWrapperClassifier(pcc));
+	// // }
+	// mmm.add(cc);
+	// mmm.add(br);
+	// mmm.add(mrlm);
+	// mmm.add(dbr);
+	//
+	// return mmm;
+	// }
 }

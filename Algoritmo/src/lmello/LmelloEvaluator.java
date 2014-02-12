@@ -6,7 +6,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import meka.classifiers.multilabel.BR;
+import meka.classifiers.multilabel.MultilabelClassifier;
+import meka.classifiers.multilabel.PCC;
 import mulan.classifier.MultiLabelLearner;
 import mulan.classifier.transformation.BinaryRelevance;
 import mulan.classifier.transformation.ClassifierChain;
@@ -163,7 +164,8 @@ public class LmelloEvaluator extends Evaluator {
 						LmelloClassifier lmbc = (LmelloClassifier) bc;
 						if (bestc == null) {
 							bestc = getBestParameter(clone, mlTrain);
-							System.out.println(bestc.getClass().getSimpleName());
+							System.out
+									.println(bestc.getClass().getSimpleName());
 						}
 						lmbc.setClassifier(bestc);
 						((LmelloClassifier) ((TransformationBasedMultiLabelLearner) learner)
@@ -221,6 +223,16 @@ public class LmelloEvaluator extends Evaluator {
 
 			return ((numfeats + (numlabels - 1) / 2) * numlabels) * 10
 					* numinsts;
+		}
+
+		if (mll instanceof MekaWrapperClassifier) {
+			MekaWrapperClassifier mw = (MekaWrapperClassifier) mll;
+			MultilabelClassifier mlc = mw.getMultilabelClassifier();
+			if (mlc instanceof PCC) {
+				int ret = (numfeats + (numlabels - 1) / 2) * numlabels
+						* numinsts;
+				return ret * (2 << (numlabels - 1));
+			}
 		}
 
 		return -1;
