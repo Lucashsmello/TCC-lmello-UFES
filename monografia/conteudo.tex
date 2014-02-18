@@ -1,4 +1,3 @@
-
 \newcommand{\NbasesV}{\textit{N}}
 \newcommand{\Nbases}{6}
 \newcommand{\Nml}{6}
@@ -19,7 +18,38 @@
  
 \end{verbatim}
 
+Segundo \cite{rezende2003sistemas} Aprendizado de Máquina é uma área de Inteligência Artificial
+cujo objetivo é o desenvolvimento de técnicas computacionais
+sobre o aprendizado bem como a construção de sistemas capazes de adquirir
+conhecimento de forma automática. Essa área tem atraido a atenção de muitos 
+pesquisadores em diversas especialidades. Dentro dessa área, encontra-se a subárea Aprendizado Supervisionado.
+Em Aprendizado Supervisionado, um problema de classificação é a tarefa de encontrar
+uma técnica capaz de predizer a classe ou as classes que uma instância de
+um objeto em específico pertence \cite{rezende2003sistemas}.
+Para completar essa tarefa, a técnica deve usar exemplos de treino cujas as classes
+são conhecidas que lhe são dispostas. Uma instância é um objeto do mundo real descrito
+por um vetor de valores numéricos ou nominais e por um conjunto de rótulos.
+Na literatura, as classes também são chamadas de rótulos (REZENDE, 2003, p. 91)
+e quando as instâncias só podem assumir um único rótulo, o problema é chamado de classificação unirrótulo,
+do contrário, é chamado de problema de classificação multirrótulo (BORGES, 2012).
 
+Problemas de classificação multirrótulo estão presentes em diversas áreas, trabalhos relevantes podem
+ser encontrados em áreas como a bioinfomática, diagnóstico médico, classificação de imagens e principalmente
+categorização de textos (CARVALHO, 2009, p. 2). A classificação multirrótulo é inevitavelmente
+mais complexa que a unirrótulo. Para solucioná-la,  o método multirrótulo mais conhecido é um método simples chamado de
+Relevância Binária (BR – Binary Relevance) (READ, 2011, p. 2). 
+Há muitas críticas sobre o método, sendo a maior delas a incapacidade do método de reconhecer correlação entre os rótulos (READ, 2011, p. 2).
+Com o intuito de alcançar melhores resultados que o BR, alguns autores o aprimoraram ou elaboraram novos tipos de métodos
+de tal forma que divergem na forma como resolvem o problema (READ, 2011). 
+Por exemplo, existem métodos que transformam o problema multirrótulo em
+diversos problemas unirrótulo, como é o caso do BR, e outros métodos que são classificadores especiais, capazes de classificar diretamente sobre os problemas multirrótulo, sem necessidade de transformação, como é o caso do Multi-Label C4.5 (MADJAROV et al., 2012, p. 5). 
+
+Com tantos métodos novos, alguns deles apresentados por Carvalho (2009)
+e por Read(2011) é necessário realizar comparações e testes de qualidade.
+É certo que já existem análises e comparações entre os métodos,
+no entanto há necessidade de avaliar os métodos de forma mais formal
+e reforçar as conclusões alcançadas pelos autores dos métodos além de elaborar
+uma forma eficiente de comparar tipos diferentes de métodos multirrótulos (DRUMMOND, 2008).
 
 \section{Motivações}
 % A análise dos métodos multirrótulo traz os seguintes benefícios:
@@ -50,122 +80,139 @@ O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 
 \chapter{Classificação multirrótulo}
 
-Problemas de classificação estão situadas na área de aprendizado supervisionado. Nela,
-normalmente, cada objeto de um domínio específico é descrito por um conjunto fixo de características, também
-chamados de atributos \cite{rezende}.
+Problemas de classificação estão situadas na área de aprendizado supervisionado, que por sua vez é uma 
+subárea da mineração de dados. Para \cite{dunham2003introductory} a mineração de dados é definido como a descoberta
+de informações escondidas em um conjunto de dados. Ela surgiu diante do grande crescimento de dados armazenados
+em arquivos de computadores e do desejo dos usuários desses dados em obter informações mais detalhadas do que simplesmente
+os próprios dado em si. A mineração de dados tem por objetivo satisfazer o desejo desses usuários ao desenvolver técnicas
+capazes de explicitar informações valiosas, antes escondidas ao usuários diante de uma alta quantidade de dados.
+Uma de suas subáreas é a aprendizado supervisionado. Nela, segundo \cite{mohri2012foundations} os dados pelos quais deve-se extrair as informações, são 
+rótulos
+
+normalmente, cada objeto de um domínio é descrito por um conjunto fixo de atributos \cite{rezende2003sistemas}.
+Um atributo é uma descrição de uma característica do objeto 
 Por exemplo, em um do ponto de vista médico??.
-No problema de classificação, cada exemplo de objeto do domínio em questão é associado 
-consiste na predição de classes ou rótulos a exemplos de objetos do domínio determinado, de tal forma
-que esses rótulos confiram informações aos dados categorizados sob o mesmo rótulo.
-A classificação de dados é aplicada em varias áreas de conhecimento onde são
-bastante comuns, dentre elas podemos citar algumas: Computação, Informática, Engenharia,
-Medicina. Na computação há uma área de estudos com um vasto interesse em classificação de
-dados, é a área denominada por aprendizado de máquina.
-Segundo Mitchell, 1997, aprendizado de máquina pode ser definido como a
-capacidade de melhorar o desempenho na realização de alguma tarefa por meio de
-experiência. Nessa área, computadores são programados para aprender com as experiências
-passadas através de indução, no qual são geradas conclusões genéricas a partir de um
-respectivo conjunto particular de exemplos. Aprendizado de máquina é uma das áreas de
-pesquisa da computação que mais tem crescido nos últimos anos, sendo propostos
-continuamente diferentes algoritmos, formas de utilização e extensões dos algoritmos
-existentes. Além disso, deve-se notar também e levar em consideração que a cada dia vem
-surgindo variações de características nos problemas reais a serem tratados.
-Notavelmente podemos perceber que nos últimos anos, estão sendo realizadas intensas
-pesquisas na área de aprendizado de máquina, tendo como principal foco a classificação de
-dados, como por exemplo, em (CANUTO et AL, 2009; ALMEIDA; LUDERMIR, 2010;
-LORENA; CARVALHO, 2010; OLIVEIRA; CANUTO; SOUTO, 2007; SANTANA;
-CANUTO; ABREU, 2006).
-Diante das informações anteriormente citadas, podemos dizer que problemas de
-classificação de dados é um subconjunto dos problemas de aprendizado supervisionado.
-Assim o processo de classificação ocorre por meio de um algoritmo de aprendizado, cujo
-objetivo é gerar um classificador a partir de dados de entrada rotulados anteriormente.
-Classificação é, provavelmente, a tarefa mais estudada em Mineração de Dados tendo
-recebido uma maior atenção das comunidades de Aprendizado de Máquina. Um classificador
-faz um mapeamento do espaço de padrões, denotado por Rm, em que m é o numero de
-atributos de entrada, para um espaço de classes, denotado C. Algumas técnicas de aprendizado
-de máquina podem se utilizadas para induzir um classificador a partir de um conjunto de
-treinamento composto de n pares ( Xi,Yi), onde Xi ε Rm e Yi ε C é a classe do padrão Xi. Esse
-18
-classificador deve ser capaz de inferir corretamente a classe de novos padrões de R m, não
-presentes no conjunto de treinamento. A essa capacidade de inferência é dado o nome de
-generalização.
-Inicialmente, os dados pertencentes ao domínio sobre o qual será aplicado o algoritmo
-de classificação devem ser preparados para serem representados de forma adequada para
-processamento. Eles devem ser organizados em um conjunto de exemplos de maneira que
-cada exemplo seja representado por uma tupla de atributos. Os atributos de entrada
-representam as características de cada exemplo (variáveis independentes), e são utilizados
-para induzir o classificador. O atributo de saída representa as classes que são associadas aos
-exemplos (variável dependente). A Figura 2.1 apresenta um esquema de um processo de
-classificação.
-Após a preparação, os dados são utilizados por um algoritmo de treinamento (indutor).
-Durante o treinamento, cada exemplo é representado por um par (T i, Yi), tal que i = 1, 2, 3, ...,m, em
-que m é o número de exemplos de treinamento, Ti é uma tupla de atributos de entrada que descrevem
-cada exemplo e Yi é o atributo de saída que possui o rótulo que classifica o exemplo. Segundo Tan et
-al. (2005), o processo de classificação consiste do aprendizado de uma função objetivo f que mapeia
-cada conjunto de atributos Ti em uma das classes predefinidas Yi. Essa função objetivo é encontrada
-por meio de ajustes dos parâmetros livres do algoritmo de indução. O conhecimento de um especialista
-do domínio sendo investigado pode ser utilizado para auxiliar na preparação dos dados e no processo
-de obtenção do classificador.
+Em problemas de classificação unirrótulo, cada exemplo do objeto do domínio em questão é associado 
+a um único rótulo e o objetivo é desenvolver um sistema classificativo que consiga predizer corretamente
+o rótulo. Na classificação multirrótulo, um exemplo pode assumir um ou mais rótulos, o que torna o problema mais complexo.
+Por exemplo, um filme pode ser rótulado como sendo de romance e comédia, e não exclusivamente de romance ou comédia.
 
 
-Classificação tradicional (unirrótulo) está relacionada com a aprendizagem de um
-conjunto de exemplos que estão associados a um único rótulo (unirrótulo) a partir de um
-conjunto de rótulos independentes L, L > 1. Se L = 2, então o aprendizado é chamado de
-problema de uma classificação binária (ou de filtragem, no caso de dados textuais e web),
-enquanto se
-L > 2, ele passar a ser considerado problema de classificação unirrótulo
-multiclasse. Existem vários domínios onde um conjunto de exemplos pode esta relacionada a
-mais de uma classe simultaneamente. Para esses casos onde as classes não estão de forma
-separada dar- se o nome de Classificação Multirrótulo.
-Entretanto, existe uma grande quantidade de problemas relevantes em que cada
-exemplo pode ser associado a mais de uma classe simultaneamente. Esse grupo de problemas,
-em que as classes não são disjuntas, é conhecido como classificação multirrótulo (do inglês,
-multi-label) (Tsoumakas e Katakis, 2007). Por exemplo, um filme pode ser classificado como
-ação e aventura, um artigo no jornal pode ser classificado como pertencente à seção de música
-e cultura, além de outros. A motivação inicial para as pesquisas na área de classificação
-multirrótulo surgiu com a dificuldade causada por ambigüidades em problemas de
-categorização de textos (SCHAPIRE; SINGER, 2000).
-20
-A área de classificação de textos é até hoje a principal área de aplicação de técnicas de
-classificação multirrótulo. Apesar disso, a classificação multirrótulo também é importante em
-outras áreas, como reconhecimento de padrões e bioinformática. Em (BOUTELL et al., 2004),
-um classificador multirrótulo é utilizado para classificação semântica de cenas. Em (CLARE
-E KING, 2001), o classificador C4.5, baseado em árvores de decisão, foi adaptado para lidar
-com múltiplos rótulos de classe e aplicado a problemas de análise de expressão de genes.
-Mais recentemente, (TROHIDIS et. al., 2008) realizaram uma comparação de diversas
-técnicas de classificação multirrótulo aplicadas a classificação de música em emoções.
-De acordo com (ELISSEEFF E WESTON, 2001), as classificações binárias de multi-
-classes podem ser vistas como um caso especial do problema de classificação multirrótulo,
-em que o número de rótulos associado a cada exemplo é igual a 1. Vários métodos foram
-propostos na literatura para lidar com o problema de classificação multirrótulo. Esses métodos
-podem ser divididos em independentes e dependentes de algoritmo. A abordagem
-independente combina classificadores unirrótulo para resolver o problema multirrótulo,
-enquanto que a abordagem dependente de algoritmo modifica internamente os classificadores
-unirrótulo de modo que esses possam ser usados para resolver problemas multirrótulo.
-Tabela 1 - Ex. base de dados multirrótulo, Contendo quatro rótulos distintos: λ1 , λ2
-,λ3 , λ4
-Exemplo Rótulos
-A λ2 , λ3
-B λ1 , λ3 λ4
-C λ4
-D λ2 , λ3
-Na classificação multirrótulo, não existe a restrição de um exemplo estar associado
-apenas a um único rótulo. Nesse caso, um exemplo é associado a um conjunto de rótulos
-Yi ⊆ L, onde L =
-λ j : j = 1. . L . Essa característica está presente em problemas de diversos
-domínios. Por exemplo, em classificação de textos, um documento pode pertencer
-simultaneamente a mais de um tópico, como informática e agricultura. No diagnóstico
-médico, um paciente pode apresentar câncer, ao mesmo tempo em que também apresenta
-diabetes. Na Tabela 1 é apresentado um exemplo de base de dados multirrótulo que contém
-quatro rótulos distintos e quatro exemplos. Recentemente, o problema do aprendizado
-multirrótulo tem chamado significativa atenção de muitos pesquisadores, motivados pelo
-21
-número crescente de novas aplicações, como anotação semântica de imagens e vídeo, genoma
-funcional, categorização de músicas em emoções e marketing direto (Tsoumakas et al. 2009).
-Assim, diversos métodos foram propostos para tratar os problemas de classificação
-multirrótulo. Esses métodos podem ser divididos em duas abordagens distintas:
- Transformação do problema (Independente do Algoritmo)
- Adaptação do Algoritmo (dependente do Algoritmo)
+% A classificação de dados é aplicada em varias áreas de conhecimento onde são
+% bastante comuns, dentre elas podemos citar algumas: Computação, Informática, Engenharia,
+% Medicina. Na computação há uma área de estudos com um vasto interesse em classificação de
+% dados, é a área denominada por aprendizado de máquina.
+% Segundo Mitchell, 1997, aprendizado de máquina pode ser definido como a
+% capacidade de melhorar o desempenho na realização de alguma tarefa por meio de
+% experiência. 
+
+% Nessa área, computadores são programados para aprender com as experiências
+% passadas através de indução, no qual são geradas conclusões genéricas a partir de um
+% respectivo conjunto particular de exemplos. Aprendizado de máquina é uma das áreas de
+% pesquisa da computação que mais tem crescido nos últimos anos, sendo propostos
+% continuamente diferentes algoritmos, formas de utilização e extensões dos algoritmos
+% existentes. Além disso, deve-se notar também e levar em consideração que a cada dia vem
+% surgindo variações de características nos problemas reais a serem tratados.
+% Notavelmente podemos perceber que nos últimos anos, estão sendo realizadas intensas
+% pesquisas na área de aprendizado de máquina, tendo como principal foco a classificação de
+% dados, como por exemplo, em (CANUTO et AL, 2009; ALMEIDA; LUDERMIR, 2010;
+% LORENA; CARVALHO, 2010; OLIVEIRA; CANUTO; SOUTO, 2007; SANTANA;
+% CANUTO; ABREU, 2006).
+
+Assim a classificação é a tarefa de encontrar uma técnica capaz de predizer o rótulo que uma instância
+de um objeto de forma correta.
+Para completar essa tarefa, a técnica usa dados de entrada que são exemplos de treino cujas as classes são conhecidas afim de
+reconhecer e aprender padrões nos exemplos. Quando 
+
+% Assim o processo de classificação ocorre por meio de um algoritmo de aprendizado, cujo
+% objetivo é gerar um classificador a partir de dados de entrada rotulados anteriormente.
+% Classificação é, provavelmente, a tarefa mais estudada em Mineração de Dados tendo
+% recebido uma maior atenção das comunidades de Aprendizado de Máquina. Um classificador
+% faz um mapeamento do espaço de padrões, denotado por Rm, em que m é o numero de
+% atributos de entrada, para um espaço de classes, denotado C. Algumas técnicas de aprendizado
+% de máquina podem se utilizadas para induzir um classificador a partir de um conjunto de
+% treinamento composto de n pares ( Xi,Yi), onde Xi ε Rm e Yi ε C é a classe do padrão Xi. Esse
+% 18
+% classificador deve ser capaz de inferir corretamente a classe de novos padrões de R m, não
+% presentes no conjunto de treinamento. A essa capacidade de inferência é dado o nome de
+% generalização.
+% Inicialmente, os dados pertencentes ao domínio sobre o qual será aplicado o algoritmo
+% de classificação devem ser preparados para serem representados de forma adequada para
+% processamento. Eles devem ser organizados em um conjunto de exemplos de maneira que
+% cada exemplo seja representado por uma tupla de atributos. Os atributos de entrada
+% representam as características de cada exemplo (variáveis independentes), e são utilizados
+% para induzir o classificador. O atributo de saída representa as classes que são associadas aos
+% exemplos (variável dependente). A Figura 2.1 apresenta um esquema de um processo de
+% classificação.
+% Após a preparação, os dados são utilizados por um algoritmo de treinamento (indutor).
+% Durante o treinamento, cada exemplo é representado por um par (T i, Yi), tal que i = 1, 2, 3, ...,m, em
+% que m é o número de exemplos de treinamento, Ti é uma tupla de atributos de entrada que descrevem
+% cada exemplo e Yi é o atributo de saída que possui o rótulo que classifica o exemplo. Segundo Tan et
+% al. (2005), o processo de classificação consiste do aprendizado de uma função objetivo f que mapeia
+% cada conjunto de atributos Ti em uma das classes predefinidas Yi. Essa função objetivo é encontrada
+% por meio de ajustes dos parâmetros livres do algoritmo de indução. O conhecimento de um especialista
+% do domínio sendo investigado pode ser utilizado para auxiliar na preparação dos dados e no processo
+% de obtenção do classificador.
+% 
+% 
+% Classificação tradicional (unirrótulo) está relacionada com a aprendizagem de um
+% conjunto de exemplos que estão associados a um único rótulo (unirrótulo) a partir de um
+% conjunto de rótulos independentes L, L > 1. Se L = 2, então o aprendizado é chamado de
+% problema de uma classificação binária (ou de filtragem, no caso de dados textuais e web),
+% enquanto se
+% L > 2, ele passar a ser considerado problema de classificação unirrótulo
+% multiclasse. Existem vários domínios onde um conjunto de exemplos pode esta relacionada a
+% mais de uma classe simultaneamente. Para esses casos onde as classes não estão de forma
+% separada dar- se o nome de Classificação Multirrótulo.
+% Entretanto, existe uma grande quantidade de problemas relevantes em que cada
+% exemplo pode ser associado a mais de uma classe simultaneamente. Esse grupo de problemas,
+% em que as classes não são disjuntas, é conhecido como classificação multirrótulo (do inglês,
+% multi-label) (Tsoumakas e Katakis, 2007). Por exemplo, um filme pode ser classificado como
+% ação e aventura, um artigo no jornal pode ser classificado como pertencente à seção de música
+% e cultura, além de outros. A motivação inicial para as pesquisas na área de classificação
+% multirrótulo surgiu com a dificuldade causada por ambigüidades em problemas de
+% categorização de textos (SCHAPIRE; SINGER, 2000).
+% 20
+% A área de classificação de textos é até hoje a principal área de aplicação de técnicas de
+% classificação multirrótulo. Apesar disso, a classificação multirrótulo também é importante em
+% outras áreas, como reconhecimento de padrões e bioinformática. Em (BOUTELL et al., 2004),
+% um classificador multirrótulo é utilizado para classificação semântica de cenas. Em (CLARE
+% E KING, 2001), o classificador C4.5, baseado em árvores de decisão, foi adaptado para lidar
+% com múltiplos rótulos de classe e aplicado a problemas de análise de expressão de genes.
+% Mais recentemente, (TROHIDIS et. al., 2008) realizaram uma comparação de diversas
+% técnicas de classificação multirrótulo aplicadas a classificação de música em emoções.
+% De acordo com (ELISSEEFF E WESTON, 2001), as classificações binárias de multi-
+% classes podem ser vistas como um caso especial do problema de classificação multirrótulo,
+% em que o número de rótulos associado a cada exemplo é igual a 1. Vários métodos foram
+% propostos na literatura para lidar com o problema de classificação multirrótulo. Esses métodos
+% podem ser divididos em independentes e dependentes de algoritmo. A abordagem
+% independente combina classificadores unirrótulo para resolver o problema multirrótulo,
+% enquanto que a abordagem dependente de algoritmo modifica internamente os classificadores
+% unirrótulo de modo que esses possam ser usados para resolver problemas multirrótulo.
+% Tabela 1 - Ex. base de dados multirrótulo, Contendo quatro rótulos distintos: λ1 , λ2
+% ,λ3 , λ4
+% Exemplo Rótulos
+% A λ2 , λ3
+% B λ1 , λ3 λ4
+% C λ4
+% D λ2 , λ3
+% Na classificação multirrótulo, não existe a restrição de um exemplo estar associado
+% apenas a um único rótulo. Nesse caso, um exemplo é associado a um conjunto de rótulos
+% Yi ⊆ L, onde L =
+% λ j : j = 1. . L . Essa característica está presente em problemas de diversos
+% domínios. Por exemplo, em classificação de textos, um documento pode pertencer
+% simultaneamente a mais de um tópico, como informática e agricultura. No diagnóstico
+% médico, um paciente pode apresentar câncer, ao mesmo tempo em que também apresenta
+% diabetes. Na Tabela 1 é apresentado um exemplo de base de dados multirrótulo que contém
+% quatro rótulos distintos e quatro exemplos. Recentemente, o problema do aprendizado
+% multirrótulo tem chamado significativa atenção de muitos pesquisadores, motivados pelo
+% 21
+% número crescente de novas aplicações, como anotação semântica de imagens e vídeo, genoma
+% funcional, categorização de músicas em emoções e marketing direto (Tsoumakas et al. 2009).
+% Assim, diversos métodos foram propostos para tratar os problemas de classificação
+% multirrótulo. Esses métodos podem ser divididos em duas abordagens distintas:
+%  Transformação do problema (Independente do Algoritmo)
+%  Adaptação do Algoritmo (dependente do Algoritmo)
 
 
 \section{Enunciado do problema}
