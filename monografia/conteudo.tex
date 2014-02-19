@@ -87,15 +87,24 @@ em arquivos de computadores e do desejo dos usuários desses dados em obter info
 os próprios dado em si. A mineração de dados tem por objetivo satisfazer o desejo desses usuários ao desenvolver técnicas
 capazes de explicitar informações valiosas, antes escondidas ao usuários diante de uma alta quantidade de dados.
 Uma de suas subáreas é a aprendizado supervisionado. Nela, segundo \cite{mohri2012foundations},
-os dados pelos quais deve-se extrair as informações, são rótulados e a técnica
+os dados pelos quais deve-se extrair as informações são associados a uma variável especial cujo valor
+é conhecido e a técnica deve predizer os rótulos
+corretamente para novos dados cujo valor da variável especial associada a elas é desconhecido.
 
-normalmente, cada objeto de um domínio é descrito por um conjunto fixo de atributos \cite{rezende2003sistemas}.
-Um atributo é uma descrição de uma característica do objeto 
-Por exemplo, em um do ponto de vista médico??.
-Em problemas de classificação unirrótulo, cada exemplo do objeto do domínio em questão é associado 
-a um único rótulo e o objetivo é desenvolver um sistema classificativo que consiga predizer corretamente
-o rótulo. Na classificação multirrótulo, um exemplo pode assumir um ou mais rótulos, o que torna o problema mais complexo.
-Por exemplo, um filme pode ser rótulado como sendo de romance e comédia, e não exclusivamente de romance ou comédia.
+Normalmente, em aprendizado supervisionado os dados são objetos de um domínio específico e cada um dos objetos
+é descrito por um conjunto fixo de atributos \cite{rezende2003sistemas}. 
+Esses objetos são usualmente chamados de instâncias ou exemplos do domínio do problema.
+Um atributo é uma descrição de uma característica da instância.
+Por exemplo, de um do ponto de vista médico??.
+Em problemas de classificação unirrótulo, a variável especial associada a cada instância é discreta
+e é chamada de classe ou rótulo. A técnica que prediz as classes é chamado de classificador.
+% cada exemplo do objeto do domínio em questão é associado 
+% a um único rótulo e o objetivo é desenvolver um sistema classificativo que consiga predizer corretamente
+% o rótulo. 
+Na classificação multirrótulo, cada instância pode assumir um ou mais rótulos, e a técnica
+que prediz os rótulos de uma instância é chamada de classificador multirrótulo.
+Por exemplo, uma instância de filme pode ser rotulado como sendo de romance e comédia, 
+e não exclusivamente de romance ou comédia.
 
 
 % A classificação de dados é aplicada em varias áreas de conhecimento onde são
@@ -119,10 +128,11 @@ Por exemplo, um filme pode ser rótulado como sendo de romance e comédia, e nã
 % LORENA; CARVALHO, 2010; OLIVEIRA; CANUTO; SOUTO, 2007; SANTANA;
 % CANUTO; ABREU, 2006).
 
-Assim a classificação é a tarefa de encontrar uma técnica capaz de predizer o rótulo que uma instância
-de um objeto de forma correta.
-Para completar essa tarefa, a técnica usa dados de entrada que são exemplos de treino cujas as classes são conhecidas afim de
-reconhecer e aprender padrões nos exemplos. Quando 
+Assim a classificação é a tarefa de encontrar um classificador capaz de predizer 
+o rótulo ou os rótulos de uma instância forma correta.
+Para completar essa tarefa, o classificador deve usar dados de entrada que são exemplos
+de treino cujos rótulos são conhecidos afim de
+reconhecer e aprender padrões.
 
 % Assim o processo de classificação ocorre por meio de um algoritmo de aprendizado, cujo
 % objetivo é gerar um classificador a partir de dados de entrada rotulados anteriormente.
@@ -228,6 +238,14 @@ de tamanho igual ao número de rótulos.
 \end{verbatim}
 
 
+Em um problema de classificação multirrótulo, seja $X$ o espaço de características tal que
+$X\subseteq \mathbb{R}^n$ e $L=\{l_1,l_2,l_3,...l_r\}$ o conjunto dos $r$ rótulos possíveis do problema,
+uma instância é definida como sendo um vetor $(x,y)$ tal que $x\in X$ e $y$ é um vetor binário
+$y=(y_1,y_2,...,y_r)$ de tal forma $y_i=1$ indica a presença do rótulo $l_i$ na instância.
+Assim, o espaço de rótulos possíveis para uma instância qualquer é definido como $Y=\{0,1\}^r$.
+
+A tarefa do problema de classificação multirrótulo é encontrar uma função $C : X \rightarrow Y$ de forma
+a maximizar uma métrica de qualidade, definida pela função $f: Y \rightarrow [0,1]$  para 
 
 \section{Avaliação de Desempenho}
 \begin{verbatim}
