@@ -240,12 +240,17 @@ de tamanho igual ao número de rótulos.
 
 Em um problema de classificação multirrótulo, seja $X$ o espaço de características tal que
 $X\subseteq \mathbb{R}^n$ e $L=\{l_1,l_2,l_3,...l_r\}$ o conjunto dos $r$ rótulos possíveis do problema,
-uma instância é definida como sendo um vetor $(x,y)$ tal que $x\in X$ e $y$ é um vetor binário
-$y=(y_1,y_2,...,y_r)$ de tal forma $y_i=1$ indica a presença do rótulo $l_i$ na instância.
+uma instância é definida como sendo um vetor $(x',y')$ tal que $x'\in X$ e $y'$ é um vetor binário
+$y'=(y'_1,y'_2,...,y'_r)$ de tal forma $y'_i=1$ indica a presença do rótulo $l_i$ na instância.
 Assim, o espaço de rótulos possíveis para uma instância qualquer é definido como $Y=\{0,1\}^r$.
 
 A tarefa do problema de classificação multirrótulo é encontrar uma função $C : X \rightarrow Y$ de forma
-a maximizar uma métrica de qualidade, definida pela função $f: Y \rightarrow [0,1]$  para 
+a maximizar uma métrica de qualidade, definida por uma função que mapeia as predições da função $C$
+e os rótulos reais alvos a um valor numérico entre $0$ a $1$.
+
+A função $C$ é estimada a partir de uma base de treino $D=(x_1,y_1$
+
+
 
 \section{Avaliação de Desempenho}
 \begin{verbatim}
