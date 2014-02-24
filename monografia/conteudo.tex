@@ -249,13 +249,13 @@ a maximizar uma métrica de qualidade, definida por uma função que mapeia as p
 e os rótulos reais alvos a um valor numérico entre $0$ a $1$.
 A função $C$ é estimada a partir de uma base de treino $D=\{(x_1,y_1),(x_2,y_2),...,(x_n,y_n)\}, x_i\in X, y_i\in Y$.
 
-Note em um problema de classificação unirrótulo todas as instâncias da forma $(x',y')$ tem como $y'$
+Note que em um problema de classificação unirrótulo todas as instâncias da forma $(x',y')$ tem como $y'$
 um vetor binário de rótulos onde apenas uma posição tem valor $1$. Assim, podemos ver o problema classificação
 unirrótulo como um caso específico do problema de classificação multirrótulo.
 Outro ponto importante a notar é a grande diferença da complexidade da classificação unirrótulo para a multirrótulo.
 Enquanto que na classificação unirrótulo o número de possíveis rotulações que uma instância desconhecida pode ter é
 $r$, linear em relação ao número de rótulos, na multirrótulo o número cresce exponencialmente, a saber, $2^r$.
-Assim construir um classificador multirrótulo parece ser mais complexo que um classificador unirrótulo.
+Assim construir um classificador multirrótulo é mais complexo que um classificador unirrótulo.
 
 
 
@@ -266,6 +266,22 @@ ESBOÇO:
 conforme o artigo: "Bayes Optimal Multilabel Classification via Probabilistic Classifier Chains".
 -Falar que é diferente do multiclasse e a razao disso
 \end{verbatim}
+
+A avaliação de desempenho de classicadores, tanto multirrótulo quanto unirrótulo, é comumente feito por
+por meio de análises em testes nas amostras coletadas
+do problema. Isso é feito corretamente com a ajuda de métodos de reamostragem fundamentados pela ciência estatística.
+
+A avaliação de desempenho dos classificadores multirrótulos se difere da unirrótulo principalmente na
+quantificação da qualidade de predição. Enquanto que na classificação unirrótulo existe apenas uma classificação
+correta dentre apenas $r$ possíveis classificações, na classificação multirrótulo podem existir mais de uma combinação, 
+dentre as $2^r$ possíveis, que estejam corretas ou parcialmente corretas. Para isso, são definidas várias métricas multirrótulo,
+cada uma capturando um aspecto diferente do desempenho do classificador. 
+
+
+
+
+
+
 \subsection{Métricas}
 \label{sec:metrics}
 \subsubsection{Accuracy}
