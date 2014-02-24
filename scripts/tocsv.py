@@ -252,6 +252,61 @@ def saveResults(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeMe
         fout.write("\n")
 
     fout.close()
+    
+def saveResults2(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeMeanRank,methodsnames,makerank):
+    fout=open(fileoutname,'w')
+    maxm=0
+
+#    print allresults 
+
+    bsortedidx=zip(*sorted(zip(basenames,range(len(basenames)))))[1]
+    basenames=sorted(basenames)
+    allresults=[allresults[i] for i in bsortedidx]
+    allranks=[allranks[i] for i in bsortedidx]
+
+    for r in allresults:
+        if(len(r)>maxm):
+            maxm=len(r)
+
+    for i in range(len(allresults)):
+        r=allresults[i]
+        idxmets=zip(*sorted(zip(zip(*r)[0],range(len(r)))))[1]
+        allresults[i]=[r[x] for x in idxmets]
+        ri=allranks[i]
+        allranks[i]=zip(*[zip(*ri)[x-1] for x in idxmets[1:]])
+        
+    
+    for i in range(1,len(allresults[0][0])): # para cada metrica
+        m=allresults[0][0][i]
+        fout.write(m+' ;')
+        for j in range(0,maxm): # para cada metodo
+            if(j!=0):
+                fout.write(str(r[j][0])+';') #classificador
+            for k in range(0,len(allresults)): # para cada base
+                r=allresults[k]
+                if(j==0):
+                    fout.write(basenames[k]+' ;')
+                else:
+                    fout.write(str(r[j][i])) #valor da metricas
+                    if(makerank and j>0 and i>0):
+                        if(int(allranks[k][i-1][j-1])==allranks[k][i-1][j-1]):
+                            fout.write("("+str(int(allranks[k][i-1][j-1]) + 1)+")")
+                        else:
+                            fout.write("("+str(allranks[k][i-1][j-1] + 1)+")")
+                    fout.write(";")
+            fout.write("\n")
+        fout.write("\n")
+
+
+    for i in range(0,maxm):
+        if(makeMeanRank and i<=len(meanRankAllExps)):
+            if(i==0):
+                fout.write(" ;"+" ;Media dos Ranks de Todas Bases;")
+            else:
+                fout.write(" ;"+methodsnames[i-1]+";"+str(meanRankAllExps[i-1])+";")
+        fout.write("\n")
+
+    fout.close()
 
 def tocsv(dirpath, metrics, methods="ALL",baseClassifs="ALL",makerank=True,makeMergeResults=False,mergeMetricIndex=1):
     if(not os.path.exists(dirpath+"/csv")):
@@ -307,7 +362,7 @@ def tocsv(dirpath, metrics, methods="ALL",baseClassifs="ALL",makerank=True,makeM
         [methodsnames,meanRankAllExps]=getAllDataMeanRank(allranks,methodsnames,allridx)
     
 
-    saveResults(allresults,dirpath+"/csv/"+"exps-"+str(baseClassifs)[1:-1]+".csv",basenames,allranks,meanRankAllExps,makeMeanRank,methodsnames,makerank)
+    saveResults2(allresults,dirpath+"/csv/"+"exps-"+str(baseClassifs)[1:-1]+".csv",basenames,allranks,meanRankAllExps,makeMeanRank,methodsnames,makerank)
 
 
 
