@@ -10,14 +10,6 @@
 \newcommand{\MRLMa}{RDBR}
 
 \chapter{Introdução}
-\begin{verbatim}
- -Falar um pouco sobre aprendizado de máquina.
- -Falar sobre Classificação multiclasse
- -Apresentar Classificação multirrótulo e falar como é mais tenso que a multiclasse, dar exemplos etc.
- -Falar um pouco do estado da arte da Classificacao multirrotulo.
- 
-\end{verbatim}
-
 Segundo \cite{rezende2003sistemas} Aprendizado de Máquina é uma área de Inteligência Artificial
 cujo objetivo é o desenvolvimento de técnicas computacionais
 sobre o aprendizado bem como a construção de sistemas capazes de adquirir
@@ -77,6 +69,18 @@ O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 
 % \section{Contribuições}
 \section{Estrutura do Trabalho}
+O restante do trabalho está organizado da seguinte forma:
+\begin{itemize}
+ \item O capítulo 2 apresenta os principais conceitos da classificação multirrótulo, bem como
+ os métodos usados para avaliação de desempenho de classificadores multirrótulo.
+ \item O capítulo 3 apresenta a definição de diferentes métodos de classificação multirrótulo usados neste trabalho,
+ bem como suas complexidades algorítma.
+ \item O capítulo 4 apresenta a definição de um novo método de classificação multirrótulo proposto neste trabalho.
+ \item O capítulo 5 começa apresentando as configurações experimentais escolhidos para realização de testes e termina
+ apresentando os resultados e a sua análise detalhada.
+ \item No capítulo 6 são apresentados as conclusões finais sobre o desempenho dos métodos e sobre a análise do capítulo anterior.
+\end{itemize}
+
 
 \chapter{Classificação multirrótulo}
 
@@ -106,143 +110,22 @@ que prediz os rótulos de uma instância é chamada de classificador multirrótu
 Por exemplo, uma instância de filme pode ser rotulado como sendo de romance e comédia, 
 e não exclusivamente de romance ou comédia.
 
-
-% A classificação de dados é aplicada em varias áreas de conhecimento onde são
-% bastante comuns, dentre elas podemos citar algumas: Computação, Informática, Engenharia,
-% Medicina. Na computação há uma área de estudos com um vasto interesse em classificação de
-% dados, é a área denominada por aprendizado de máquina.
-% Segundo Mitchell, 1997, aprendizado de máquina pode ser definido como a
-% capacidade de melhorar o desempenho na realização de alguma tarefa por meio de
-% experiência. 
-
-% Nessa área, computadores são programados para aprender com as experiências
-% passadas através de indução, no qual são geradas conclusões genéricas a partir de um
-% respectivo conjunto particular de exemplos. Aprendizado de máquina é uma das áreas de
-% pesquisa da computação que mais tem crescido nos últimos anos, sendo propostos
-% continuamente diferentes algoritmos, formas de utilização e extensões dos algoritmos
-% existentes. Além disso, deve-se notar também e levar em consideração que a cada dia vem
-% surgindo variações de características nos problemas reais a serem tratados.
-% Notavelmente podemos perceber que nos últimos anos, estão sendo realizadas intensas
-% pesquisas na área de aprendizado de máquina, tendo como principal foco a classificação de
-% dados, como por exemplo, em (CANUTO et AL, 2009; ALMEIDA; LUDERMIR, 2010;
-% LORENA; CARVALHO, 2010; OLIVEIRA; CANUTO; SOUTO, 2007; SANTANA;
-% CANUTO; ABREU, 2006).
-
 Assim a classificação é a tarefa de encontrar um classificador capaz de predizer 
 o rótulo ou os rótulos de uma instância corretamente.
 Para completar essa tarefa, o classificador deve usar dados de entrada que são exemplos
 de treino cujos rótulos são conhecidos afim de
 reconhecer e aprender padrões.
 
-% Assim o processo de classificação ocorre por meio de um algoritmo de aprendizado, cujo
-% objetivo é gerar um classificador a partir de dados de entrada rotulados anteriormente.
-% Classificação é, provavelmente, a tarefa mais estudada em Mineração de Dados tendo
-% recebido uma maior atenção das comunidades de Aprendizado de Máquina. Um classificador
-% faz um mapeamento do espaço de padrões, denotado por Rm, em que m é o numero de
-% atributos de entrada, para um espaço de classes, denotado C. Algumas técnicas de aprendizado
-% de máquina podem se utilizadas para induzir um classificador a partir de um conjunto de
-% treinamento composto de n pares ( Xi,Yi), onde Xi ε Rm e Yi ε C é a classe do padrão Xi. Esse
-% 18
-% classificador deve ser capaz de inferir corretamente a classe de novos padrões de R m, não
-% presentes no conjunto de treinamento. A essa capacidade de inferência é dado o nome de
-% generalização.
-% Inicialmente, os dados pertencentes ao domínio sobre o qual será aplicado o algoritmo
-% de classificação devem ser preparados para serem representados de forma adequada para
-% processamento. Eles devem ser organizados em um conjunto de exemplos de maneira que
-% cada exemplo seja representado por uma tupla de atributos. Os atributos de entrada
-% representam as características de cada exemplo (variáveis independentes), e são utilizados
-% para induzir o classificador. O atributo de saída representa as classes que são associadas aos
-% exemplos (variável dependente). A Figura 2.1 apresenta um esquema de um processo de
-% classificação.
-% Após a preparação, os dados são utilizados por um algoritmo de treinamento (indutor).
-% Durante o treinamento, cada exemplo é representado por um par (T i, Yi), tal que i = 1, 2, 3, ...,m, em
-% que m é o número de exemplos de treinamento, Ti é uma tupla de atributos de entrada que descrevem
-% cada exemplo e Yi é o atributo de saída que possui o rótulo que classifica o exemplo. Segundo Tan et
-% al. (2005), o processo de classificação consiste do aprendizado de uma função objetivo f que mapeia
-% cada conjunto de atributos Ti em uma das classes predefinidas Yi. Essa função objetivo é encontrada
-% por meio de ajustes dos parâmetros livres do algoritmo de indução. O conhecimento de um especialista
-% do domínio sendo investigado pode ser utilizado para auxiliar na preparação dos dados e no processo
-% de obtenção do classificador.
-% 
-% 
-% Classificação tradicional (unirrótulo) está relacionada com a aprendizagem de um
-% conjunto de exemplos que estão associados a um único rótulo (unirrótulo) a partir de um
-% conjunto de rótulos independentes L, L > 1. Se L = 2, então o aprendizado é chamado de
-% problema de uma classificação binária (ou de filtragem, no caso de dados textuais e web),
-% enquanto se
-% L > 2, ele passar a ser considerado problema de classificação unirrótulo
-% multiclasse. Existem vários domínios onde um conjunto de exemplos pode esta relacionada a
-% mais de uma classe simultaneamente. Para esses casos onde as classes não estão de forma
-% separada dar- se o nome de Classificação Multirrótulo.
-% Entretanto, existe uma grande quantidade de problemas relevantes em que cada
-% exemplo pode ser associado a mais de uma classe simultaneamente. Esse grupo de problemas,
-% em que as classes não são disjuntas, é conhecido como classificação multirrótulo (do inglês,
-% multi-label) (Tsoumakas e Katakis, 2007). Por exemplo, um filme pode ser classificado como
-% ação e aventura, um artigo no jornal pode ser classificado como pertencente à seção de música
-% e cultura, além de outros. A motivação inicial para as pesquisas na área de classificação
-% multirrótulo surgiu com a dificuldade causada por ambigüidades em problemas de
-% categorização de textos (SCHAPIRE; SINGER, 2000).
-% 20
-% A área de classificação de textos é até hoje a principal área de aplicação de técnicas de
-% classificação multirrótulo. Apesar disso, a classificação multirrótulo também é importante em
-% outras áreas, como reconhecimento de padrões e bioinformática. Em (BOUTELL et al., 2004),
-% um classificador multirrótulo é utilizado para classificação semântica de cenas. Em (CLARE
-% E KING, 2001), o classificador C4.5, baseado em árvores de decisão, foi adaptado para lidar
-% com múltiplos rótulos de classe e aplicado a problemas de análise de expressão de genes.
-% Mais recentemente, (TROHIDIS et. al., 2008) realizaram uma comparação de diversas
-% técnicas de classificação multirrótulo aplicadas a classificação de música em emoções.
-% De acordo com (ELISSEEFF E WESTON, 2001), as classificações binárias de multi-
-% classes podem ser vistas como um caso especial do problema de classificação multirrótulo,
-% em que o número de rótulos associado a cada exemplo é igual a 1. Vários métodos foram
-% propostos na literatura para lidar com o problema de classificação multirrótulo. Esses métodos
-% podem ser divididos em independentes e dependentes de algoritmo. A abordagem
-% independente combina classificadores unirrótulo para resolver o problema multirrótulo,
-% enquanto que a abordagem dependente de algoritmo modifica internamente os classificadores
-% unirrótulo de modo que esses possam ser usados para resolver problemas multirrótulo.
-% Tabela 1 - Ex. base de dados multirrótulo, Contendo quatro rótulos distintos: λ1 , λ2
-% ,λ3 , λ4
-% Exemplo Rótulos
-% A λ2 , λ3
-% B λ1 , λ3 λ4
-% C λ4
-% D λ2 , λ3
-% Na classificação multirrótulo, não existe a restrição de um exemplo estar associado
-% apenas a um único rótulo. Nesse caso, um exemplo é associado a um conjunto de rótulos
-% Yi ⊆ L, onde L =
-% λ j : j = 1. . L . Essa característica está presente em problemas de diversos
-% domínios. Por exemplo, em classificação de textos, um documento pode pertencer
-% simultaneamente a mais de um tópico, como informática e agricultura. No diagnóstico
-% médico, um paciente pode apresentar câncer, ao mesmo tempo em que também apresenta
-% diabetes. Na Tabela 1 é apresentado um exemplo de base de dados multirrótulo que contém
-% quatro rótulos distintos e quatro exemplos. Recentemente, o problema do aprendizado
-% multirrótulo tem chamado significativa atenção de muitos pesquisadores, motivados pelo
-% 21
-% número crescente de novas aplicações, como anotação semântica de imagens e vídeo, genoma
-% funcional, categorização de músicas em emoções e marketing direto (Tsoumakas et al. 2009).
-% Assim, diversos métodos foram propostos para tratar os problemas de classificação
-% multirrótulo. Esses métodos podem ser divididos em duas abordagens distintas:
-%  Transformação do problema (Independente do Algoritmo)
-%  Adaptação do Algoritmo (dependente do Algoritmo)
-
-
 \section{Enunciado do problema}
-\begin{verbatim}
-ESBOÇO:
--Definição formal.
--um classificador multirrótulo mapeia do espaço de características
-para um vetor de valores reais entre 0 e 1 
-de tamanho igual ao número de rótulos.
--falar da complexidade do problema
--falar sobre lidar o problema como probabilidade condicional dado o rótulo e etc...
-    P(l_1 | x,l_2)
-\end{verbatim}
-
 
 Em um problema de classificação multirrótulo, seja $X$ o espaço de características tal que
 $X\subseteq \mathbb{R}^n$ e $L=\{l_1,l_2,l_3,...l_r\}$ o conjunto dos $r$ rótulos possíveis do problema,
 uma instância é definida como sendo uma dupla de vetores $(x',y')$ tal que $x'\in X$ e $y'$ é um vetor binário
-$y'=(y'_1,y'_2,...,y'_r)$ de tal forma $y'_i=1$ indica a presença do rótulo $l_i$ na instância.
+$y'=(y'_1,y'_2,...,y'_r)$ de tal forma que $y'_i=1$ indica a presença do rótulo $l_i$ na instância.
 Assim, o espaço de rótulos possíveis para uma instância qualquer é definido como $Y=\{0,1\}^r$.
+% A transfomação de um vetor binário pertencente ao espaço $Y$ para o conjunto de rótulos correspondente,
+
+
 
 A tarefa do problema de classificação multirrótulo é encontrar uma função $C : X \rightarrow Y$ de forma
 a maximizar uma métrica de qualidade, definida por uma função que mapeia as predições da função $C$
@@ -267,7 +150,7 @@ conforme o artigo: "Bayes Optimal Multilabel Classification via Probabilistic Cl
 -Falar que é diferente do multiclasse e a razao disso
 \end{verbatim}
 
-A avaliação de desempenho de classicadores, tanto multirrótulo quanto unirrótulo, é comumente feito
+A avaliação de desempenho de classificadores, tanto multirrótulo quanto unirrótulo, é comumente feito
 por meio de testes nas amostras coletadas do problema.
 Isso é feito corretamente com a ajuda de métodos de reamostragem fundamentados pela ciência estatística,
 descritas na seção \ref{sec:modelav}.
@@ -282,12 +165,38 @@ cada uma capturando um aspecto diferente do desempenho do classificador.
 
 
 \subsection{Métricas}
+Seja $P=(p_1,p_2,...,p_n), p_i \subseteq L$
+% $\hat{y}=(\hat{y}_1,\hat{y}_2,...,\hat{y}_n), \hat{y}_i \in Y$
+um vetor de predições de rótulos produzido pela
+classificação das $n$ instâncias de rótulos $(r_1,r_2,...,r_n), r_i \subseteq L$
+% da base $D=\{(x_1,y_1),(x_2,y_2),...,(x_n,y_n)\}, x_i\in X, y_i\in Y$
+respectivamente. Note que aqui as predições $p_i$ e os rótulos $r_i$ estão representados na forma de conjunto de rótulos,
+e não na forma de vetor binário.
+As métricas multirrótulo propostas servem para quantificar a qualidade de $P$
+e úteis para resumi-lo a um único valor escalar entre 0 e 1.
+Abaixo estão algumas métricas definidas por \cite{reviewml2013}:
 \label{sec:metrics}
-\subsubsection{Accuracy}
-\subsubsection{Hamming-Loss}
+\subsubsection{Hamming Loss}
+\begin{equation}
+ hloss(P)=\frac{1}{n} \sum_{i=1}^n{|p_i \triangle r_i|}
+\end{equation}
+O símbolo $\triangle$ é definido como a diferença simétrica entre dois conjuntos de mesmo tamanho.
+O \textit{Hamming Loss} significa a proporção de rótulos preditos mal classificados. Por rótulo predito mal classificado
+entende-se que classificou um rótulo que não existia ou deixou de classificar um rótulo relevante.
+Note que quanto menor o seu valor, melhor é a qualidade de predição, sendo que 0 é a qualidade perfeita e 1 a mais
+imperfeita possível.
+
+Em \cite{pcc2010} é mostrado que para que um classificador minimize o valor dessa métrica, basta minimizar
+o erro (mal classificação) para cada rótulo individualmente. 
+Assim, para minimizar essa métrica não é necessário levar
+em consideração a correlação entre rótulos. Dessa forma considerar os rótulos de forma independente é o suficiente para minimizá-lo,
+apesar de que um método multirrótulo pode usar a correlação entre rótulos para ajudar a minimizá-lo, uma vez que 
+a tarefa de classificação, mesma que de forma independente, é difícil.
+
 \subsubsection{Subset Accuracy}
 \subsubsection{Example Based Accuracy}
-\subsubsection{Ranking Loss}
+\subsubsection{Precision}
+\subsubsection{Recall}
 \subsection{Modelo de Avaliação}
 \label{sec:modelav}
 
@@ -308,6 +217,43 @@ Falar sobre bases separadas de treino,teste e validação.
 \subsection{Probabilistic Classifier Chain}
 \subsection{Relevância Binária Dependente - DBR}
 \label{sec:dbr}
+Este método é baseado no método BR e a diferença entre ambos está no fato de 
+que o DBR não considera os $r$ rótulos independentes.
+
+
+O DBR é composto de dois classificadores multirrótulo, $c_0$ e $c_1$ , 
+cada um composto de $r$ classificadores binários. O classificador multirrótulo $c_0$ é
+exatamente o método BR. Os $r$ classificadores binários $c_1^1,c_1^2...,c_1^r$ que compoêm $c_1$ 
+  trabalham em um novo espaço de características $X^{new}=X \times \{0,1\}^{r-1}$.
+  Esse novo espaço é a extensão do antigo com a adição de $r-1$ rótulos.
+  Digamos que $(x,y)$ seja uma instância do espaço original $X \times Y$
+  onde $x \in X$ e $y \in {\{0,1\}}^{r}$, então cada instância
+  do classificador binário $c_1^i$ tem $|x|+r-1$ características
+  e é definido como sendo $(x,y_1,...,y_{i-1},y_{i+1},...,y_{r})$.
+  
+  \subsubsection{Fase de Treinamento}
+  Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ é o vetor de características de cada instância
+  e $y_i \in Y$ o vetor binário de rótulos de cada instância,
+  primeiro treina-se o $c_0$
+  no espaço de características original conforme o treinamento do próprio BR mostrado na seção \ref{sec:br}.
+  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ adicionando os rótulos de cada
+  exemplo como características. Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
+  cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,r}),y_{i,j} | i=1,...,n\}$.
+  Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
+  Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
+  estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_r)$.
+  
+  \subsubsection{Fase de Predição}
+  Como no caso do Classifier Chain, os rótulos reais $y$, que são usado como características adicionais em cada instância de treino,
+ estão disponíveis apenas durante a fase de treinamento.
+ Com isso, para tornar possível a classificação por $c_1$, o DBR usa o classificador $c_0$ com a finalidade de
+ estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
+ o que resulta no predição $c_0(x)=\hat{y}=(\hat{y}_1,\hat{y}_2,...,\hat{y}_r)$, que servirá como parte da instância de $c_1$,
+ onde antes era o lugar de $y$. 
+ A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y})$ de uma forma bem similar ao BR:
+ cada classificador binário $c_1^i$ do método é responsável pela predição de um único rótulo da instância
+ cujo vetor de características é $(x,\hat{y}_1,...,\hat{y}_{j-1},\hat{y}_{j+1},...,\hat{y}_r)$.
+
 \subsection{Monte Carlo Classifier Chain}
 \cite{mcc2012}
 
@@ -324,7 +270,7 @@ A proposta de \MRLM~(\MRLMa)~é fundamentada no \MML~\textit{dependent binary re
 na seção \ref{sec:dbr}. Assim como o DBR e o CC, o \MRLMa~é um método baseado na transformação do problema que dividem o problema
 multirrótulo em vários problemas classificação binária. Todos eles exploram a correlação entre os rótulos por meio da adição de
 características especiais que representam os rótulos reais ou estimativas dos rótulos reais ao espaço de características original. 
-Mas, diferentemente dos outros, o \MRLMa~adiciona uma inteligência na adição dessas características especiais na fase de predição do método.
+Mas, diferentemente dos outros, o \MRLMa~adiciona uma inteligência no uso dessas características especiais na fase de predição do método.
 A forma de como isso é feito, bem como o funcionamento completo do algoritmo de classificação e a fundamentação teórica
 do \MRLMa~são detalhados na seção \ref{sec:mrlm_algo}. 
 A seção \ref{sec:mrlm_analise} analisa o funcionamento e o desempenho do \MRLMa~de forma empírica.
@@ -361,22 +307,22 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   \item Assim como o DBR, é composto de dois classificadores multirrotulo, o primeiro, $c_0$, é um BR
 %   e o segundo, $c_1$, é um BR ligeiramente modificado, que chamaremos de $BR^*$.
   \item Assim como o DBR, é composto de um BR e um classificador multirrótulo, $c_0$ e $c_1$,
-  cada um composto de $l$ classificadores binários.
+  cada um composto de $r$ classificadores binários.
   \item O $c_0$ trabalha dentro do espaço de características original do problema, de nome $X$,
   e $c_1$ trabalha dentro de um novo espaço de características do problema, de nome $X_e$ e
-   definido como $X_e=X \times \{0,1\}^{l}$. Assim, $c_0$ e $c_1$ são
+   definido como $X_e=X \times \{0,1\}^{r}$. Assim, $c_0$ e $c_1$ são
   representados pelas seguintes funções:
   \begin{equation}
   \begin{split}
-   & c_0 : X \rightarrow \{0,1\}^l \\
-   & c_1 : X_e \rightarrow \{0,1\}^l
+   & c_0 : X \rightarrow \{0,1\}^r \\
+   & c_1 : X_e \rightarrow \{0,1\}^r
    \end{split}
   \end{equation}
-  \item Os $l$ classificadores binários $c_1^1,c_1^2...,c_1^l$ que compoêm $c_1$ não trabalham no mesmo
+  \item Os $r$ classificadores binários $c_1^1,c_1^2...,c_1^r$ que compoêm $c_1$ não trabalham no mesmo
   espaço de características, contudo,
-  trabalham com uma dimensão reduzida, em $X \times \{0,1\}^{l-1}$. Digamos que $(x,y)$ seja uma instância de $X_e$
-  onde $x \in X$ e $y \in {\{0,1\}}^l$, então cada instância 
-  do classificador binário $c_1^i$ tem $|x|+l-1$ características e é definido como sendo $(x,y_1,...,y_{i-1},y_{i+1},...,y_{l})$.
+  trabalham com uma dimensão reduzida, em $X \times \{0,1\}^{r-1}$. Digamos que $(x,y)$ seja uma instância de $X_e$
+  onde $x \in X$ e $y \in {\{0,1\}}^r$, então cada instância 
+  do classificador binário $c_1^i$ tem $|x|+r-1$ características e é definido como sendo $(x,y_1,...,y_{i-1},y_{i+1},...,y_{r})$.
 
   
 %   e o resultado da classificação multirrotulo de $c_1$ é construido da seguinte forma:
@@ -404,7 +350,8 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   A fase de treinamento do \MRLMa~é exatamente igual ao DBR.
   
   De forma mais formal, o treinamento de \MRLM~funciona da seguinte forma.
-  Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ e $y_i \in Y$,
+  Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ é o vetor de características de cada instância
+  e $y_i \in Y$ o vetor binário de rótulos de cada instância,
   primeiro treina-se o $c_0$
   no espaço de características original conforme o treinamento do próprio BR mostrado na seção \ref{sec:br}.
 %   Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ e que é
@@ -412,46 +359,48 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   (ver figura \ref{fig:instsRotulos}).
   Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ adicionando os rótulos de cada
   exemplo como características. Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
-  cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,l}),y_{i,j} | i=1,...,n\}$.
+  cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,r}),y_{i,j} | i=1,...,n\}$.
   Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
   Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
-  estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_l)$.
+  estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_r)$.
  
  \subsection{Fase de Predição}
  \label{sec:mrlm_prediction}
  O funcionamento do \MRLMa~distingue-se do DBR apenas na fase de predição.
- Dado uma instância $x$ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^l$, queremos que a função $C:X\rightarrow Y$,
+ Dado o vetor de características $x$ de uma instância 
+ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^r$, queremos que a função $C:X\rightarrow Y$,
  representando o classificador multirrótulo \MRLMa, retorne $y$ quando o submetemos $x$, ou seja, $C(x)=y$.
  
  Como no caso do DBR e do Classifier Chain, os rótulos reais $y$, que são usado como características especiais,
  estão disponíveis apenas durante a fase de treinamento. Dessa forma, para tornar possível a classificação por $c_1$, usou-se o $c_0$ para
  estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
- resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_l^0)$, que servirá como parte da instância de $c_1$
+ resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_r^0)$, que servirá como parte da instância de $c_1$
  no lugar de $y$. 
- A partir daí, $c_1$ classifica a instância $(x,\hat{y}^0)$ de uma forma bem similar ao BR:
- cada classificador binário do método é responsável pela predição de um rótulo da instância.
+A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y}^0)$ de uma forma bem similar ao BR:
+ cada classificador binário $c_1^i$ do método é responsável pela predição de um único rótulo da instância
+ cujo vetor de características é $(x,\hat{y}_1^0,...,\hat{y}_{j-1}^0,\hat{y}_{j+1}^0,...,\hat{y}_r^0)$.
 %  \begin{equation}
 %   c_1(x)=(c_1^1(x),c_1^2(x),...,c_1^l(x))
 %  \end{equation}
  No entanto, o \MRLMa~adota uma técnica extra, inspirada no Classifier Chain que consiste em, para
  cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
- a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{l}$,
+ a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{r}$,
  classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores.
 
  Assim que $c_1$ classifica a instância $(x,\hat{y}^0)$, gerando portanto a estimativa de rótulos $\hat{y}^1=c_1(x,\hat{y}^0)$,
  $\hat{y}^1$ é usado para atualizar as características da instância $x$, tomando assim o lugar de $\hat{y}^0$.
- Esse processo de atualização das características é iterativo e é repetido $r$ vezes,
- onde $r$ é determinado por um valor máximo de iterações, definido a priori, ou quando é detectado a convergência.
+ Esse processo de atualização das características é iterativo e é repetido $k$ vezes,
+ onde $k$ é determinado por um valor máximo de iterações, definido a priori, ou quando é detectado a convergência.
  A convergência é alcançada quando a estimativa de rótulos não muda, independente do número de iterações.
 %  Isso acontece, por exemplo, quando $c_1(c_1(c_0))=c_1(c_0)$.
- Com $r$ iterações, tem-se $r$ estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^r$, dentre as quais o último ($\hat{y}^r$)
- é a classificação final do método $C(x)=\hat{y}^r$.
+ Com $k$ iterações, tem-se $k$ estimativas de rótulos $\hat{y}^1,\hat{y}^2,...,\hat{y}^k$, dentre as quais o último ($\hat{y}^k$)
+ é a classificação final do método $C(x)=\hat{y}^k$.
  
  Dessa forma, podemos concluir que \MRLM~é um método recursivo de tal forma que
- para $r=1$, $C(x)=c_1(c_0(x))$,
- para $r=2$, $C(x)=c_1(c_1(c_0(x)))$,
- para $r=3$, $C(x)=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
- Note que para $r=0$, o \MRLMa~é exatamente o BR, $C(x)=c_0(x)$.
+ para $k=1$, $C(x)=c_1(x,c_0(x))$,
+ para $k=2$, $C(x)=c_1(x,c_1(x,c_0(x)))$,
+ para $k=3$, $C(x)=c_1(x,c_1(x,c_1(x,c_0(x))))$ e assim por diante.
+ Note que para $k=0$, o \MRLMa~é exatamente o BR, $C(x)=c_0(x)$.
 %  a aplicação de $c_1$ $3$ vezes sobre
 %  $c_0(x)$ resulta na estimativa $\hat{y}^3=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
  Aplicando esse processo recursivo, espera-se que a cada recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
@@ -463,7 +412,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  Com essa suposição teríamos que $\hat{y}^i$ seria melhor do que $\hat{y}^{i-1}$, pois $\hat{y}^{i-1}$ se aproxima
  mais da distribuição real dos rótulos do que $\hat{y}^{i-2}$. Assim, quando $c_1$ estimar $\hat{y}^i$ usando $\hat{y}^{i-1}$ estaria baseado em 
  uma distribuição mais próxima daquela em que foi treinado do que usando $\hat{y}^{i-2}$.
- Lembrando que $c_1$ foi treinado usando rótulos assumidamente corretos.
+ Lembrando que $c_1$ foi treinado usando apenas rótulos assumidamente corretos.
  
  Olhando por esse procedimento, o \MRLMa~pode ser simplesmente visto como uma generalização do BR e do DBR
  que insere uma inteligência
@@ -486,16 +435,16 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  Nessa seção o método \MRLMa~é posto em prova. Com objetivo de analisar o método, implementou-se o algoritmo
  na linguagem de programação Java e no Weka \cite{weka}, que é uma biblioteca que integra técnicas de reconhecimento de padrões.
  A principal hipótese em que o \MRLMa~é baseado será testado nessa seção com o intuito de validar o método.
- Com a finalidade de tornar os testes mais objetivos, a hipótese é melhor formalizado:
+ Com a finalidade de tornar os testes mais objetivos, a hipótese é melhor formalizado assim:
  \begin{itemize}
 
   \item Dados uma métrica $M$, uma base de Teste $D=\{x_1,x_2,...,x_n\}$,
   um DBR induzido composto pelos classificadores multirrótulos $c_0$ e $c_1$ e
-  dois vetores de predições de $l$ rótulos:
+  dois vetores de predições de $r$ rótulos:
   \begin{equation}
   \begin{split}
-  & p=(p_1,p_2,...,p_n) : p_i \in {\{0,1\}}^l |1 \leq i \leq n \\
-  & b=(b_1,b_2,...,b_n) : b_i \in {\{0,1\}}^l |1 \leq i \leq n
+  & p=(p_1,p_2,...,p_n) : p_i \in {\{0,1\}}^r |1 \leq i \leq n \\
+  & b=(b_1,b_2,...,b_n) : b_i \in {\{0,1\}}^r |1 \leq i \leq n
   \end{split}
   \end{equation}
   tal que $M(p_2) \geq M(p_1)$,
@@ -547,12 +496,12 @@ A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenh
 
 
 É importante analisar o quanto o método aumenta o tamanho da base de dados uma vez que isso acarreta no aumento
-do tempo de execução do algoritmo. Seja $l$ o número de rótulos, $n$ o número de instâncias de treino
+do tempo de execução do algoritmo. Seja $r$ o número de rótulos, $n$ o número de instâncias de treino
 e $m$ o número de atributos da base original, na fase de treinamento do \MRLMa, o número de base de dados utilizadas são
-$2l$, cada uma contendo $n$ instâncias. Em metade delas, as instâncias contidas tem $m$ atributos e na outra metade $m+l$ atributos.
-Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(r+1)l$ bases de dados de $n$ instâncias onde na primeira base, o
-número de atributos é igual a $m$ e nas restantes é igual $m+l$. Vale ressaltar que nem todas essas bases de dados são
-armazenados explicitamente na mémoria em espaços diferentes, algumas são reutilizadas no processo de predição.
+$2r$, cada uma contendo $n$ instâncias. Em metade delas, as instâncias contidas tem $m$ atributos e na outra metade $m+r$ atributos.
+Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(r+1)r$ bases de dados de $n$ instâncias onde na primeira base, o
+número de atributos é igual a $m$ e nas restantes é igual $m+r$. Vale ressaltar que nem todas essas bases de dados precisam ser
+armazenados explicitamente na mémoria em espaços diferentes, algumas podem são reutilizadas no processo de predição.
 
 % Em relação a complexidade algorítma do \MRLMa, ela pode ser
 % aproximada pelo número de atributos destinados ao classificador base, uma vez que é um método de transfomação
