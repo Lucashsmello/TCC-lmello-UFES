@@ -1,7 +1,9 @@
 \documentclass[brazil,ruledheader]{abnt}	% padrao abtnt, inlgles, nao sei oq eh ruledheader ainda TODO
-\usepackage[T1]{fontenc} 			% forcar fonte latina
-\usepackage[utf8]{inputenc}
+% \usepackage[T1]{fontenc} 			% forcar fonte latina
+% \usepackage[utf8]{inputenc}
 \usepackage[portuguese]{babel}
+\usepackage{fontspec}
+% \setmainfont{Code2000}
 
 % \usepackage{algorithm2e}			% algoritmo com linhazinha legal ;)
 \usepackage{float}
@@ -10,11 +12,11 @@
 
 \usepackage{url}
 
-\usepackage{amsmath}				% coisas matematicas
-\usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{amsmath,amssymb,amsfonts}
 
 \usepackage{graphicx}				% trecos graficos
+\usepackage{pstricks,pst-node,pst-tree}
 
 \graphicspath{{pics/}}				% caminho para pasta com figuras
 
@@ -24,6 +26,18 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{textcomp}
+
+\newcommand{\hh}{{\pmb{h}}}
+\newcommand{\ww}{{\pmb{w}}}
+\newcommand{\xx}{{\pmb{x}}}
+\newcommand{\yy}{{\pmb{y}}}
+\newcommand{\XX}{{\pmb{X}}}
+\newcommand{\YY}{{\pmb{Y}}}
+
+\newcommand{\tili}{{\tilde{i}}}
+\newcommand{\tilj}{{\tilde{j}}}
+%\newcommand{\p}{\tiny}
+\newcommand{\p}{\scriptsize}
 
 %para insercao de numeracao nas linhas
 %\usepackage{lineno}
@@ -77,8 +91,6 @@ Monografia...???
 \chapter*{Thanks to}
 % 
 \tableofcontents{}
-% 
-\listoffigures
 
 \listoftables
 
