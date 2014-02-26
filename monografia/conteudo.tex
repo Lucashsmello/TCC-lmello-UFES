@@ -345,134 +345,6 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   bem como formalizam e detalham tanto a fase de treinamento quanto a fase de predição do algoritmo.
   É importante observar que a fase de treinamento do \MRLMa~é exatamente o mesmo do que o DBR.
   A diferença de ambos os métodos se dá na fase de predição, descrita na seção \ref{sec:mrlm_prediction}.
-  
-  
-  \begin{figure}
-\centering
-$
-\psmatrix[colsep=.6cm,rowsep=.4cm,linewidth=.4pt]
-\circ\\
-\\
-& \bigcirc &\circ&&\bigcirc&\circ&\\
-&\vdots\\
-& \bigcirc &\circ&&\bigcirc&\circ&\\
-&\vdots\\
-& \bigcirc &\circ&&\bigcirc&\circ&\\
-&\mathrm{BR}&&&\mathrm{RDBR}
-\ncline[linestyle=dotted]{3,3}{3,5}
-\ncput*[npos=.875]{\|}
-\ncline[linestyle=dotted]{5,3}{5,5}
-\ncput*[npos=.875]{\|}
-\ncline[linestyle=dotted]{7,3}{7,5}
-\ncput*[npos=.875]{\|}
-\ncarc[arcangle=-5]{->}{1,1}{3,2}
-\ncarc[arcangle=-5]{->}{1,1}{5,2}
-\ncarc[arcangle=-5]{->}{1,1}{7,2}
-\ncline{->}{3,2}{3,3}
-\ncline{->}{5,2}{5,3}
-\ncline{->}{7,2}{7,3}
-\ncline{->}{3,3}{5,5}
-\ncline{->}{3,3}{7,5}
-\ncline{->}{5,3}{3,5}
-\ncline{->}{5,3}{7,5}
-\ncline{->}{7,3}{3,5}
-\nccircle[linestyle=none]{1,1}{.01cm}^{\textbf{x}}
-\nccircle[linestyle=none]{3,3}{.01cm}_{\hat{y}_1}
-\nccircle[linestyle=none]{5,3}{.01cm}_{\hat{y}_j}
-\nccircle[linestyle=none]{7,3}{.01cm}_{\hat{y}_m}
-\nccircle[linestyle=none]{3,6}{.01cm}_{\hat{y}_1}
-\nccircle[linestyle=none]{5,6}{.01cm}_{\hat{y}_j}
-\nccircle[linestyle=none]{7,6}{.01cm}_{\hat{y}_m}
-\ncline[arm=50pt]{->}{7,3}{5,5}
-\ncarc[arcangle=30]{->}{1,1}{3,5}
-\ncarc[arcangle=34]{->}{1,1}{5,5}
-\ncarc[arcangle=35]{->}{1,1}{7,5}
-\ncline{->}{3,5}{3,6}
-\ncline{->}{5,5}{5,6}
-\ncline{->}{7,5}{7,6}
-\ncloop[arm=.7,loopsize=0,angleA=90,angleB=90]{->}{3,6}{3,3}
-\ncloop[arm=.7,loopsize=0,angleA=90,angleB=90]{->}{5,6}{5,3}
-\ncloop[arm=.7,loopsize=0,angleA=90,angleB=90]{->}{7,6}{7,3}
-\nccircle[linestyle=none]{3,5}{.12cm}>{ h_{1}^{\mathrm{DBR}} }
-\nccircle[linestyle=none]{5,5}{.12cm}>{ h_{j}^{\mathrm{DBR}} }
-\nccircle[linestyle=none]{7,5}{.12cm}>{ h_{m}^{\mathrm{DBR}} }
-\nccircle[linestyle=none]{3,2}{.12cm}>{ h_{1}^{\mathrm{BR}} }
-\nccircle[linestyle=none]{5,2}{.12cm}>{ h_{j}^{\mathrm{BR}} }
-\nccircle[linestyle=none]{7,2}{.12cm}>{ h_{m}^{\mathrm{BR}} }
-\ncline{->}{3,6}{3,7}
-\ncline{->}{5,6}{5,7}
-\ncline{->}{7,6}{7,7}
-\endpsmatrix
-$
-\caption{Architecture of the recursive dependent binary relevance
-classifier (RDBR), batch version.
-In the first layer the binary relevance classifier (BR) provide the class
-labels individually. The next layer provides the mutually dependent estimates
-obtained by the DBR estimator which are recursively fed into the DBR.
-The realimentation to obtain $\hat{\yy}^{\mathrm{(\tau+1)}}$
-is only performed when the complete estimated
-label vector from the current iteration $\hat{\yy}^{\mathrm{(\tau+1)}}$
-has been calculated.}
-\label{fig:RDBRbatch}
-\end{figure}
-
-  
-  \begin{figure}
-\centering
-$
-\psmatrix[colsep=.6cm,rowsep=.4cm,linewidth=.4pt]
-\circ\\
-\\
-& \bigcirc &\circ&&\bigcirc&\enspace&\\
-&\vdots\\
-& \bigcirc &\circ&&\bigcirc&\enspace&\\
-&\vdots\\
-& \bigcirc &\circ&&\bigcirc&\enspace&\\
-&\mathrm{BR}&&&\mathrm{DBR}
-\ncline[linestyle=dotted]{3,3}{3,5}
-\ncput*[npos=.875]{\|}
-\ncline[linestyle=dotted]{5,3}{5,5}
-\ncput*[npos=.875]{\|}
-\ncline[linestyle=dotted]{7,3}{7,5}
-\ncput*[npos=.875]{\|}
-\ncarc[arcangle=-5]{->}{1,1}{3,2}
-\ncarc[arcangle=-5]{->}{1,1}{5,2}
-\ncarc[arcangle=-5]{->}{1,1}{7,2}
-\ncline{->}{3,2}{3,3}
-\ncline{->}{5,2}{5,3}
-\ncline{->}{7,2}{7,3}
-\ncline{->}{3,3}{5,5}
-\ncline{->}{3,3}{7,5}
-\ncline{->}{5,3}{3,5}
-\ncline{->}{5,3}{7,5}
-\ncline{->}{7,3}{3,5}
-\nccircle[linestyle=none]{1,1}{.01cm}^{\textbf{x}}
-\nccircle[linestyle=none]{3,3}{.01cm}_{\hat{y}_1}
-\nccircle[linestyle=none]{5,3}{.01cm}_{\hat{y}_j}
-\nccircle[linestyle=none]{7,3}{.01cm}_{\hat{y}_m}
-\nccircle[linestyle=none]{3,6}{.01cm}_{\hat{y}_1}
-\nccircle[linestyle=none]{5,6}{.01cm}_{\hat{y}_j}
-\nccircle[linestyle=none]{7,6}{.01cm}_{\hat{y}_m}
-\ncline[arm=50pt]{->}{7,3}{5,5}
-\ncarc[arcangle=30]{->}{1,1}{3,5}
-\ncarc[arcangle=34]{->}{1,1}{5,5}
-\ncarc[arcangle=35]{->}{1,1}{7,5}
-\ncline{->}{3,5}{3,6}
-\ncline{->}{5,5}{5,6}
-\ncline{->}{7,5}{7,6}
-\nccircle[linestyle=none]{3,5}{.12cm}>{ h_{1}^{\mathrm{DBR}} }
-\nccircle[linestyle=none]{5,5}{.12cm}>{ h_{j}^{\mathrm{DBR}} }
-\nccircle[linestyle=none]{7,5}{.12cm}>{ h_{m}^{\mathrm{DBR}} }
-\nccircle[linestyle=none]{3,2}{.12cm}>{ h_{1}^{\mathrm{BR}} }
-\nccircle[linestyle=none]{5,2}{.12cm}>{ h_{j}^{\mathrm{BR}} }
-\nccircle[linestyle=none]{7,2}{.12cm}>{ h_{m}^{\mathrm{BR}} }
-\endpsmatrix
-$
-\caption{Arquitetura do classificador \textit{Dependent Binary Relevance} (DBR).
-Na primeira cada, a esquerda, os classificadores binários do BR provê cada
-um dos rótulos individualmente. A próxima camada provê a estimativa final dos rótulos.}
-\label{fig:DBRstruct}
-\end{figure}
  
  
  \subsection{Fase de Treinamento}
@@ -509,13 +381,168 @@ A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y}^0)$ de u
  cada classificador binário $c_1^i$ do método é responsável pela predição de um único rótulo da instância
  cujo vetor de características é $(x,\hat{y}_1^0,...,\hat{y}_{j-1}^0,\hat{y}_{j+1}^0,...,\hat{y}_r^0)$. 
  Esse procedimento é o realizado pelo DBR e é ilustrado na figura \ref{fig:DBRstruct}.
+ 
+   \begin{figure}
+\centering
+$
+\psmatrix[colsep=.6cm,rowsep=.4cm,linewidth=.4pt]
+\\
+\\
+& \bigcirc &\circ&&\bigcirc&\enspace&\\
+&\vdots\\
+& \bigcirc &\circ&&\bigcirc&\enspace&\\
+&\vdots\\
+& \bigcirc &\circ&&\bigcirc&\enspace&\\
+&\mathrm{BR}&&&\mathrm{DBR}
+\ncline[linestyle=dotted]{3,3}{3,5}
+\ncput*[npos=.65]{\|}
+\ncline[linestyle=dotted]{5,3}{5,5}
+\ncput*[npos=.65]{\|}
+\ncline[linestyle=dotted]{7,3}{7,5}
+\ncput*[npos=.65]{\|}
+\ncline{->}{3,2}{3,3}
+\ncline{->}{5,2}{5,3}
+\ncline{->}{7,2}{7,3}
+\ncline{->}{3,3}{5,5}
+\ncline{->}{3,3}{7,5}
+\ncline{->}{5,3}{3,5}
+\ncline{->}{5,3}{7,5}
+\ncline{->}{7,3}{3,5}
+\nccircle[linestyle=none]{3,3}{.01cm}_{\hat{y}_1}
+\nccircle[linestyle=none]{5,3}{.01cm}_{\hat{y}_j}
+\nccircle[linestyle=none]{7,3}{.01cm}_{\hat{y}_r}
+\nccircle[linestyle=none]{3,6}{.01cm}_{\hat{y}_1}
+\nccircle[linestyle=none]{5,6}{.01cm}_{\hat{y}_j}
+\nccircle[linestyle=none]{7,6}{.01cm}_{\hat{y}_r}
+\ncline[arm=50pt]{->}{7,3}{5,5}
+\ncline{->}{3,5}{3,6}
+\ncline{->}{5,5}{5,6}
+\ncline{->}{7,5}{7,6}
+\nccircle[linestyle=none]{3,5}{.12cm}>{ c_1^0 }
+\nccircle[linestyle=none]{5,5}{.12cm}>{ c_1^j }
+\nccircle[linestyle=none]{7,5}{.12cm}>{ c_1^r }
+\nccircle[linestyle=none]{3,2}{.12cm}>{ c_0^0 }
+\nccircle[linestyle=none]{5,2}{.12cm}>{ c_0^j }
+\nccircle[linestyle=none]{7,2}{.12cm}>{ c_0^r }
+\endpsmatrix
+$
+\caption{Arquitetura do classificador \textit{Dependent Binary Relevance} (DBR).
+Na primeira camada (a esquerda), os classificadores binários do BR provê cada
+um dos rótulos individualmente. A próxima camada provê a estimativa final dos rótulos.}
+\label{fig:DBRstruct}
+\end{figure}
+ 
+   \begin{figure}
+\centering
+$
+\psmatrix[colsep=.6cm,rowsep=.4cm,linewidth=.4pt]
+\\
+\\
+& \bigcirc &\circ&&\bigcirc&\circ&\\
+&\vdots\\
+& \bigcirc &\circ&&\bigcirc&\circ&\\
+&\vdots\\
+& \bigcirc &\circ&&\bigcirc&\circ&\\
+&\mathrm{BR}&&&\mathrm{RDBR}
+\ncline[linestyle=dotted]{3,3}{3,5}
+\ncput*[npos=.65]{\|}
+\ncline[linestyle=dotted]{5,3}{5,5}
+\ncput*[npos=.65]{\|}
+\ncline[linestyle=dotted]{7,3}{7,5}
+\ncput*[npos=.65]{\|}
+\ncline{->}{3,2}{3,3}
+\ncline{->}{5,2}{5,3}
+\ncline{->}{7,2}{7,3}
+\ncline{->}{3,3}{5,5}
+\ncline{->}{3,3}{7,5}
+\ncline{->}{5,3}{3,5}
+\ncline{->}{5,3}{7,5}
+\ncline{->}{7,3}{3,5}
+\nccircle[linestyle=none]{3,3}{.01cm}_{\hat{y}_1}
+\nccircle[linestyle=none]{5,3}{.01cm}_{\hat{y}_j}
+\nccircle[linestyle=none]{7,3}{.01cm}_{\hat{y}_r}
+\nccircle[linestyle=none]{3,6}{.01cm}_{\hat{y}_1}
+\nccircle[linestyle=none]{5,6}{.01cm}_{\hat{y}_j}
+\nccircle[linestyle=none]{7,6}{.01cm}_{\hat{y}_r}
+\ncline[arm=50pt]{->}{7,3}{5,5}
+\ncline{->}{3,5}{3,6}
+\ncline{->}{5,5}{5,6}
+\ncline{->}{7,5}{7,6}
+\ncloop[arm=.7,loopsize=0,angleA=90,angleB=90]{->}{3,6}{3,3}
+\ncloop[arm=.7,loopsize=0,angleA=90,angleB=90]{->}{5,6}{5,3}
+\ncloop[arm=.7,loopsize=0,angleA=90,angleB=90]{->}{7,6}{7,3}
+\nccircle[linestyle=none]{3,5}{.12cm}>{ c_1^0 }
+\nccircle[linestyle=none]{5,5}{.12cm}>{ c_1^j }
+\nccircle[linestyle=none]{7,5}{.12cm}>{ c_1^r }
+\nccircle[linestyle=none]{3,2}{.12cm}>{ c_0^0 }
+\nccircle[linestyle=none]{5,2}{.12cm}>{ c_0^j }
+\nccircle[linestyle=none]{7,2}{.12cm}>{ c_0^r }
+\ncline{->}{3,6}{3,7}
+\ncline{->}{5,6}{5,7}
+\ncline{->}{7,6}{7,7}
+\endpsmatrix
+$
+\caption{ Arquitetura do \textit{Recursive Dependent Binary Relevance} (RDBR).
+Na primeira camada (a esquerda), os classificadores binários do BR provê estimativas de cada
+um dos rótulos individualmente. A próxima camada provê as estimativas obtidas pelo DBR as quais
+são usados recursivamente ao realimentar o DBR.
+% The realimentation to obtain $\hat{\yy}^{\mathrm{(\tau+1)}}$
+% is only performed when the complete estimated
+% label vector from the current iteration $\hat{\yy}^{\mathrm{(\tau+1)}}$
+% has been calculated.
+}
+\label{fig:RDBRbatch}
+\end{figure}
+ 
+ 
 %  \begin{equation}
 %   c_1(x)=(c_1^1(x),c_1^2(x),...,c_1^l(x))
 %  \end{equation}
- No entanto, o \MRLMa~adota uma técnica extra, inspirada no Classifier Chain que consiste em, para
- cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
- a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{r}$,
- classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores.
+ 
+ \begin{figure}
+\centering
+$
+\psmatrix[colsep=.6cm,rowsep=.4cm,linewidth=.4pt]
+&\bigcirc&\|&\bigcirc\\
+\\
+&\bigcirc&\|&\bigcirc\\
+\enspace&\enspace&\enspace&\enspace&\enspace\\
+\\
+&\bigcirc&\|&\bigcirc\\
+\\
+&\bigcirc&\|&\bigcirc\\
+\ncline{->}{1,2}{3,4}
+\ncline{->}{3,2}{1,4}
+\ncline[linestyle=dotted]{1,2}{1,3}
+\ncline[linestyle=dotted]{3,2}{3,3}
+\nccircle[linestyle=none]{1,2}{.1cm}^{ y_i^{\mathrm{(\tau)}} }
+\nccircle[linestyle=none]{1,4}{.1cm}^{ y_i^{\mathrm{(\tau+1)}} }
+\nccircle[linestyle=none]{3,2}{.1cm}^{ y_j^{\mathrm{(\tau)}} }
+\nccircle[linestyle=none]{3,4}{.1cm}^{ y_j^{\mathrm{(\tau+1)}} }
+\ncline{4,1}{4,5}
+\ncline{->}{6,2}{8,4}
+\ncline{->}{8,4}{6,4}
+\ncline[linestyle=dotted]{6,2}{6,3}
+\ncline[linestyle=dotted]{8,2}{8,3}
+\nccircle[linestyle=none]{6,2}{.05cm}^{ y_i^{\mathrm{(\tau)}} }
+\nccircle[linestyle=none]{6,4}{.05cm}^{ y_i^{\mathrm{(\tau+1)}} }
+\nccircle[linestyle=none]{8,2}{.1cm}^{ y_j^{\mathrm{(\tau)}} }
+\nccircle[linestyle=none]{8,4}{.1cm}^{ y_j^{\mathrm{(\tau+1)}} }
+\endpsmatrix
+$
+\caption{Basic idea of the recursive dependent binary relevance
+classifier (RDBR), stochastic version.
+In the upper part the update strategy of the batch version is shown.
+A label $\hat{y_{i}}^{\mathrm{(\tau+1)}}$ is estimated,
+based exclusively on the label
+estimates of the previous estimates $\hat{y_{j}}^{\mathrm{(\tau)}}$.
+In the lower part the update strategy of the stochastic version is shown.
+A label $\hat{y_{i}}^{\mathrm{(\tau+1)}}$ is estimated,
+based on the label estimates of the previous estimates
+and on the current estimates $\hat{y_{j}}^{\mathrm{(\tau+1)}}$,
+as soon as they become available.}
+\label{fig:RDBRstochastic}
+\end{figure}
 
  Assim que $c_1$ classifica a instância $(x,\hat{y}^0)$, gerando portanto a estimativa de rótulos $\hat{y}^1=c_1(x,\hat{y}^0)$,
  $\hat{y}^1$ é usado para atualizar as características da instância $x$, tomando assim o lugar de $\hat{y}^0$.
@@ -543,10 +570,17 @@ A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y}^0)$ de u
  mais da distribuição real dos rótulos do que $\hat{y}^{i-2}$. Assim, quando $c_1$ estimar $\hat{y}^i$ usando $\hat{y}^{i-1}$ estaria baseado em 
  uma distribuição mais próxima daquela em que foi treinado do que usando $\hat{y}^{i-2}$.
  Lembrando que $c_1$ foi treinado usando apenas rótulos assumidamente corretos.
- 
- Olhando por esse procedimento, o \MRLMa~pode ser simplesmente visto como uma generalização do BR e do DBR
+  Olhando por todo o procedimento descrito, o \MRLMa~pode ser simplesmente visto como uma generalização do BR e do DBR
  que insere uma inteligência
  adicional a aplicação e uso do classificador $c_1$ de DBR, afim de que ele seja melhor aproveitado.
+ 
+  Adicionalmente, o \MRLMa~adota uma técnica extra, inspirada no Classifier Chain que consiste em, para
+ cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
+ a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{r}$,
+ classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores. Isso é ilustrado
+ na figura \ref{fig:RDBRstochastic}.
+ 
+
  
  \section{Análise}
  \label{sec:mrlm_analise}
