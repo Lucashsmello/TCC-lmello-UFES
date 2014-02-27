@@ -340,8 +340,7 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 %   
   
 \end{itemize}
-  A figura \ref{fig:RDBRbatch} exibe uma imagem que permite visualizar a estrutura do \MRLMa.
-  As seções seguintes explicam o funcionamento da da estrutura apresentada 
+  As seções seguintes explicam o funcionamento da estrutura apresentada 
   bem como formalizam e detalham tanto a fase de treinamento quanto a fase de predição do algoritmo.
   É importante observar que a fase de treinamento do \MRLMa~é exatamente o mesmo do que o DBR.
   A diferença de ambos os métodos se dá na fase de predição, descrita na seção \ref{sec:mrlm_prediction}.
@@ -380,7 +379,9 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y}^0)$ de uma forma bem similar ao BR:
  cada classificador binário $c_1^i$ do método é responsável pela predição de um único rótulo da instância
  cujo vetor de características é $(x,\hat{y}_1^0,...,\hat{y}_{j-1}^0,\hat{y}_{j+1}^0,...,\hat{y}_r^0)$. 
- Esse procedimento é o realizado pelo DBR e é ilustrado na figura \ref{fig:DBRstruct}.
+ Esse procedimento é o realizado pelo DBR e é ilustrado na figura \ref{fig:DBRstruct}. 
+ Nela vemos quais estimativas de rótulos são utilizadas como características adicionais para classificação final
+ de uma instância.
  
    \begin{figure}
 \centering
@@ -427,7 +428,7 @@ $
 \endpsmatrix
 $
 \caption{Arquitetura do classificador \textit{Dependent Binary Relevance} (DBR).
-Na primeira camada (a esquerda), os classificadores binários do BR provê cada
+Na primeira camada (a esquerda), os classificadores binários do BR proveem cada
 um dos rótulos individualmente. A próxima camada provê a estimativa final dos rótulos.}
 \label{fig:DBRstruct}
 \end{figure}
@@ -483,7 +484,7 @@ $
 \endpsmatrix
 $
 \caption{ Arquitetura do \textit{Recursive Dependent Binary Relevance} (RDBR).
-Na primeira camada (a esquerda), os classificadores binários do BR provê estimativas de cada
+Na primeira camada (a esquerda), os classificadores binários do BR proveem estimativas de cada
 um dos rótulos individualmente. A próxima camada provê as estimativas obtidas pelo DBR as quais
 são usados recursivamente ao realimentar o DBR.
 % The realimentation to obtain $\hat{\yy}^{\mathrm{(\tau+1)}}$
@@ -532,20 +533,24 @@ $
 $
 \caption{Estrutura do RDBR com atualização estática (imagem acima) 
 e dinâmica (imagem abaixo) dos rótulos.
-
-
-
-Basic idea of the recursive dependent binary relevance
-classifier (RDBR), stochastic version.
-In the upper part the update strategy of the batch version is shown.
-A label $\hat{y_{i}}^{\mathrm{(\tau+1)}}$ is estimated,
-based exclusively on the label
-estimates of the previous estimates $\hat{y_{j}}^{\mathrm{(\tau)}}$.
-In the lower part the update strategy of the stochastic version is shown.
-A label $\hat{y_{i}}^{\mathrm{(\tau+1)}}$ is estimated,
-based on the label estimates of the previous estimates
-and on the current estimates $\hat{y_{j}}^{\mathrm{(\tau+1)}}$,
-as soon as they become available.}
+Na atualização dinâmica, a estimativa dos rótulos $\hat{y_{i}}^{\mathrm{(\tau+1)}}$
+é baseado nas estimativas dos rótulos anteriores (da iteração $\mathrm{(\tau)}$)
+e nas da iteração atual ($\mathrm{(\tau+1)}$), se
+disponíveis.
+% 
+% 
+% Basic idea of the recursive dependent binary relevance
+% classifier (RDBR), stochastic version.
+% In the upper part the update strategy of the batch version is shown.
+% A label $\hat{y_{i}}^{\mathrm{(\tau+1)}}$ is estimated,
+% based exclusively on the label
+% estimates of the previous estimates $\hat{y_{j}}^{\mathrm{(\tau)}}$.
+% In the lower part the update strategy of the stochastic version is shown.
+% A label $\hat{y_{i}}^{\mathrm{(\tau+1)}}$ is estimated,
+% based on the label estimates of the previous estimates
+% and on the current estimates $\hat{y_{j}}^{\mathrm{(\tau+1)}}$,
+% as soon as they become available.
+}
 \label{fig:RDBRstochastic}
 \end{figure}
 
@@ -578,26 +583,23 @@ as soon as they become available.}
   Olhando por todo o procedimento descrito, o \MRLMa~pode ser simplesmente visto como uma generalização do BR e do DBR
  que insere uma inteligência
  adicional a aplicação e uso do classificador $c_1$ de DBR, afim de que ele seja melhor aproveitado.
+ A figura \ref{fig:RDBRbatch} ilustra bem o funcionamento do RDBR.
+ Nela vemos quais estimativas de rótulos são utilizadas como características adicionais
+ para próxima estimativa de rótulos.
  
   Adicionalmente, o \MRLMa~adota uma técnica extra, inspirada no Classifier Chain que consiste em, para
  cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
  a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{r}$,
  classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores. Isso é ilustrado
- na figura \ref{fig:RDBRstochastic}.
+ na figura \ref{fig:RDBRstochastic} e é chamado de atualização dinâmica dos rótulos.
  
 
  
  \section{Análise}
- \label{sec:mrlm_analise}
- \begin{verbatim}
- ESBOÇO:
-  -Listar as hipoteses/suposições em que MRLM é baseado.
-  -Mostrar experimentos/gráficos que comprovam que as hipoteses bases
-      são verdades(geralmente).
-  -Mostrar complexidade algorítma.
-  -Conclusão rápida em relação a mudança que o MRLM faz com o DBR.
-      (Conclusão mais detalhada será feita no último capitulo da monografia!)
- \end{verbatim}
+ \label{sec:mrlm_analise} 
+ 
+ 
+ \input{plots/emotions.tex}
  
  Nessa seção o método \MRLMa~é posto em prova. Com objetivo de analisar o método, implementou-se o algoritmo
  na linguagem de programação Java e no Weka \cite{weka}, que é uma biblioteca que integra técnicas de reconhecimento de padrões.
