@@ -123,7 +123,7 @@ $X\subseteq \mathbb{R}^n$ e $L=\{l_1,l_2,l_3,...l_r\}$ o conjunto dos $r$ rótul
 uma instância é definida como sendo uma dupla de vetores $(x',y')$ tal que $x'\in X$ e $y'$ é um vetor binário
 $y'=(y'_1,y'_2,...,y'_r)$ de tal forma que $y'_i=1$ indica a presença do rótulo $l_i$ na instância.
 Assim, o espaço de rótulos possíveis para uma instância qualquer é definido como $Y=\{0,1\}^r$.
-% A transfomação de um vetor binário pertencente ao espaço $Y$ para o conjunto de rótulos correspondente,
+% A transformação de um vetor binário pertencente ao espaço $Y$ para o conjunto de rótulos correspondente,
 
 
 
@@ -200,17 +200,43 @@ a tarefa de classificação, mesma que de forma independente, é difícil.
 \subsection{Modelo de Avaliação}
 \label{sec:modelav}
 
-\begin{verbatim}
-ESBOÇO:
-Falar do Holdout,Cross-validation estratificado.
-Falar sobre bases separadas de treino,teste e validação.
-\end{verbatim}
-
 \chapter{Métodos Multirrótulos}
 \section{Transformação do Problema}
 \subsection{Relevância Binária - BR}
 \label{sec:br}
-\cite{br2010}
+
+
+O método da Relevância Binária, conhecido como \textit{Binary Relevance} \cite{br2010}, 
+é composto de $r$ classificadores binários $c_1,c_2,...,c_r$. Cada classificador $c_i$ 
+é associado ao rótulo $i$ e treinado com o único objetivo de resolver
+um problema de classificação binária onde as instâncias que
+tem o rótulo $i$ são consideradas para o classificador $c_i$ como positivas
+e as demais instâncias como
+negativas. 
+Após todos os classificadores terem sido treinados, quando uma instância
+ainda não de rótulo desconhecido 
+é apresentado aos classificadores, todos aqueles que produzirem uma classe positiva
+terão sua classe associada á nova instância.
+O método de classificação de relevância binária é uma estratégia de transformação do
+problema, que decompõe o problema de classificação multirrótulo em diversos problemas
+de classificação binária unirrótulo, um para cada um dos rótulos do problema.
+
+\begin{figure}
+\caption{Exemplo da transformação realizada pelo método \textit{BR}}
+\label{fig:br}
+ 
+ \includegraphics[width=1\linewidth]{BR-figure2}
+
+\end{figure}
+
+A figura \ref{fig:br} ilustra um exemplo da transformação que o BR realiza em um problema multirrótulo
+de rótulos $A,B$ e $C$ e 6 instâncias. Nele vemos que o BR transforma a base de treino em 3 novas bases
+de dados, um para cada classificador binário.
+
+
+
+
+
 \subsection{Classifier Chain}
 \cite{cc2009}
 \subsection{Ensemble of Classifier Chain}
@@ -598,9 +624,6 @@ disponíveis.
  \section{Análise}
  \label{sec:mrlm_analise} 
  
- 
- \input{plots/emotions.tex}
- 
  Nessa seção o método \MRLMa~é posto em prova. Com objetivo de analisar o método, implementou-se o algoritmo
  na linguagem de programação Java e no Weka \cite{weka}, que é uma biblioteca que integra técnicas de reconhecimento de padrões.
  A principal hipótese em que o \MRLMa~é baseado será testado nessa seção com o intuito de validar o método.
@@ -643,23 +666,62 @@ Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho me
 alcançou o mesmo desempenho do DBR.
 
 
-\begin{figure}[h]
-\label{fig:Gmrlm_1}
-\caption{Gráfico do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de iterações (eixo horizontal)
-representado na linha azul.
-A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR}
+
+\begin{figure}
 \centering
-\includegraphics[width=1\textwidth] {Gmedicalj48_mrlm.png}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/emotions}
+  \caption{Emotions}
+  \label{fig:subemotions}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/medical}
+  \caption{Medical}
+  \label{fig:submedical}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/scene}
+  \caption{Scene}
+  \label{fig:subscene}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/enron}
+  \caption{Enron}
+  \label{fig:subenron}
+\end{subfigure}
+
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/yeast}
+  \caption{Yeast}
+  \label{fig:subyeast}
+\end{subfigure}
+\caption{Gráficos de análise de desempenho do \MRLMa.}
+\label{fig:test}
 \end{figure}
 
-\begin{figure}[h]
-\label{fig:Gmrlm_2}
-\caption{Gráficos do desempenho do \MRLMa~(eixo vertical) para vários valores máximos de iterações (eixo horizontal)
-representado nas linha azuis.
-A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenho do DBR.}
+\begin{figure}
 \centering
-\includegraphics[width=1\textwidth] {Gbirdsj48_mrlm.png}
-\includegraphics[width=1\textwidth] {Ggenbaseknn_mrlm.png}
+ \begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/birds}
+  \caption{Birds}
+  \label{fig:subbirds}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[angle=-90, width=1\linewidth]{plots/genbase}
+  \caption{Genbase}
+  \label{fig:subgenbase}
+\end{subfigure}
+
+\caption{Gráficos de análise de desempenho do \MRLMa~nos dois experimentos em que
+o \MRLMa~não melhorou na sua segunda iteração.}
 \end{figure}
 
 
@@ -668,12 +730,12 @@ A linha em vermelha representa um limiar para o \MRLMa~cujo valor é o desempenh
 do tempo de execução do algoritmo. Seja $r$ o número de rótulos, $n$ o número de instâncias de treino
 e $m$ o número de atributos da base original, na fase de treinamento do \MRLMa, o número de base de dados utilizadas são
 $2r$, cada uma contendo $n$ instâncias. Em metade delas, as instâncias contidas tem $m$ atributos e na outra metade $m+r$ atributos.
-Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(r+1)r$ bases de dados de $n$ instâncias onde na primeira base, o
+Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(k+1)r$ bases de dados de $n$ instâncias onde na primeira base, o
 número de atributos é igual a $m$ e nas restantes é igual $m+r$. Vale ressaltar que nem todas essas bases de dados precisam ser
 armazenados explicitamente na mémoria em espaços diferentes, algumas podem são reutilizadas no processo de predição.
 
 % Em relação a complexidade algorítma do \MRLMa, ela pode ser
-% aproximada pelo número de atributos destinados ao classificador base, uma vez que é um método de transfomação
+% aproximada pelo número de atributos destinados ao classificador base, uma vez que é um método de transformação
 % e a maior parte do custo computacional se encontra no classificador base.
 % A complexidade 
 
@@ -756,7 +818,7 @@ Nela são apresentadas as seguintes informações de cada base de dados:
 
 % 
 % Este capítulo se encontra dividido em duas seções, na primeira foram analisados os
-% resultados dos métodos de transfomação para cada classificador base.
+% resultados dos métodos de transformação para cada classificador base.
 % Já na segunda seção cada combinação de método multirrótulo com classificador base foi considerado
 % um método de transformação e seus resultados são comparados entre si juntamente com os métodos multirrótulos
 % de adaptação.

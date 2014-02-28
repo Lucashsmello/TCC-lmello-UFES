@@ -15,10 +15,10 @@ do
     set xlabel "Número de iterações"
     set ylabel "Subset Accuracy"
     set yrange [${yy1[$i]}:${yy2[$i]}]
-    set terminal postscript
+    set terminal postscript color "Helvetica,25"
     set output '| ps2pdf - plots/${b}.pdf'
-    plot "${b}.data" using 2 title "RDBR" with linespoints ls 7 lt 1 lw 4, \
-         "${b}.data" using 3 title "DBR" with linespoints ls 2 lt 1 lw 4
+    plot "${b}.data" using 2 title "RDBR" with linespoints ls 7 lt 1 lw 1 lc 3, \
+         "${b}.data" using 3 title "DBR" with linespoints ls 2 lt 1 lw 1 lc 1
     #pause 2
 
 EOF
