@@ -9,6 +9,11 @@
 \newcommand{\MRLM}{Recursive Dependent Binary Relevance}
 \newcommand{\MRLMa}{RDBR}
 
+\newcommand{\legendaTab}[2]{Desempenho dos métodos multirrótulos com \textit{#2} medido pela métrica \textit{#1} }
+\newcommand{\jqo}{J48}
+\newcommand{\EBA}{Example Based Accuracy}
+\newcommand{\SA}{\textit{Subset Accuracy}}
+
 \chapter{Introdução}
 Segundo \cite{rezende2003sistemas} Aprendizado de Máquina é uma área de Inteligência Artificial
 cujo objetivo é o desenvolvimento de técnicas computacionais
@@ -210,7 +215,7 @@ O método da Relevância Binária, conhecido como \textit{Binary Relevance} \cit
 é composto de $r$ classificadores binários $c_1,c_2,...,c_r$. Cada classificador $c_i$ 
 é associado ao rótulo $i$ e treinado com o único objetivo de resolver
 um problema de classificação binária onde as instâncias que
-tem o rótulo $i$ são consideradas para o classificador $c_i$ como positivas
+tem o rótulo $r_i$ são consideradas para o classificador $c_i$ como positivas
 e as demais instâncias como
 negativas. 
 Após todos os classificadores terem sido treinados, quando uma instância
@@ -222,10 +227,10 @@ problema, que decompõe o problema de classificação multirrótulo em diversos 
 de classificação binária unirrótulo, um para cada um dos rótulos do problema.
 
 \begin{figure}
-\caption{Exemplo da transformação realizada pelo método \textit{BR}}
-\label{fig:br}
- 
  \includegraphics[width=1\linewidth]{BR-figure2}
+ 
+ \caption{Exemplo da transformação realizada pelo método \textit{BR}}
+\label{fig:br}
 
 \end{figure}
 
@@ -238,7 +243,40 @@ de dados, um para cada classificador binário.
 
 
 \subsection{Classifier Chain}
-\cite{cc2009}
+
+
+A idéia básica desse algoritmo é semelhante ao BR: realiza a transformação do
+problema multirrótulo decompondo-o em diversos problemas
+de classificação binária unirrótulo, um para cada um dos rótulos do problema.
+Ele é também composto de $r$ classificadores binários $c_1,c_2,...,c_r$ e cada um
+é associado a um único rótulo distinto. A diferença do \textit{Classifier Chain} para o BR está
+em que os classificadores binários estão organizados em uma cadeia de tal forma que
+o classificador $c_i$ é contruído com base nos rótulos ou predições dos classificadores anteriores
+($c_{i-1},c_{i-2},...,c_{1}$) \cite{cc2009}. O classificador $c_i$ não está necessariamente associado ao rótulo $r_i$,
+ele pode estar associado a qualquer um dos rótulos.
+Essa associação é feita de forma aleatória ou pré-definida por parâmetro do algoritmo.
+
+Na fase de treinamento do método o espaço de características de cada classificador $c_i$ é 
+extendido com os valores dos $i-1$ rótulos reais anteriores da cadeia. Veja um exemplo 
+ilustrado na figura \ref{fig:CCtraintest} onde o método é treinado sobre uma base de treino de três rótulos ($A,B,C$)
+e seis instâncias. Note que a base de treino do classificador binário $B$ tem como característica adicional o rótulo $A$.
+
+Na fase de predição do método a classificação ocorre de forma sequencial, na ordem em que a cadeia foi definida.
+O classificador $c_1$ inicia o processo de classificação realizando a estimativa do rótulo associado da instância teste.
+A partir daí o classificador $c_i$ realiza a predição da instância teste assim que a predição do classificador $c_{i-1}$
+esteja disponível. O classificador $c_i$ agrega a predição do classificador $c_{i-1}$, que é um valor binário (0 ou 1),
+a instância de teste. A figura \ref{fig:CCtraintest} ilutra bem o processo de predição na qual o vetor de características da
+instância teste vai crescendo com adição de cada estimativa de rótulo.
+
+
+\begin{figure}
+
+ \includegraphics[width=1\linewidth]{CC-train-test}
+ \caption{Ilustração de um exemplo da fase de treinamento e de predição do método Classifier Chain.}
+\label{fig:CCtraintest}
+\end{figure}
+
+
 \subsection{Ensemble of Classifier Chain}
 \subsection{Probabilistic Classifier Chain}
 \subsection{Relevância Binária Dependente - DBR}
@@ -761,14 +799,25 @@ são listadas:
 As fórmulas para o cálculo de cada uma das métricas são apresentadas na seção \ref{sec:metrics}.
 É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
 um aspecto diferente da classificação. 
+
+A análise experimental dos métodos se encontram divididos em dois estudos. O primeiro estudo consiste em
+comparar os métodos quando todos usam o mesmo classificador base e o segundo em comparar cada combinação de um
+modelo de classificação multirrótulo com uma configuração de parâmetros definida. 
+O primeiro estudo tem por objetivo analisar se cada método multirrótulo apresentada desempenhos diferentes para
+diferentes classificadores, ou seja, se o \textit{ranking} é alterado ao alterar o classificador base.
+O segundo estudo tem por objetivo analisar os métodos de uma forma geral, uma vez que é desconhecido
+o classificador base que melhor se adapta a cada base, a priori.
+
 Num total, foram utilizados \Nml~modelos de classificação multirrótulos: BR, DBR, RDBR, CC, ECC e MCC.
-Para cada um deles utilizou-se os seguintes classificadores base: KNN, SVM, J48 e Regressão Logística. 
-Para o melhor entendimento, neste capítulo um método multirrótulo é definido como sendo a combinação
-de um modelo de classificação multirrótulo com uma configuração de parâmetros pré-definida. Assim, por exemplo,
-o classificador BR com KNN é considerado um método diferente do classificador BR com SVM. Isso, por um lado é bom
-pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
-Por outro lado é ruim uma vez que considera os mesmos modelos de classificação como sendo completamente diferentes.
-Dessa forma, foram considerados 24 métodos multirrótulos e comparados entre si de forma experimental.
+Para cada um deles utilizou-se os seguintes classificadores base: KNN, SVM, \jqo e Regressão Logística \cite{classificadoresbases}. 
+% Para o melhor entendimento, neste capítulo um método multirrótulo é definido como sendo a combinação
+% de um modelo de classificação multirrótulo com uma configuração de parâmetros pré-definida. Assim, por exemplo,
+% o classificador BR com KNN é considerado um método diferente do classificador BR com SVM.
+% Isso, por um lado é bom
+% pois testa o desempenho dos classificadores multirrótulo quando não é gasto tempo computacional para ajustar parâmetros.
+% Por outro lado é ruim uma vez que considera os mesmos modelos de classificação como sendo completamente diferentes.
+% Dessa forma, foram considerados 24 métodos multirrótulos e comparados entre si de forma experimental.
+
 
 \section{Base de dados}
 \label{sec:datas}
@@ -785,9 +834,8 @@ As bases de dados são apresentadas a seguir:
 \item \bf{Enron}: ??	
 
 \end{itemize}
-\label{tab:datas}
+
 \begin{table}[h]
-\caption{Resumo das bases de dados multirrótulos}
 \begin{tabular}{|c|ccccccc|}
 \hline
 % \textbf{}         & \textbf{}        & \textbf{}         & \multicolumn{2}{c}{\textbf{ATRIBUTOS}} & \textbf{}        & \textbf{}              & \textbf{}          \\
@@ -800,6 +848,8 @@ As bases de dados são apresentadas a seguir:
 \textbf{Medical}  & Texto            & 978               & 1449              & 0                  & 45               & 1.245                  & 0.028              \\
 \textbf{Enron}    & Texto            & 1702              & 1001              & 0                  & 53               & 3.378                  & 0.064             \\ \hline
 \end{tabular}
+\caption{Resumo das bases de dados multirrótulos}
+\label{tab:datas}
 \end{table}
 
 A tabela \ref{tab:datas} apresenta algumas estatísticas das bases de dados adquiridas.
@@ -825,20 +875,75 @@ Nela são apresentadas as seguintes informações de cada base de dados:
 
 
 \section{Resultados Experimentais}
-Nesta seção é feita uma análise geral do desempenho dos métodos multirrótulos em cada uma das bases de dados
+Nesta seção é feita uma análise do desempenho dos métodos multirrótulos em cada uma das bases de dados
 em diferentes métricas.
-Para cada métrica escolhida é apresentado uma tabela
-contendo os valores das métricas para cada um dos métodos multirrótulo e o
-o ranking dos métodos multirrótulos.
+Essa seção é dividida em 4 subseções, uma para cada classificador base escolhido. Em cada uma
+delas os métodos tiveram seus classificadores bases fixados.
+A razão disso vem do fato de que queremos comparar os métodos multirrótulos entre si, e não os seus classificadores
+bases.
+Ao fixarmos o classificador base, 
+o desempenho irá depender apenas do modelo de classificação multirrótulo
+de cada um.
+Em cada subseção e para cada métrica escolhida é apresentado uma tabela
+contendo os valores da métrica para cada um dos métodos multirrótulo e
+o ranking dos métodos multirrótulos. Conclusões e análises finais sobre
+os fatos e observações levantados nessas subseções serão
+dadas no capítulo \ref{sec:conclusions}.
 
 % \subsection{Hammin}
 
-\begin{table}[h]
-\label{tab:hammingloss}
+% \begin{table}[h]
+% \label{tab:hammingloss}
+% 
+% \caption{EXEMPLO DE TABELA, NAO É DE VERDADE AINDA!}
+% 
+% \end{table}
 
-\caption{EXEMPLO DE TABELA, NAO É DE VERDADE AINDA!}
+\subsection{KNN}
+\input{tabelas/SAknn.tex}
+\input{tabelas/HLknn.tex}
+\input{tabelas/EBAknn.tex}
 
-\end{table}
+
+Vejamos alguns pontos interessantes nos testes das tabelas
+\ref{tab:SAknn},\ref{tab:HLknn} e \ref{tab:EBAknn}.
+Note que o \textit{ranking} dos métodos mudou bastante de métrica para métrica.
+No caso do BR, o ranking médio caiu de $4.5$ no \SA para $1.75$ no Hamming Loss, ou seja,
+de penúltimo colocado no ranking médio para primeiro colocado. 
+Isso já é uma colocação forte para afirmação anterior, no início do capítulo, em que 
+cada métrica captura um aspecto diferente do método. 
+
+
+
+\subsection{SVM}
+\input{tabelas/SAsvm.tex}
+\input{tabelas/HLsvm.tex}
+\input{tabelas/EBAsvm.tex}
+
+\subsection{\jqo}
+\input{tabelas/SAj48.tex}
+\input{tabelas/HLj48.tex}
+\input{tabelas/EBAj48.tex}
+\subsection{Logi}
+\input{tabelas/SAlogi.tex}
+\input{tabelas/HLlogi.tex}
+\input{tabelas/EBAlogi.tex}
+
+
+% \input{tabelas/SAknn.tex}
+% \input{tabelas/SAsvm.tex}
+% \input{tabelas/SAj48.tex}
+% \input{tabelas/SAlogi.tex}
+% 
+% \input{tabelas/HLknn.tex}
+% \input{tabelas/HLsvm.tex}
+% \input{tabelas/HLj48.tex}
+% \input{tabelas/HLlogi.tex}
+% 
+% \input{tabelas/EBAknn.tex}
+% \input{tabelas/EBAsvm.tex}
+% \input{tabelas/EBAj48.tex}
+% \input{tabelas/EBAlogi.tex}
 
 % \subsection{Medical}
 % \subsection{Yeast}
@@ -853,3 +958,4 @@ o ranking dos métodos multirrótulos.
 
 
 \chapter{Conclusão}
+\label{sec:conclusions}
