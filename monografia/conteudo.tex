@@ -13,6 +13,9 @@
 \newcommand{\jqo}{J48}
 \newcommand{\EBA}{Example Based Accuracy}
 \newcommand{\SA}{\textit{Subset Accuracy}}
+\newcommand{\HL}{\textit{Hamming Loss}}
+\newcommand{\CC}{\textit{Classifier Chain}}
+\newcommand{\ECC}{\textit{Ensemble of }~\CC}
 
 \chapter{Introdução}
 Segundo \cite{rezende2003sistemas} Aprendizado de Máquina é uma área de Inteligência Artificial
@@ -66,8 +69,9 @@ desenvolver um novo algoritmo de classificação multirrótulo.
 Mais formalmente, a análise deve implicar em conclusões matemáticas ou estatísticas sobre o desempenho dos métodos multirrótulo.
 O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 \begin{itemize}
+ \item Descobrir como medir correlação entre rótulos;
  \item Comparação estatística e análise crítica dos métodos multirrótulos;
- \item Elaboração de um algoritmo de um novo método multirrótulo.
+ \item Elaboração de um algoritmo de um novo método multirrótulo;
  \item Implementação dos métodos multirrótulos em uma biblioteca que integra técnicas de reconhecimento de padrões.
 \end{itemize}
 
@@ -875,6 +879,7 @@ Nela são apresentadas as seguintes informações de cada base de dados:
 
 
 \section{Resultados Experimentais}
+\label{sec:exps}
 Nesta seção é feita uma análise do desempenho dos métodos multirrótulos em cada uma das bases de dados
 em diferentes métricas.
 Essa seção é dividida em 4 subseções, uma para cada classificador base escolhido. Em cada uma
@@ -909,10 +914,15 @@ Vejamos alguns pontos interessantes nos testes das tabelas
 \ref{tab:SAknn},\ref{tab:HLknn} e \ref{tab:EBAknn}.
 Note que o \textit{ranking} dos métodos mudou bastante de métrica para métrica.
 No caso do BR, o ranking médio caiu de $4.5$ no \SA para $1.75$ no Hamming Loss, ou seja,
-de penúltimo colocado no ranking médio para primeiro colocado. 
-Isso já é uma colocação forte para afirmação anterior, no início do capítulo, em que 
-cada métrica captura um aspecto diferente do método. 
+de penúltimo colocado no ranking médio para o primeiro colocado. 
+Lembre-se de que cada métrica captura um aspecto diferente do método.
+Note que para a base de dados \textit{Enron}, o valor do \SA~é o mais baixo dentre todas bases.
+Isso é esperado uma vez que é a base \textit{Enron} é a base com maior número de rótulos ($53$) e o \SA
+exige fortemente que a predição do classificador acerte a única possível combinação dentre as $2^{53}$ possíveis.
+Mas o interessante é que, apesar do \SA~ser o pior para essa base, o \HL~é o quarto melhor.
+Isso sugere que há um alguns poucos rótulos que são difíceis de serem corretamente preditos.
 
+Para o classificador base KNN, o RDBR obteve o melhor resultado na métrica \SA~e na métrica \EBA.
 
 
 \subsection{SVM}
@@ -920,14 +930,35 @@ cada métrica captura um aspecto diferente do método.
 \input{tabelas/HLsvm.tex}
 \input{tabelas/EBAsvm.tex}
 
+Nas tabelas
+\ref{tab:SAsvm},\ref{tab:HLsvm} e \ref{tab:EBAsvm} observamos os mesmo pontos
+interessantes que nas tabelas do KNN, (\ref{tab:SAknn},\ref{tab:HLknn} e \ref{tab:EBAknn}):
+O \textit{ranking} muda bastante de métrica para métrica e o \SA~é baixo para algumas base porém
+o \HL~é bom para as mesmas. No entanto, o modelo de classificação multirrótulo que mais se adaptou ao SVM foi
+o \ECC. Adicionalmente, a ordem dos métodos que obtiverem o melhor rank médio alterou-se consideravelmente.
+Para o \SA~a ordem crescente era \MRLMa,MCC,DBR,CC,BR,ECC com o KNN, mas com o SVM a ordem mudou para ECC,MCC,\MRLMa,CC,DBR,BR.
+
 \subsection{\jqo}
 \input{tabelas/SAj48.tex}
 \input{tabelas/HLj48.tex}
 \input{tabelas/EBAj48.tex}
+
+Além de reforçar os mesmos pontos interessantes citados nos classificadores bases anteriores,
+os testes com o \jqo, apresentados nas tabelas \ref{tab:SAj48},\ref{tab:HLj48} e \ref{tab:EBAj48}, mostraram mais uma vez que o \ECC~e o \MRLMa~obtiveram os melhores resultados, exceto
+no Hamming Loss, na qual o BR superou o \MRLMa.
+
 \subsection{Logi}
 \input{tabelas/SAlogi.tex}
 \input{tabelas/HLlogi.tex}
 \input{tabelas/EBAlogi.tex}
+
+
+Os resultados apresentados nas tabelas \ref{tab:SAlogi},\ref{tab:HLlogi} e \ref{tab:EBAlogi},
+mostraram mais uma vez que \ECC~se adaptou mais ao classificador base escolhido 
+que os demais métodos multirrótulo.
+Note mais uma vez que o desempenho muda muito de métrica pra métrica. O \CC~que tem
+o segundo melhor \textit{ranking} médio no \SA, tem o pior \textit{ranking} médio no
+Hamming Loss.
 
 
 % \input{tabelas/SAknn.tex}
@@ -952,10 +983,30 @@ cada métrica captura um aspecto diferente do método.
 % \subsection{Enron}
 % \subsection{Birds}
 
-\section{Complexidade Algorítima}
+\section{Análise Experimental}
+
+
 
 
 
 
 \chapter{Conclusão}
+Este trabalho teve por objetivo as seguintes atividades:
+\begin{enumerate}
+ \item Descobrir como medir correlação entre rótulos;
+ \item Comparação estatística e análise crítica dos métodos multirrótulos;
+ \item Elaboração de um algoritmo de um novo método multirrótulo;
+\end{enumerate}
+O objetivo 1 foi considerado alcançado a
+
+
+A partir dos experimentos mostrados e analisados na seção \ref{sec:exps} podemos
+chegar aos seguintes pontos conclusivos
+Vimos que pelos experimentos mostrados na seção \ref{sec:exps}
+a escolha desse modelo de classificação binária afeta significativamente o desempenho do método.
+
+
+
+
+
 \label{sec:conclusions}
