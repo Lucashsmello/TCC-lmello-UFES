@@ -9,47 +9,53 @@
 \newcommand{\MRLM}{Recursive Dependent Binary Relevance}
 \newcommand{\MRLMa}{RDBR}
 
-\newcommand{\legendaTab}[2]{Desempenho dos métodos multirrótulos com \textit{#2} medido pela métrica \textit{#1} }
+
 \newcommand{\jqo}{J48}
 \newcommand{\EBA}{Example Based Accuracy}
 \newcommand{\SA}{\textit{Subset Accuracy}}
 \newcommand{\HL}{\textit{Hamming Loss}}
 \newcommand{\CC}{\textit{Classifier Chain}}
 \newcommand{\ECC}{\textit{Ensemble of }~\CC}
+\newcommand{\BR}{\textit{Binary Relevance}}
+\newcommand{\tabmode}{h}
+% \newcommand{\legendaTab}[2]{Desempenho dos métodos multirrótulos com \textit{#2} medido pela métrica \textit{#1} }
+\newcommand{\legendaTab}[2]{Desempenho dos métodos multirrótulos com \textit{#2} medidos pelas métricas \SA,\HL~e~\EBA}
 
 \chapter{Introdução}
-Segundo \cite{rezende2003sistemas} Aprendizado de Máquina é uma área de Inteligência Artificial
+Segundo \cite{rezende2003sistemas} Aprendizado de Máquina é uma área da Inteligência Artificial
 cujo objetivo é o desenvolvimento de técnicas computacionais
 sobre o aprendizado bem como a construção de sistemas capazes de adquirir
-conhecimento de forma automática. Essa área tem atraido a atenção de muitos 
-pesquisadores em diversas especialidades. Dentro dessa área, encontra-se a subárea Aprendizado Supervisionado.
+conhecimento de forma automática. Dentro dessa área, encontra-se a subárea Aprendizado Supervisionado.
 Em Aprendizado Supervisionado, um problema de classificação é a tarefa de encontrar
 uma técnica capaz de predizer a classe ou as classes que uma instância de
 um objeto em específico pertence \cite{rezende2003sistemas}.
 Para completar essa tarefa, a técnica deve usar exemplos de treino cujas as classes
 são conhecidas que lhe são dispostas. Uma instância é um objeto do mundo real descrito
 por um vetor de valores numéricos ou nominais e por um conjunto de rótulos.
-Na literatura, as classes também são chamadas de rótulos (REZENDE, 2003, p. 91)
+Na literatura, como por \cite{rezende2003sistemas}, as classes também são chamadas de rótulos
 e quando as instâncias só podem assumir um único rótulo, o problema é chamado de classificação unirrótulo,
-do contrário, é chamado de problema de classificação multirrótulo (BORGES, 2012).
+do contrário, é chamado de problema de classificação multirrótulo \cite{borges2012}.
 
 Problemas de classificação multirrótulo estão presentes em diversas áreas, trabalhos relevantes podem
 ser encontrados em áreas como a bioinfomática, diagnóstico médico, classificação de imagens e principalmente
-categorização de textos (CARVALHO, 2009, p. 2). A classificação multirrótulo é inevitavelmente
-mais complexa que a unirrótulo. Para solucioná-la,  o método multirrótulo mais conhecido é um método simples chamado de
-Relevância Binária (BR – Binary Relevance) (READ, 2011, p. 2). 
-Há muitas críticas sobre o método, sendo a maior delas a incapacidade do método de reconhecer correlação entre os rótulos (READ, 2011, p. 2).
-Com o intuito de alcançar melhores resultados que o BR, alguns autores o aprimoraram ou elaboraram novos tipos de métodos
-de tal forma que divergem na forma como resolvem o problema (READ, 2011). 
-Por exemplo, existem métodos que transformam o problema multirrótulo em
-diversos problemas unirrótulo, como é o caso do BR, e outros métodos que são classificadores especiais, capazes de classificar diretamente sobre os problemas multirrótulo, sem necessidade de transformação, como é o caso do Multi-Label C4.5 (MADJAROV et al., 2012, p. 5). 
+categorização de textos, conforme \cite{carvalho2009}. A classificação multirrótulo é inevitavelmente
+mais complexa que a unirrótulo. Para solucioná-la, o método multirrótulo mais conhecido é um método simples chamado de
+Relevância Binária (\textit{BR – Binary Relevance}) \cite{carvalho2009}. 
+No entanto, há muitas críticas sobre \textit{BR}, sendo a maior delas a incapacidade do método de reconhecer
+a correlação entre os rótulos, como dito por \cite{pcc2010}.
+Com o intuito de alcançar melhores resultados que o \textit{BR}, alguns autores, como \cite{cc2009} e \cite{dbr2014},
+o aprimoraram ou elaboraram novos tipos de métodos baseados nele,
+os quais exploram a dependência entre os rótulos. 
+% Por exemplo, existem métodos que transformam o problema multirrótulo em
+% diversos problemas unirrótulo, como é o caso do \textit{BR}, e outros métodos que são classificadores especiais,
+% capazes de classificar diretamente sobre os problemas multirrótulo, sem necessidade de transformação, como é o caso do Multi-Label C4.5 (MADJAROV et al., 2012, p. 5). 
 
-Com tantos métodos novos, alguns deles apresentados por Carvalho (2009)
-e por Read(2011) é necessário realizar comparações e testes de qualidade.
+Com tantos métodos novos, alguns deles apresentados por \cite{carvalho2009}
+e por \cite{cc2009} é necessário realizar comparações e testes de qualidade.
 É certo que já existem análises e comparações entre os métodos,
-no entanto há necessidade de avaliar os métodos de forma mais formal
+no entanto há necessidade de avaliar os métodos mais formalmente
 e reforçar as conclusões alcançadas pelos autores dos métodos além de elaborar
-uma forma eficiente de comparar tipos diferentes de métodos multirrótulos (DRUMMOND, 2008).
+uma forma eficiente de comparar tipos diferentes de métodos multirrótulos.
 
 \section{Motivações}
 % A análise dos métodos multirrótulo traz os seguintes benefícios:
@@ -69,7 +75,7 @@ desenvolver um novo algoritmo de classificação multirrótulo.
 Mais formalmente, a análise deve implicar em conclusões matemáticas ou estatísticas sobre o desempenho dos métodos multirrótulo.
 O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 \begin{itemize}
- \item Descobrir como medir correlação entre rótulos;
+ \item Descobrir como medir e explorar correlação entre rótulos;
  \item Comparação estatística e análise crítica dos métodos multirrótulos;
  \item Elaboração de um algoritmo de um novo método multirrótulo;
  \item Implementação dos métodos multirrótulos em uma biblioteca que integra técnicas de reconhecimento de padrões.
@@ -208,6 +214,7 @@ a tarefa de classificação, mesma que de forma independente, é difícil.
 \subsubsection{Recall}
 \subsection{Modelo de Avaliação}
 \label{sec:modelav}
+
 
 \chapter{Métodos Multirrótulos}
 \section{Transformação do Problema}
@@ -368,8 +375,7 @@ em estimativas melhores de rótulos do que anteriormente.
 % A alimentação é a propagação das 
 % estimativas dos rótulos de um classificador multirrótulo para o espaço de características expandido de um outro, ou o mesmo,
 % classificador multirrótulo.
-O funcionamento do algoritmo é formalmente detalhado nas seções seguintes.
-
+O funcionamento do algoritmo é detalhado nas subseções \ref{sec:mrlm_train} e \ref{sec:mrlm_prediction}.
 Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
 \begin{itemize}
 %   \item Assim como o DBR, é composto de dois classificadores multirrotulo, o primeiro, $c_0$, é um BR
@@ -415,9 +421,10 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
  
  
  \subsection{Fase de Treinamento}
+ \label{sec:mrlm_train}
   A fase de treinamento do \MRLMa~é exatamente igual ao DBR.
   
-  De forma mais formal, o treinamento de \MRLM~funciona da seguinte forma.
+  Formalmente, o treinamento de \MRLM~funciona da seguinte forma.
   Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ é o vetor de características de cada instância
   e $y_i \in Y$ o vetor binário de rótulos de cada instância,
   primeiro treina-se o $c_0$
@@ -689,7 +696,7 @@ disponíveis.
  
  \end{itemize}
 
-De uma forma bem resumida e informal, a hipótese é que erros de predições pelo
+Resumidamente, a hipótese é que erros de predições pelo
 classificador $c_0$ do DBR afetam negativamente a classificação do classificador $c_1$.
 A comprovação dessa hipótese é feita da seguinte forma. Experimentos com o \MRLMa~são realizados
 usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica \textit{Subset Accuracy}
@@ -699,11 +706,11 @@ O experimento é repetido com o número máximo de iterações do
 Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
 De fato, é o que ocorre na maioria dos casos, apesar de que o método estabiliza/converge rapidamente em relação ao
 número de iterações.
-O gráfico da figura \ref{fig:Gmrlm_1} é um exemplo do que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
+Os gráfico da figura \ref{fig:mrlmgraph1} mostram o que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
 até o valor máximo de iterações chegar a 2, depois disso o método não tem seu desempenho alterado.
 Portanto 2 foi o valor máximo de iterações necessárias para o método convergir nesses casos.
 Nos outros dois casos o método convergiu com apenas uma iterações ou piorou 
-com duas ou mais iterações. Veja os dois gráficos dos dois casos na figura \ref{fig:Gmrlm_2}.
+com duas ou mais iterações. Veja os dois gráficos dos dois casos na figura \ref{fig:mrlmgraph2}.
 Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor do que o DBR e em apenas um dos casos
 alcançou o mesmo desempenho do DBR.
 
@@ -744,7 +751,7 @@ alcançou o mesmo desempenho do DBR.
   \label{fig:subyeast}
 \end{subfigure}
 \caption{Gráficos de análise de desempenho do \MRLMa.}
-\label{fig:test}
+\label{fig:mrlmgraph1}
 \end{figure}
 
 \begin{figure}
@@ -764,6 +771,7 @@ alcançou o mesmo desempenho do DBR.
 
 \caption{Gráficos de análise de desempenho do \MRLMa~nos dois experimentos em que
 o \MRLMa~não melhorou na sua segunda iteração.}
+\label{fig:mrlmgraph2}
 \end{figure}
 
 
@@ -807,10 +815,13 @@ um aspecto diferente da classificação.
 A análise experimental dos métodos se encontram divididos em dois estudos. O primeiro estudo consiste em
 comparar os métodos quando todos usam o mesmo classificador base e o segundo em comparar cada combinação de um
 modelo de classificação multirrótulo com uma configuração de parâmetros definida. 
-O primeiro estudo tem por objetivo analisar se cada método multirrótulo apresentada desempenhos diferentes para
+O primeiro estudo, que chamaremos de Estudo Específico, tem por objetivo analisar se cada método multirrótulo apresentada desempenhos diferentes para
 diferentes classificadores, ou seja, se o \textit{ranking} é alterado ao alterar o classificador base.
-O segundo estudo tem por objetivo analisar os métodos de uma forma geral, uma vez que é desconhecido
-o classificador base que melhor se adapta a cada base, a priori.
+O segundo estudo, que chamaremos de Estudo Geral,
+tem por objetivo analisar os métodos de uma forma geral,
+desconhecendo o classificador base que melhor se adapta a cada base, a priori.
+Nesse estudo, cada combinação de modelo multirrótulo com um classificador base é considerado
+um novo método multirrótulo.
 
 Num total, foram utilizados \Nml~modelos de classificação multirrótulos: BR, DBR, RDBR, CC, ECC e MCC.
 Para cada um deles utilizou-se os seguintes classificadores base: KNN, SVM, \jqo e Regressão Logística \cite{classificadoresbases}. 
@@ -882,18 +893,21 @@ Nela são apresentadas as seguintes informações de cada base de dados:
 \label{sec:exps}
 Nesta seção é feita uma análise do desempenho dos métodos multirrótulos em cada uma das bases de dados
 em diferentes métricas.
-Essa seção é dividida em 4 subseções, uma para cada classificador base escolhido. Em cada uma
-delas os métodos tiveram seus classificadores bases fixados.
-A razão disso vem do fato de que queremos comparar os métodos multirrótulos entre si, e não os seus classificadores
-bases.
+Essa seção é dividida em 2 subseções, um para o Estudo específico citado e
+outro para o Estudo Geral, ambos definidos no ínicio do capítulo.
+
+No Estudo Específico os métodos tiveram seus classificadores bases fixados.
+A razão disso vem do fato de que queremos comparar os métodos multirrótulos entre si,
+e não os seus classificadores bases.
 Ao fixarmos o classificador base, 
 o desempenho irá depender apenas do modelo de classificação multirrótulo
 de cada um.
 Em cada subseção e para cada métrica escolhida é apresentado uma tabela
 contendo os valores da métrica para cada um dos métodos multirrótulo e
-o ranking dos métodos multirrótulos. Conclusões e análises finais sobre
-os fatos e observações levantados nessas subseções serão
-dadas no capítulo \ref{sec:conclusions}.
+o ranking dos métodos multirrótulos.
+% Conclusões e análises detalhadas sobre
+% os resultados e observações levantados nessas subseções serão
+% dadas na secão \ref{sec:analiseexp}.
 
 % \subsection{Hammin}
 
@@ -904,109 +918,161 @@ dadas no capítulo \ref{sec:conclusions}.
 % 
 % \end{table}
 
-\subsection{KNN}
-\input{tabelas/SAknn.tex}
-\input{tabelas/HLknn.tex}
-\input{tabelas/EBAknn.tex}
+% \subsection{KNN}
+
+
+
+
+
+
+% \subsection{SVM}
+
+
+% \subsection{\jqo}
+
+
+
+
+% \subsection{Logi}
+
+
+
+
+
+
+% \subsection{Resultado Geral}
+
+
+
+
+
+
+
+
+\subsection{Estudo Específico}
+% \input{tabelas/SAknn.tex}
+% \input{tabelas/HLknn.tex}
+% \input{tabelas/EBAknn.tex}
+% 
+% \input{tabelas/SAsvm.tex}
+% \input{tabelas/HLsvm.tex}
+% \input{tabelas/EBAsvm.tex}
+% 
+% \input{tabelas/SAj48.tex}
+% \input{tabelas/HLj48.tex}
+% \input{tabelas/EBAj48.tex}
+% 
+% \input{tabelas/SAlogi.tex}
+% \input{tabelas/HLlogi.tex}
+% \input{tabelas/EBAlogi.tex}
+
+\input{tabelas2/ESknn.tex}
+\input{tabelas2/ESsvm.tex}
+\input{tabelas2/ESj48.tex}
+\input{tabelas2/ESlogi.tex}
+
+% \input{tabelas/SAsvm.tex}
+% \input{tabelas/HLsvm.tex}
+% \input{tabelas/EBAsvm.tex}
+% 
+% \input{tabelas/SAj48.tex}
+% \input{tabelas/HLj48.tex}
+% \input{tabelas/EBAj48.tex}
+% 
+% \input{tabelas/SAlogi.tex}
+% \input{tabelas/HLlogi.tex}
+% \input{tabelas/EBAlogi.tex}
+
 
 
 Vejamos alguns pontos interessantes nos testes das tabelas
-\ref{tab:SAknn},\ref{tab:HLknn} e \ref{tab:EBAknn}.
+\ref{tab:ESknn}, onde o KNN foi utilizado.
 Note que o \textit{ranking} dos métodos mudou bastante de métrica para métrica.
-No caso do BR, o ranking médio caiu de $4.5$ no \SA para $1.75$ no Hamming Loss, ou seja,
+No caso do BR, o ranking médio caiu de $4.5$ no \SA~para $1.75$ no \HL, ou seja,
 de penúltimo colocado no ranking médio para o primeiro colocado. 
-Lembre-se de que cada métrica captura um aspecto diferente do método.
-Note que para a base de dados \textit{Enron}, o valor do \SA~é o mais baixo dentre todas bases.
-Isso é esperado uma vez que é a base \textit{Enron} é a base com maior número de rótulos ($53$) e o \SA
+Isso não só ocorre com o KNN, mas também para os outros classificadores bases, cujos resultados
+se encontram nas tabelas
+\ref{tab:ESsvm}, \ref{tab:ESj48} e \ref{tab:ESlogi}.
+% \ref{tab:SAsvm},\ref{tab:HLsvm},\ref{tab:EBAsvm},
+% \ref{tab:SAj48},\ref{tab:HLj48},\ref{tab:EBAj48},
+% \ref{tab:SAlogi},\ref{tab:HLlogi} e \ref{tab:EBAlogi}.
+Note que em todas as tabelas, para a base de dados \textit{Enron},
+o valor do \SA~é o mais baixo dentre todas bases.
+Isso é esperado uma vez que é a base com maior número de rótulos ($53$) e o \SA
 exige fortemente que a predição do classificador acerte a única possível combinação dentre as $2^{53}$ possíveis.
 Mas o interessante é que, apesar do \SA~ser o pior para essa base, o \HL~é o quarto melhor.
-Isso sugere que há um alguns poucos rótulos que são difíceis de serem corretamente preditos.
-
+Isso sugere que há alguns poucos rótulos que são difíceis de serem corretamente preditos.
 Para o classificador base KNN, o RDBR obteve o melhor resultado na métrica \SA~e na métrica \EBA.
 
 
-\subsection{SVM}
-\input{tabelas/SAsvm.tex}
-\input{tabelas/HLsvm.tex}
-\input{tabelas/EBAsvm.tex}
 
-Nas tabelas
-\ref{tab:SAsvm},\ref{tab:HLsvm} e \ref{tab:EBAsvm} observamos os mesmo pontos
-interessantes que nas tabelas do KNN, (\ref{tab:SAknn},\ref{tab:HLknn} e \ref{tab:EBAknn}):
-O \textit{ranking} muda bastante de métrica para métrica e o \SA~é baixo para algumas base porém
-o \HL~é bom para as mesmas. No entanto, o modelo de classificação multirrótulo que mais se adaptou ao SVM foi
-o \ECC. Adicionalmente, a ordem dos métodos que obtiverem o melhor rank médio alterou-se consideravelmente.
-Para o \SA~a ordem crescente era \MRLMa,MCC,DBR,CC,BR,ECC com o KNN, mas com o SVM a ordem mudou para ECC,MCC,\MRLMa,CC,DBR,BR.
+A ordem dos métodos que obtiverem o melhor rank médio altera-se consideravelmente
+ao alterar o classificador base.
+Por exemplo,
+com o KNN, a ordem crescente do rank médio no \SA~é \MRLMa,MCC,DBR,CC,BR,ECC com o KNN,
+mas com o SVM a ordem mudou para ECC,MCC,\MRLMa,CC,DBR,BR.
 
-\subsection{\jqo}
-\input{tabelas/SAj48.tex}
-\input{tabelas/HLj48.tex}
-\input{tabelas/EBAj48.tex}
-
-Além de reforçar os mesmos pontos interessantes citados nos classificadores bases anteriores,
-os testes com o \jqo, apresentados nas tabelas \ref{tab:SAj48},\ref{tab:HLj48} e \ref{tab:EBAj48}, mostraram mais uma vez que o \ECC~e o \MRLMa~obtiveram os melhores resultados, exceto
-no Hamming Loss, na qual o BR superou o \MRLMa.
-
-\subsection{Logi}
-\input{tabelas/SAlogi.tex}
-\input{tabelas/HLlogi.tex}
-\input{tabelas/EBAlogi.tex}
-
-
-Os resultados apresentados nas tabelas \ref{tab:SAlogi},\ref{tab:HLlogi} e \ref{tab:EBAlogi},
-mostraram mais uma vez que \ECC~se adaptou mais ao classificador base escolhido 
-que os demais métodos multirrótulo.
-Note mais uma vez que o desempenho muda muito de métrica pra métrica. O \CC~que tem
-o segundo melhor \textit{ranking} médio no \SA, tem o pior \textit{ranking} médio no
-Hamming Loss.
-
-
-% \input{tabelas/SAknn.tex}
-% \input{tabelas/SAsvm.tex}
-% \input{tabelas/SAj48.tex}
-% \input{tabelas/SAlogi.tex}
-% 
-% \input{tabelas/HLknn.tex}
-% \input{tabelas/HLsvm.tex}
-% \input{tabelas/HLj48.tex}
-% \input{tabelas/HLlogi.tex}
-% 
-% \input{tabelas/EBAknn.tex}
-% \input{tabelas/EBAsvm.tex}
-% \input{tabelas/EBAj48.tex}
-% \input{tabelas/EBAlogi.tex}
-
-% \subsection{Medical}
-% \subsection{Yeast}
-% \subsection{Scene}
-% \subsection{Genbase}
-% \subsection{Enron}
-% \subsection{Birds}
-
-\section{Análise Experimental}
+O método BR alcança resultados melhores pela métrica \HL~do que para as outras.
+O seu ranking médio é sempre menor quando medido pelo \HL. Isso sugere que, apesar
+do BR não capturar a dependência entre rótulos, ele captura bem a dependência
+que cada rótulo tem com o vetor de características.
 
 
 
+% Note mais uma vez que o desempenho muda muito de métrica pra métrica. O \CC~que tem
+% o segundo melhor \textit{ranking} médio no \SA, tem o pior \textit{ranking} médio no
+% Hamming Loss.
+
+
+\subsection{Estudo Geral}
+
+\input{tabelas/SAall.tex}
+\input{tabelas/HLall.tex}
+\input{tabelas/EBAall.tex}
+
+
+As tabelas \ref{tab:allresultsSA},\ref{tab:allresultsHL} e \ref{tab:allresultsEBA} mostram o  resultado alcançado
+por cada combinação de modelo de classificação multirrótulo e classificador base nas métricas \SA,\HL e \EBA.
+O ECC com KNN foi o único que não alcançou nenhum resultado, pois precisou de mais memória principal do que
+tinha disponível e é por isso que temos nas tabelas o símbolo do ponto de interrogação em seu resultado.
+Observando as tabelas podemos notar
+que os método multirrótulo ECC obtém os melhores resultados em geral. O ECC com \jqo~obteve o 
+melhor rank médio para as métricas \SA~e \HL, e o segundo melhor rank médio para a métrica \EBA.
+O \MRLMa~com KNN alcançou resultados bons, ele teve o segundo melhor rank médio pela métrica \SA.
+Interessante que o \MRLMa~com KNN obtém resultados muito melhores do que com outros classificadores base.
+Isso não ocorre com outros métodos, visto que alguns alcançam resultados melhores usando SVM e outros com \jqo.
+Note que o \textit{rank} de cada um dos métodos variam muito de base de dados para base de dados, ou seja, desvio padrão
+dos \textit{rank} é alto. Por exemplo, o MMC com KNN alcançou o pior desempenho na base \textit{Enron}, porém 
+teve o melhor desempenho na \textit{Yeast}. Esse desvio padrão alto sugere que não há método multirrótulo que
+seja bom para todos os problemas, cada um é bom para um tipo de problema.
 
 
 
 \chapter{Conclusão}
 Este trabalho teve por objetivo as seguintes atividades:
 \begin{enumerate}
- \item Descobrir como medir correlação entre rótulos;
+ \item Descobrir como medir e explorar correlação entre rótulos;
  \item Comparação estatística e análise crítica dos métodos multirrótulos;
  \item Elaboração de um algoritmo de um novo método multirrótulo;
 \end{enumerate}
-O objetivo 1 foi considerado alcançado a
+O objetivo 1 foi considerado alcançado ao verificarmos que a métrica \SA~mede a 
+exploração da correlação entre rótulos e também ao verificarmos que a estratégia adotada por vários 
+métodos que se baseia na expansão do espaço de características com valores de rótulos, realmente
+faz com que o modelo de classificação considera dependência entre rótulos, mesmo que parcialmente.
+O objetivo 3 foi considerado alcançado, pois desenvolveu-se um novo modelo de classificação,
+chamado de \MRLM, que apresenta resultados melhores que alguns métodos multirrótulo da literatura.
+Vale ressaltar que o novo método apresentou sempre resultados experimentais melhores que o método na qual
+ele foi baseado, o DBR. Isso comprova que o novo método é uma melhoria do antigo.
+
+Adicionalmente, a partir dos experimentos mostrados e analisados na seção \ref{sec:exps} podemos
+chegar aos seguintes pontos conclusivos:
+  \begin{itemize}
+   \item a escolha do modelo de classificação base para os métodos multirrótulo
+   afeta significativamente o desempenho do método.
+   \item Para problemas multirrótulo cuja dependência entre rótulos é baixa, inexistente ou complexa, o
+   método \BR~apresenta resultados melhores que os métodos multirrótulo estudados.
+  \end{itemize}
 
 
-A partir dos experimentos mostrados e analisados na seção \ref{sec:exps} podemos
-chegar aos seguintes pontos conclusivos
-Vimos que pelos experimentos mostrados na seção \ref{sec:exps}
-a escolha desse modelo de classificação binária afeta significativamente o desempenho do método.
-
-
-
-
-
+  
 \label{sec:conclusions}

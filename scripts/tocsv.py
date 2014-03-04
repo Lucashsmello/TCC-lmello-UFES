@@ -4,9 +4,12 @@
 import sys
 import os
 import re
+from math import sqrt
 
 base_re=re.compile('BASE DE DADOS:\s([^\s]+),\s')
 #method_result_re=re.compile('^([^\s;(]+);')
+
+n_casas=3
 
 
 def getMetrics(line,metricsidx):
@@ -57,7 +60,7 @@ def getresults(filepath,metrics,methods="ALL",baseClassifs="ALL",makeMergeResult
                 xi=line[i].find('\xc2\xb1')
                 if(xi>=0):
                     line[i]=line[i][:xi]
-                line[i]=float(line[i])
+                line[i]=float((int(float(line[i]) *(10**n_casas))))/(10**n_casas)
                 if(line[i]<0):
                     line[i]=0
             cangetmethod=True
@@ -263,8 +266,7 @@ def saveResults2(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeM
 
 #    print allresults 
 
-    methodsnames=[x.split()[0].replace("-5",'') for x in methodsnames]
-
+    #methodsnames=[x.split()[0].replace("-5",'') for x in methodsnames]
 
     bsortedidx=zip(*sorted(zip(basenames,range(len(basenames)))))[1]
     basenames=sorted(basenames)
@@ -315,13 +317,26 @@ def saveResults2(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeM
 
     fout.close()
 
+
+def stddev(meanRanks,ranks):
+    stdranks=[]
+    for i in range(0,len(meanRanks)):
+        mr=meanRanks[i]
+        stdd=0
+        for rb in ranks:
+            stdd+=(rb[-1][i]+1-mr)*(rb[-1][i]+1-mr)
+        stdranks.append(sqrt(stdd/(len(ranks)-1)))
+
+    return stdranks
+
 def saveResults3(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeMeanRank,methodsnames,makerank):
     fout=open(fileoutname,'w')
     maxm=0
 
 #    print allresults 
 
-    methodsnames=[x.split()[0].replace("-5",'') for x in methodsnames]
+    #methodsnames=[x.split()[0].replace("-5",'') for x in methodsnames]
+    methodsnames=[x.replace("-5",'') for x in methodsnames]
 
     metsidx=zip(*sorted(zip(methodsnames,range(len(methodsnames)))))[1]
     bsortedidx=zip(*sorted(zip(basenames,range(len(basenames)))))[1]
@@ -341,20 +356,23 @@ def saveResults3(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeM
         ri=allranks[i]
         allranks[i]=zip(*[zip(*ri)[x-1] for x in idxmets[1:]])
         
+
+    rankstddev=stddev(meanRankAllExps,allranks)
     
     for i in range(1,len(allresults[0][0])-1): # para cada metrica
         m=allresults[0][0][i]
         fout.write(m+' ;')
         for j in range(0,maxm): # para cada metodo
             if(j!=0):
-                fout.write(str(r[j][0]).split()[0].replace("-5",'').replace("MRLM","RDBR")+';') #classificador
+#                fout.write(str(r[j][0]).split()[0].replace("-5",'').replace("MRLM","RDBR")+';') #classificador
+                 fout.write(str(r[j][0]).replace("-5",'').replace("MRLM","RDBR")+';') #classificador
             for k in range(0,len(allresults)): # para cada base
                 r=allresults[k]
 #                print basenames[k]
                 if(j==0):
                     fout.write(basenames[k].replace('-P','').capitalize()+' ;')
                 else:
-                    fout.write(str(r[j][i])) #valor da metricas
+                    fout.write(("%.3f" % r[j][i]).replace("0.",".")) #valor da metricas
                     if(makerank and j>0 and i>0):
                         if(int(allranks[k][i-1][j-1])==allranks[k][i-1][j-1]):
                             fout.write("("+str(int(allranks[k][i-1][j-1]) + 1)+")")
@@ -362,9 +380,9 @@ def saveResults3(allresults,fileoutname,basenames,allranks,meanRankAllExps,makeM
                             fout.write("("+str(allranks[k][i-1][j-1] + 1)+")")
                     fout.write(";")
             if(j>0):
-                fout.write(str(meanRankAllExps[j-1])+";")
+                fout.write("%.2f;%.2f" % (meanRankAllExps[j-1], rankstddev[j-1]))
             else:
-                fout.write("Rank médio")
+                fout.write("Rank médio;Desvio Padrão")
             fout.write("\n")
         fout.write("\n")
 
