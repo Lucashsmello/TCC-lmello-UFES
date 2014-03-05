@@ -138,14 +138,23 @@ $X\subseteq \mathbb{R}^n$ e $L=\{l_1,l_2,l_3,...l_r\}$ o conjunto dos $r$ rótul
 uma instância é definida como sendo uma dupla de vetores $(x',y')$ tal que $x'\in X$ e $y'$ é um vetor binário
 $y'=(y'_1,y'_2,...,y'_r)$ de tal forma que $y'_i=1$ indica a presença do rótulo $l_i$ na instância.
 Assim, o espaço de rótulos possíveis para uma instância qualquer é definido como $Y=\{0,1\}^r$.
-% A transformação de um vetor binário pertencente ao espaço $Y$ para o conjunto de rótulos correspondente,
+
+% A tarefa do problema de classificação multirrótulo é encontrar uma função $C$, tal que $C : X \rightarrow Y$, de forma
+% a maximizar uma métrica de qualidade, definida como uma função que mapeia as predições da função $C$
+% e os rótulos reais alvos a um valor numérico de $0$ a $1$.
+% A função $C$ é estimada a partir de uma base de treino $D=\{(x_1,y_1),(x_2,y_2),...,(x_n,y_n)\}, x_i\in X, y_i\in Y$ e
+% normalmente os classificadores multirrótulo são representados por essa função.
+
+Seja $f$,$f : X \rightarrow Y$, a função que mapeia qualquer $x,x \in X$ a seus rótulos reais.
+A tarefa do problema de classificação multirrótulo é encontrar a função $f$
+a partir de uma base de treino $D=\{(x_1,y_1),(x_2,y_2),...,(x_n,y_n)\}, x_i\in X, y_i\in Y$.
+Uma vez que muito difícil encontrar $f$, ela é aproximada, resultando em $\hat{f}$.
+Com isso, a tarefa do problema de classificação se torna em aproximar ao máximo $\hat{f}$ de $f$.
+Formalmente, a aproximação é medida por uma métrica de qualidade é o objetivo é maximiza-la.
 
 
-
-A tarefa do problema de classificação multirrótulo é encontrar uma função $C : X \rightarrow Y$ de forma
-a maximizar uma métrica de qualidade, definida por uma função que mapeia as predições da função $C$
-e os rótulos reais alvos a um valor numérico entre $0$ a $1$.
-A função $C$ é estimada a partir de uma base de treino $D=\{(x_1,y_1),(x_2,y_2),...,(x_n,y_n)\}, x_i\in X, y_i\in Y$.
+% e
+% normalmente os classificadores multirrótulo são representados por essa função.
 
 Note que em um problema de classificação unirrótulo todas as instâncias da forma $(x',y')$ tem como $y'$
 um vetor binário de rótulos onde apenas uma posição tem valor $1$. Assim, podemos ver o problema classificação
@@ -155,16 +164,23 @@ Enquanto que na classificação unirrótulo o número de possíveis rotulações
 $r$, linear em relação ao número de rótulos, na multirrótulo o número cresce exponencialmente, a saber, $2^r$.
 Assim construir um classificador multirrótulo é mais complexo que um classificador unirrótulo.
 
+Alguns autores vêem os classificadores unirrótulo e os multirrótulo como uma função de probabilidade $p$ \cite{mcc2012}, \cite{pcc2010}.
+No caso de classificadores unirrótulo, a função de probabilidade $p(y|x)$, onde $y \in L$ e $x \in X$,
+estima a probabilidade da instância que tem o vetor de características $x$, ter o rótulo $y$.
+Já no caso de classificadores multirrótulo, a função de probabilidade $p(y|x)$, onde $y \subseteq L$ e $x \in X$,
+estima a probabilidade da instância que tem $x$, ter todos os rótulos em $y$.
+Dessa forma, para um $x,x\in X$ qualquer, a função $\hat{f}$
+pode ser obtida pela equação \ref{eq:funcprob}:
+\begin{equation} \label{eq:funcprob}
+ \hat{f}=\operatorname*{arg\,max}_y^* p(y|x)
+\end{equation}
+Apesar de a função $\hat{f}$ é melhor aproximada de $f$ quando obedece a equação \ref{eq:funcprob}, 
+muitos métodos multirrótulos não a obedecem por ser muito custoso de estimá-la, uma vez que existe
+devem procurar $y^*$ dentre $2^r$ possíveis combinações.
+
 
 
 \section{Avaliação de Desempenho}
-\begin{verbatim}
-ESBOÇO:
--Apresentar matematicamente o que pode indicar correlação entre rótulos e outras coisas
-conforme o artigo: "Bayes Optimal Multilabel Classification via Probabilistic Classifier Chains".
--Falar que é diferente do multiclasse e a razao disso
-\end{verbatim}
-
 A avaliação de desempenho de classificadores, tanto multirrótulo quanto unirrótulo, é comumente feito
 por meio de testes nas amostras coletadas do problema.
 Isso é feito corretamente com a ajuda de métodos de reamostragem fundamentados pela ciência estatística,
@@ -180,6 +196,8 @@ cada uma capturando um aspecto diferente do desempenho do classificador.
 
 
 \subsection{Métricas}
+\label{sec:metrics}
+
 Seja $P=(p_1,p_2,...,p_n), p_i \subseteq L$
 % $\hat{y}=(\hat{y}_1,\hat{y}_2,...,\hat{y}_n), \hat{y}_i \in Y$
 um vetor de predições de rótulos produzido pela
@@ -190,12 +208,13 @@ e não na forma de vetor binário.
 As métricas multirrótulo propostas servem para quantificar a qualidade de $P$
 e úteis para resumi-lo a um único valor escalar entre 0 e 1.
 Abaixo estão algumas métricas definidas por \cite{reviewml2013}:
-\label{sec:metrics}
+
 \subsubsection{Hamming Loss}
 \begin{equation}
- hloss(P)=\frac{1}{n} \sum_{i=1}^n{|p_i \triangle r_i|}
+ hloss(P)=\frac{1}{n} \sum_{i=1}^n{\frac{1}{|L|}|p_i \triangle r_i|}
 \end{equation}
-O símbolo $\triangle$ é definido como a diferença simétrica entre dois conjuntos de mesmo tamanho.
+O símbolo $\triangle$ é definido como a diferença simétrica entre dois conjuntos, por exemplo, 
+para quaisquer $A$ e $B$, $A \triangle B=(A \cup B) - (A \cap B)$.
 O \textit{Hamming Loss} significa a proporção de rótulos preditos mal classificados. Por rótulo predito mal classificado
 entende-se que classificou um rótulo que não existia ou deixou de classificar um rótulo relevante.
 Note que quanto menor o seu valor, melhor é a qualidade de predição, sendo que 0 é a qualidade perfeita e 1 a mais
@@ -209,11 +228,51 @@ apesar de que um método multirrótulo pode usar a correlação entre rótulos p
 a tarefa de classificação, mesma que de forma independente, é difícil.
 
 \subsubsection{Subset Accuracy}
+\begin{equation}
+ subsetAcc(P)=\frac{1}{n} \sum_{i=1}^n{\text{\textlbrackdbl} p_i = r_i \text{\textrbrackdbl}}
+\end{equation}
+O \SA~avalia a proporção de instâncias corretamente classificados. Aqui, nessa métrica, 
+entende-se por instância corretamente classificado quando o conjunto de rótulos preditos é
+idêntico ao conjunto de rótulos reais. É uma métrica rígida cujo valor ideal é 1 enquanto
+que o menor valor possível é 0.
+
+Em \cite{pcc2010} é mostrado que para maximizar o valor dessa métrica, é necessário levar
+em consideração a dependência entre rótulos. É por isso que ele é considerado nesse trabalho
+uma métrica que exige que o classificador multirrótulo explore a correlação entre rótulos.
+
+
 \subsubsection{Example Based Accuracy}
-\subsubsection{Precision}
-\subsubsection{Recall}
-\subsection{Modelo de Avaliação}
+\begin{equation}
+ exampleAcc(P)=\frac{1}{n} \sum_{i=1}^n{\frac{| p_i \cap r_i|}{| p_i \cup r_i|}}
+\end{equation}
+
+Note que para essa métrica o valor ideal é 1 e o de pior desempenho é 0.
+
+% \subsubsection{Precision}
+% \subsubsection{Recall}
+\subsection{Método de Reamostragem}
 \label{sec:modelav}
+
+Um método de reamostragem é um modelo ou processo de avaliação para estimar valores estatísticos
+(no nosso caso, as métricas definidas na seção \ref{sec:metrics}) usando apenas subconjuntos dos dados
+disponíveis \cite{yu2003resampling}.
+O método de reamostragem (ou modelo de avaliação) é diferente da métrica de avaliação,
+pois define como o classificador deve ser avaliado, enquanto que a métrica mede o desempenho, dando um
+valor para ele.
+
+Na área de Aprendizado Supervisionado, um dos métodos de reamostragem mais usado é a Validação Cruzada.
+Para um $k$ pré-definido maior que 1, a Validação Cruzada consiste
+em dividir o conjunto de dados $D$
+em $k$ subconjuntos disjuntos de tamanhos iguais
+,$\{s_1,s_2,...,s_k\}$ tal que $s_1 \cup s_2 \cup s_3...s_{k-1}\cup s_k=D$,
+e realizar $k$ testes, enumerados de 1 a $k$.
+Cada teste $i$, para $1\leq i \leq k$, separa um desses subconjuntos
+para formar a base de dados de teste
+enquanto os restantes formam a base de dados de treino. 
+Em seguida, o modelo de classificação é treinado sobre a base de treino e testado sobre todas as
+instâncias da base de teste.
+No final, juntando os $k$ testes, temos uma classificação (predição) para cada instância de $D$.
+A partir daí aplica-se as métricas de avaliação, como por exemplo o \HL.
 
 
 \chapter{Métodos Multirrótulos}
@@ -289,7 +348,22 @@ instância teste vai crescendo com adição de cada estimativa de rótulo.
 
 
 \subsection{Ensemble of Classifier Chain}
-\subsection{Probabilistic Classifier Chain}
+O \textit{Ensemble of Classifier Chain} é composto de $k$ \textit{Classifiers Chain} distintos \cite{cc2009},
+para um $k$ pré-definido.
+Para \textit{Classifier Chain} do \textit{Ensemble} é definido uma ordem aleatória da cadeia e
+cada \textit{Classifier Chain} é treinado sobre um amostra aleatória da base de dados de treino.
+Na fase de predição, a instância de teste é submetida a todos os \textit{Classifiers Chain}, resultando
+em $k$ predições para uma mesma instância. A predição única final é uma combinação das $k$ predições individuais,
+que é feito por voto majoritário, ou seja, um rótulo $y$ estará na predição final se $y$ estiver
+em pelo menos $\ceil{\frac{k}{2}}$ das predições individuais.
+O motivo para que cada \textit{Classifier Chain} do \textit{Ensemble} ser diferente é que
+ao combinar um classificador $c$ com outros classificadores diferentes,
+espera-se que nas instâncias em que as $c$ errar na predição dos rótulos, a maior parte dos outros
+classificadores acertem.
+
+
+
+
 \subsection{Relevância Binária Dependente - DBR}
 \label{sec:dbr}
 Este método é proposto por \cite{dbr2014} é baseado no método BR
@@ -330,7 +404,23 @@ exatamente o método BR. Os $r$ classificadores binários $c_1^1,c_1^2...,c_1^r$
  cujo vetor de características é $(x,\hat{y}_1,...,\hat{y}_{j-1},\hat{y}_{j+1},...,\hat{y}_r)$.
 
 \subsection{Monte Carlo Classifier Chain}
-\cite{mcc2012}
+
+
+O método \textit{Classifier Chain with Monte Carlo Optimization} (MCC) é introduzido
+por \cite{mcc2012} para melhorar a qualidade de predição do \textit{Classifier Chain}.
+O método usa uma heurística gulosa para melhorar a fase de predição do \textit{Classifier Chain}.
+O método parte do pressuposto de que o \textit{Classifier Chain} geralmente não encontra
+o conjunto de rótulos $y^*,y^* \in {\{0,1\}}^r$ que tem a maior probabilidade de a instância de teste ter,
+dado o vetor de características da instância, ou seja, não segue corretamente a equação \ref{eq:funcprob}.
+Para encontrar o $y^*$ de maior probabilidade, a princípio deve-se procurar entre todas as possíveis
+combinações de ${\{0,1\}}^r$, o que torna-se inviável para um valor de $r>10$.
+O MCC tenta encontrar esse $y^*$ sem testar todas as possíveis $2^r$ combinações do espaço de busca.
+Ele usa de um algoritmo de otimização, chamado \textit{Monte Carlo} \cite{montecarlo}, para
+testar apenas algumas dessas combinações.
+
+
+
+ 
 
 % \section{Adaptação de classificadores}
 % \subsection{ML-KNN}
