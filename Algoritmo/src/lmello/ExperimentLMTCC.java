@@ -33,7 +33,7 @@ public class ExperimentLMTCC {
 		// String[] datasnames = new String[] { "emotions-P", "birds-P",
 		// "CAL500-P", "Corel5k-P", "scene-P", "yeast-P", "medical-P",
 		// "enron-P" };
-		String[] datasnames = new String[] { "bibtex-P", "mediamill-P" };
+		String[] datasnames = new String[] { "motorpump-P"};
 		// String[] datasnames = new String[]
 		// {"motorpump-P","bibtex-P","mediamill-P","SLASHDOT-F"};
 //		String[] datasnames = new String[] { "enron-P",
@@ -51,6 +51,16 @@ public class ExperimentLMTCC {
 						+ dataname + ".arff", dataDir + dataname + ".xml");
 				List<MultiLabelLearner> mmm = createMLLs(baseclassifs, dataset);
 
+				
+				double card = dataset.getCardinality();
+				double dens=card/dataset.getNumLabels();
+				int nattrs=dataset.getFeatureIndices().length;
+				int ninsts=dataset.getNumInstances();
+				
+				System.out.println("card="+card+" dens="+dens);
+				
+				if(i==1)
+					break;
 				// configureClassifiers(baseclassifs, dataset);
 
 				ExperimentLM exp1 = new ExperimentLM(mmm, dataset, dataname);
