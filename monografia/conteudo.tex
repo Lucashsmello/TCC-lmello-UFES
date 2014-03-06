@@ -6,16 +6,14 @@
 \newcommand{\Ncb}{4}
 \newcommand{\MML}{método multirrótulo}
 \newcommand{\MMLs}{métodos multirrótulo}
-\newcommand{\MRLM}{Recursive Dependent Binary Relevance}
-\newcommand{\MRLMa}{RDBR}
+
 
 
 \newcommand{\jqo}{J48}
 \newcommand{\EBA}{Example Based Accuracy}
 \newcommand{\SA}{\textit{Subset Accuracy}}
 \newcommand{\HL}{\textit{Hamming Loss}}
-\newcommand{\CC}{\textit{Classifier Chain}}
-\newcommand{\ECC}{\textit{Ensemble of }~\CC}
+
 \newcommand{\BR}{\textit{Binary Relevance}}
 \newcommand{\tabmode}{h}
 % \newcommand{\legendaTab}[2]{Desempenho dos métodos multirrótulos com \textit{#2} medido pela métrica \textit{#1} }
@@ -27,12 +25,13 @@ cujo objetivo é o desenvolvimento de técnicas computacionais
 sobre o aprendizado bem como a construção de sistemas capazes de adquirir
 conhecimento de forma automática. Dentro dessa área, encontra-se a subárea Aprendizado Supervisionado.
 Em Aprendizado Supervisionado, um problema de classificação é a tarefa de encontrar
-uma técnica capaz de predizer a classe ou as classes que uma instância de
-um objeto em específico pertence \cite{rezende2003sistemas}.
-Para completar essa tarefa, a técnica deve usar exemplos de treino cujas as classes
-são conhecidas que lhe são dispostas. Uma instância é um objeto do mundo real descrito
+uma técnica capaz de predizer a classe ou as classes que uma instância
+pertence \cite{rezende2003sistemas}.
+Uma instância é um objeto do mundo real descrito
 por um vetor de valores numéricos ou nominais e por um conjunto de rótulos.
-Na literatura, como por \cite{rezende2003sistemas}, as classes também são chamadas de rótulos
+Para completar essa tarefa, a técnica deve usar exemplos de treino cujas classes
+são conhecidas. 
+Na literatura \cite{rezende2003sistemas} as classes também são chamadas de rótulos
 e quando as instâncias só podem assumir um único rótulo, o problema é chamado de classificação unirrótulo,
 do contrário, é chamado de problema de classificação multirrótulo \cite{borges2012}.
 
@@ -40,12 +39,12 @@ Problemas de classificação multirrótulo estão presentes em diversas áreas, 
 ser encontrados em áreas como a bioinfomática, diagnóstico médico, classificação de imagens e principalmente
 categorização de textos, conforme \cite{carvalho2009}. A classificação multirrótulo é inevitavelmente
 mais complexa que a unirrótulo. Para solucioná-la, o método multirrótulo mais conhecido é um método simples chamado de
-Relevância Binária (\textit{BR – Binary Relevance}) \cite{carvalho2009}. 
-No entanto, há muitas críticas sobre \textit{BR}, sendo a maior delas a incapacidade do método de reconhecer
+Relevância Binária (do inglês \textit{Binary Relevance - BR}) \cite{carvalho2009}. 
+No entanto, há muitas críticas sobre o \textit{BR}, sendo a maior delas a incapacidade do método de reconhecer
 a correlação entre os rótulos, como dito por \cite{pcc2010}.
 Com o intuito de alcançar melhores resultados que o \textit{BR}, alguns autores, como \cite{cc2009} e \cite{dbr2014},
 o aprimoraram ou elaboraram novos tipos de métodos baseados nele,
-os quais exploram a dependência entre os rótulos. 
+os quais procuram explorar a dependência entre os rótulos. 
 % Por exemplo, existem métodos que transformam o problema multirrótulo em
 % diversos problemas unirrótulo, como é o caso do \textit{BR}, e outros métodos que são classificadores especiais,
 % capazes de classificar diretamente sobre os problemas multirrótulo, sem necessidade de transformação, como é o caso do Multi-Label C4.5 (MADJAROV et al., 2012, p. 5). 
@@ -54,8 +53,7 @@ Com tantos métodos novos, alguns deles apresentados por \cite{carvalho2009}
 e por \cite{cc2009} é necessário realizar comparações e testes de qualidade.
 É certo que já existem análises e comparações entre os métodos,
 no entanto há necessidade de avaliar os métodos mais formalmente
-e reforçar as conclusões alcançadas pelos autores dos métodos além de elaborar
-uma forma eficiente de comparar tipos diferentes de métodos multirrótulos.
+e reforçar as conclusões alcançadas pelos autores dos métodos.
 
 \section{Motivações}
 % A análise dos métodos multirrótulo traz os seguintes benefícios:

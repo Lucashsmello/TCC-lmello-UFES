@@ -45,6 +45,11 @@
 %\newcommand{\p}{\tiny}
 \newcommand{\p}{\scriptsize}
 
+\newcommand{\CC}{\textit{Classifier Chain}}
+\newcommand{\ECC}{\textit{Ensemble of}~\CC}
+\newcommand{\MRLM}{Recursive Dependent Binary Relevance}
+\newcommand{\MRLMa}{RDBR}
+
 %para insercao de numeracao nas linhas
 %\usepackage{lineno}
 
@@ -60,10 +65,10 @@
 
 \orientador[Orientador:\\]{Fl\'avio Miguel Varej\~ao}
 
-\comentario{Monografia apresentada para obtenção do Grau de Bacharel em Ciência
-da Computação pela Universidade Federal do Espírito Santo.}
+\comentario{Monografia apresentada para obten��o do Grau de Bacharel em Ci�ncia
+da Computa��o pela Universidade Federal do Esp�rito Santo.}
 
-\instituicao{Departamento de Inform\'atica \par Centro Tecnol\'ogico\par Universidade Federal do Esp\'irito Santo}
+\instituicao{Departamento de Inform\'atica \par Centro Tecnol\'ogico\par Universidade Federal do Esp\'\i rito Santo}
 
 \local{Vit\'oria - ES, Brasil}
 
@@ -76,15 +81,40 @@ da Computação pela Universidade Federal do Espírito Santo.}
 
 \begin{folhadeaprovacao}
 \setlength{\ABNTsignthickness}{0.4pt}
-
-
-\assinatura{Prof. Dr. Fl\'avio Miguel Varej\~ao\\ Departamento de Informática - UFES \\ Orientador}
-\assinatura{Prof. Dr. \\ Departamento de Informática - UFES \\ Co-orientador}
-\assinatura{Prof. Dr. Fl\'avio Miguel Varej\~ao\\ Instituto Federal do Espírito Santo - IFES}
+\assinatura{Prof. Dr. Fl\'avio Miguel Varej\~ao\\ Departamento de Inform\'atica - UFES \\ Orientador}
+\assinatura{Prof. Dr. Thomas Walter Rauber\\ Departamento de Inform\'atica - UFES \\ Co-orientador}
+\assinatura{Prof. Francisco de Assis Boldt\\ Instituto Federal do Esp\'\i rito Santo - IFES}
 \end{folhadeaprovacao}
 
 \begin{resumo}
-
+O problema de classifica\c c\~ao de objetos ou dados est\'a presente em diversas aplica\c c\~oes.
+Problemas de classifica\c c\~ao em sua forma mais simples, 
+cada objeto ou amostra espec\'\i fica de dados est\'a associado
+a uma \'unica classe dentre duas poss\'\i veis.
+Esses problemas s\~ao comumente chamados de classifica\c c\~ao bin\'aria onde uma das
+classes \'e chamada de positiva e a outra de negativa. J\'a na classifica\c c\~ao unirr\'otulo, tamb\'em chamada
+de classifica\c c\~ao multiclasse, cada objeto est\'a associado a uma dentre 
+v\'arias poss\'\i veis classes.
+Uma forma mais complexa que a classifica\c c\~ao unirr\'otulo,
+s\~ao os problemas de classifica\c c\~ao multirr\' otulo onde 
+objetos podem estar associados a mais de uma classe simultaneamente.
+% No entanto, h\'a uma consider\'avel quantia de aplica\c c\~oes cujos objetos est\~ao
+% associados a mais de uma classe simultaneamente.
+% Esse problema \'e chamado 
+% de Classifica\c c\~ao Multirr\'otulo e
+Nesse \'ultimo, o desenvolvimento de algoritmos para resolv\^e-lo se torna
+um desafio muito maior do que os anteriores
+pelo fato de que o n\'umero de poss\'\i veis respostas passa a crescer exponencialmente,
+ao inv\'es de linearmente como na classifica\c c\~ao unirr\'otulo.
+Com isso, m\'etodos como o \textit{Binary Relevance},
+\textit{Dependent Binary Relevance} (DBR),~\CC,~\ECC~e \textit{Monte Carlo Classifier Chain} 
+s\~ao propostos a resolver esse problema.
+O presente trabalho analisa
+a aplica\c c\~ao dos m\'etodos citados bem como apresenta o desenvolvimento de um
+novo m\'etodo, denominado de \MRLM~que \'e uma otimiza\c c\~ao do \textit{Dependent Binary Relevance} (DBR).
+An\'alises baseadas em experimentos mostram que o m\'etodo \MRLM~supera o DBR para v\'arias medidas de
+qualidade de desempenho. Adicionalmente, as an\'alises mostram quais m\'etodos exploram a correla\c c\~ao entre
+os r\'otulos.
 \end{resumo}
 % 
 \tableofcontents{}
