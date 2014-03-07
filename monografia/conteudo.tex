@@ -75,9 +75,8 @@ sobre o desempenho dos métodos multirrótulo.
 O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 \begin{itemize}
  \item Descobrir como medir e explorar correlação entre rótulos;
- \item Comparação estatística e análise crítica dos métodos multirrótulos;
- \item Elaboração de um algoritmo de um novo método multirrótulo;
- \item Implementação dos métodos multirrótulos em uma biblioteca que integra técnicas de reconhecimento de padrões.
+ \item Análise crítica dos métodos multirrótulos;
+ \item Elaboração de um algoritmo de um novo método multirrótulo.
 \end{itemize}
 
 
@@ -178,7 +177,7 @@ pode ser obtida pela equação \ref{eq:funcprob}:
  \hat{f}=\operatorname*{arg\,max}_{y^*} p(y|x)
 \end{equation}
 Apesar da função $\hat{f}$ ser melhor aproximada de $f$ quando obedece a equação \ref{eq:funcprob}, 
-muitos métodos multirrótulos não a obedecem por ser muito custoso de estimá-la, uma vez que existe
+muitos métodos multirrótulos não a obedecem por ser muito custoso de estimá-la, uma vez que deve-se
 procurar $y^*$ dentre $2^r$ possíveis combinações.
 
 
@@ -311,7 +310,7 @@ de rótulos $A,B$ e $C$ e 6 instâncias. Nele vemos que o BR transforma a base d
 de dados, um para cada classificador binário.
 
 
-
+\FloatBarrier
 
 
 \section{Classifier Chain}
@@ -350,6 +349,7 @@ afeta diretamente na predição dos classificadores binários seguintes.
 \label{fig:CCtraintest}
 \end{figure}
 
+\FloatBarrier
 
 \section{Ensemble of Classifier Chain}
 O \textit{Ensemble of Classifier Chain} é composto de $k$ \textit{Classifiers Chain} distintos \cite{cc2009},
@@ -689,11 +689,13 @@ são usados recursivamente ao realimentar o DBR.
 %  \begin{equation}
 %   c_1(x)=(c_1^1(x),c_1^2(x),...,c_1^l(x))
 %  \end{equation}
+% \psmatrix[colsep=0.6cm,rowsep=.4cm,linewidth=.4pt]
+
+ \begin{figure}{~\\}
  
- \begin{figure}
 \centering
 $
-\psmatrix[colsep=.6cm,rowsep=.4cm,linewidth=.4pt]
+\psmatrix[colsep=0.6cm,rowsep=.4cm,linewidth=.4pt]
 &\bigcirc&\|&\bigcirc\\
 \\
 &\bigcirc&\|&\bigcirc\\
@@ -891,7 +893,6 @@ o \MRLMa~não melhorou na sua segunda iteração.}
 \label{fig:mrlmgraph2}
 \end{figure}
 
-\FloatBarrier
 
 
 É importante analisar o quanto o método aumenta o tamanho da base de dados uma vez que isso acarreta no aumento
@@ -909,6 +910,7 @@ armazenados explicitamente na mémoria em espaços diferentes, algumas são reut
 
 
 
+\FloatBarrier
 
 \chapter{Avaliação e Análise Experimental}
 Neste capítulo é descrito as bases de dados multirrótulo usadas nos experimentos, 
@@ -923,9 +925,9 @@ Para quantificar a qualidade de predição, 3 métricas foram utilizadas.
 As métricas escolhidas, bem como o motivo das escolhas,
 são listadas:
 \begin{itemize}
- \item Subset Accuracy, pois é mostrado que captura bem se o método explora a correlação entre rótulos;
- \item Hamming Loss, pois é bem mais sensível que o Subset Accuracy;
- \item Example Based Accuracy, é o meio termo entre o Hamming Loss e o Subset Accuracy.
+ \item \SA, pois é mostrado que captura bem se o método explora a correlação entre rótulos;
+ \item \HL, pois é bem mais sensível que o Subset Accuracy;
+ \item \EBA, é o meio termo entre o Hamming Loss e o Subset Accuracy.
 %  \item Tempo computacional, pois é @@@ etc...
 \end{itemize}
 
@@ -1232,7 +1234,7 @@ Este trabalho teve por objetivo as seguintes atividades:
 \begin{enumerate}
  \item Descobrir como medir e explorar correlação entre rótulos;
  \item Análise crítica dos métodos multirrótulos;
- \item Elaboração de um algoritmo de um novo método multirrótulo;
+ \item Elaboração de um algoritmo de um novo método multirrótulo.
 \end{enumerate}
 O objetivo 1 foi considerado alcançado ao verificarmos que a métrica \SA~mede a 
 exploração da correlação entre rótulos e também ao verificarmos que a estratégia adotada por vários 
