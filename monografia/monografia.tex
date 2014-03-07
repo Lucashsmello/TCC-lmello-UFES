@@ -1,4 +1,4 @@
-\documentclass[brazil,ruledheader]{abnt}	% padrao abtnt, inlgles, nao sei oq eh ruledheader ainda TODO
+\documentclass[brazil,ruledheader]{abnt}
 % \usepackage[T1]{fontenc} 			% forcar fonte latina
 % \usepackage[utf8]{inputenc}
 \usepackage[portuguese]{babel}
@@ -9,12 +9,14 @@
 \usepackage{float}
 
 \usepackage{enumerate}
-\usepackage{lscape}
+% \usepackage{lscape}
+\usepackage{pdflscape}
 
 \usepackage{url}
 \usepackage{caption}
 \usepackage{subcaption}
 
+\usepackage{placeins}
 
 \usepackage{amsthm}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -50,6 +52,8 @@
 \newcommand{\MRLM}{Recursive Dependent Binary Relevance}
 \newcommand{\MRLMa}{RDBR}
 
+\newcommand{\TITULO}{UMA AN√ÅLISE EXPERIMENTAL DE M√âTODOS PARA CLASSIFICA√á√ÉO MULTIRR√ìTULO}
+
 %para insercao de numeracao nas linhas
 %\usepackage{lineno}
 
@@ -61,12 +65,12 @@
 
 \autor{Lucas Henrique Sousa Mello}
 
-\titulo{Super Titulo}
+\titulo{\TITULO}
 
 \orientador[Orientador:\\]{Fl\'avio Miguel Varej\~ao}
 
-\comentario{Monografia apresentada para obtenÁ„o do Grau de Bacharel em CiÍncia
-da ComputaÁ„o pela Universidade Federal do EspÌrito Santo.}
+\comentario{Monografia apresentada para obten√ß√£o do Grau de Bacharel em Ci√™ncia
+da Computa√ß√£o pela Universidade Federal do Esp√≠rito Santo.}
 
 \instituicao{Departamento de Inform\'atica \par Centro Tecnol\'ogico\par Universidade Federal do Esp\'\i rito Santo}
 
@@ -80,10 +84,15 @@ da ComputaÁ„o pela Universidade Federal do EspÌrito Santo.}
 \folhaderosto
 
 \begin{folhadeaprovacao}
+Monografia de Projeto Final de Gradua√ß√£o sob o t√≠tulo \textit{``\ABNTtitulodata''},
+defendida por \ABNTautordata~e aprovada em ???, em Vit√≥ria,
+Estado do Esp√≠rito Santo, pela banca examinadora constitu√≠da pelos
+professores:
+
 \setlength{\ABNTsignthickness}{0.4pt}
 \assinatura{Prof. Dr. Fl\'avio Miguel Varej\~ao\\ Departamento de Inform\'atica - UFES \\ Orientador}
-\assinatura{Prof. Dr. Thomas Walter Rauber\\ Departamento de Inform\'atica - UFES \\ Co-orientador}
-\assinatura{Prof. Francisco de Assis Boldt\\ Instituto Federal do Esp\'\i rito Santo - IFES}
+\assinatura{Prof. Dr. Thomas Walter Rauber\\ Departamento de Inform\'atica - UFES}
+\assinatura{Prof. Dr. Elias Silva de Oliveira\\ Departamento de Inform\'atica - UFES}
 \end{folhadeaprovacao}
 
 \begin{resumo}

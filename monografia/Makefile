@@ -11,6 +11,9 @@ all: $(TMPDIR) $(DOC).tex
 #	ps2pdf $(TMPDIR)/$(DOC).ps
 
 
+bib:
+	bibtex $(TMPDIR)/$(DOC)
+
 $(TMPDIR):
 	mkdir .tmpdir
 

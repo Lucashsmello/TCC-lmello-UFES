@@ -1,5 +1,5 @@
 \newcommand{\NbasesV}{\textit{N}}
-\newcommand{\Nbases}{6}
+\newcommand{\Nbases}{8}
 \newcommand{\Nml}{6}
 \newcommand{\NmlT}{5}
 \newcommand{\NmlA}{2}
@@ -9,8 +9,8 @@
 
 
 
-\newcommand{\jqo}{J48}
-\newcommand{\EBA}{Example Based Accuracy}
+\newcommand{\jqo}{C4.5}
+\newcommand{\EBA}{\textit{Example Based Accuracy}}
 \newcommand{\SA}{\textit{Subset Accuracy}}
 \newcommand{\HL}{\textit{Hamming Loss}}
 
@@ -31,7 +31,7 @@ Uma instância é um objeto do mundo real descrito
 por um vetor de valores numéricos ou nominais e por um conjunto de rótulos.
 Para completar essa tarefa, a técnica deve usar exemplos de treino cujas classes
 são conhecidas. 
-Na literatura \cite{rezende2003sistemas} as classes também são chamadas de rótulos
+Na literatura \cite{rezende2003sistemas} as classes são também chamadas de rótulos
 e quando as instâncias só podem assumir um único rótulo, o problema é chamado de classificação unirrótulo,
 do contrário, é chamado de problema de classificação multirrótulo \cite{borges2012}.
 
@@ -70,7 +70,8 @@ O melhor entendimento do funcionamento dos métodos multirrótulo permite:
 \section{Objetivos}
 O objetivo geral deste trabalho é analisar e comparar métodos multirrótulos distintos e 
 desenvolver um novo algoritmo de classificação multirrótulo.
-Mais formalmente, a análise deve implicar em conclusões matemáticas ou estatísticas sobre o desempenho dos métodos multirrótulo.
+Formalmente, a análise deve implicar em conclusões claros
+sobre o desempenho dos métodos multirrótulo.
 O Objetivo geral pode ser detalhado nos seguintes objetivos específicos:
 \begin{itemize}
  \item Descobrir como medir e explorar correlação entre rótulos;
@@ -104,15 +105,17 @@ em arquivos de computadores e do desejo dos usuários desses dados em obter info
 os próprios dado em si. A mineração de dados tem por objetivo satisfazer o desejo desses usuários ao desenvolver técnicas
 capazes de explicitar informações valiosas, antes escondidas ao usuários diante de uma alta quantidade de dados.
 Uma de suas subáreas é a aprendizado supervisionado. Nela, segundo \cite{mohri2012foundations},
-os dados pelos quais deve-se extrair as informações são associados a uma variável especial cujo valor
-é conhecido e a técnica deve predizer os rótulos
-corretamente para novos dados cujo valor da variável especial associada a elas é desconhecido.
-
+os dados pelos quais deve-se extrair as informações são divididos em amostras
+e cada amostra está associado a uma variável especial, de valor conhecido,
+e a técnica deve predizer o valor dessa variável especial para
+novas amostras cujo valor da variável especial associada a elas é desconhecido. 
 Normalmente, em aprendizado supervisionado os dados são objetos de um domínio específico e cada um dos objetos
 é descrito por um conjunto fixo de atributos \cite{rezende2003sistemas}. 
 Esses objetos são usualmente chamados de instâncias ou exemplos do domínio do problema.
 Um atributo é uma descrição de uma característica da instância.
-Por exemplo, de um do ponto de vista médico??.
+% Por exemplo, de um do ponto de vista médico cujo objetivo é diagnosticar 
+% se um paciente está gripado ou não,
+
 Em problemas de classificação unirrótulo, a variável especial associada a cada instância é discreta
 e é chamada de classe ou rótulo. A técnica que prediz as classes é chamado de classificador.
 Quando existem apenas duas classes, o problema é chamado de classificação binária.
@@ -128,7 +131,7 @@ Assim a classificação é a tarefa de encontrar um classificador capaz de predi
 o rótulo ou os rótulos de uma instância corretamente.
 Para completar essa tarefa, o classificador deve usar dados de entrada que são exemplos
 de treino cujos rótulos são conhecidos afim de
-reconhecer e aprender padrões.
+reconhecer e aprender padrões neles.
 
 \section{Enunciado do problema}
 
@@ -164,18 +167,19 @@ $r$, linear em relação ao número de rótulos, na multirrótulo o número cres
 Assim construir um classificador multirrótulo é mais complexo que um classificador unirrótulo.
 
 Alguns autores vêem os classificadores unirrótulo e os multirrótulo como uma função de probabilidade $p$ \cite{mcc2012}, \cite{pcc2010}.
-No caso de classificadores unirrótulo, a função de probabilidade $p(y|x)$, onde $y \in L$ e $x \in X$,
-estima a probabilidade da instância que tem o vetor de características $x$, ter o rótulo $y$.
+No caso de classificadores unirrótulo, um classificador é uma função de probabilidade $p(y|x)$,
+onde $y \in L$ e $x \in X$,
+que estima a probabilidade da instância que tem o vetor de características $x$, ter o rótulo $y$.
 Já no caso de classificadores multirrótulo, a função de probabilidade $p(y|x)$, onde $y \subseteq L$ e $x \in X$,
 estima a probabilidade da instância que tem $x$, ter todos os rótulos em $y$.
 Dessa forma, para um $x,x\in X$ qualquer, a função $\hat{f}$
 pode ser obtida pela equação \ref{eq:funcprob}:
 \begin{equation} \label{eq:funcprob}
- \hat{f}=\operatorname*{arg\,max}_y^* p(y|x)
+ \hat{f}=\operatorname*{arg\,max}_{y^*} p(y|x)
 \end{equation}
-Apesar de a função $\hat{f}$ é melhor aproximada de $f$ quando obedece a equação \ref{eq:funcprob}, 
+Apesar da função $\hat{f}$ ser melhor aproximada de $f$ quando obedece a equação \ref{eq:funcprob}, 
 muitos métodos multirrótulos não a obedecem por ser muito custoso de estimá-la, uma vez que existe
-devem procurar $y^*$ dentre $2^r$ possíveis combinações.
+procurar $y^*$ dentre $2^r$ possíveis combinações.
 
 
 
@@ -245,7 +249,7 @@ uma métrica que exige que o classificador multirrótulo explore a correlação 
  exampleAcc(P)=\frac{1}{n} \sum_{i=1}^n{\frac{| p_i \cap r_i|}{| p_i \cup r_i|}}
 \end{equation}
 
-Note que para essa métrica o valor ideal é 1 e o de pior desempenho é 0.
+Note que para essa métrica o valor de melhor desempenho é 1 e o de pior desempenho é 0.
 
 % \subsubsection{Precision}
 % \subsubsection{Recall}
@@ -275,8 +279,7 @@ A partir daí aplica-se as métricas de avaliação, como por exemplo o \HL.
 
 
 \chapter{Métodos Multirrótulos}
-\section{Transformação do Problema}
-\subsection{Relevância Binária - BR}
+\section{Relevância Binária - BR}
 \label{sec:br}
 
 
@@ -288,9 +291,9 @@ tem o rótulo $r_i$ são consideradas para o classificador $c_i$ como positivas
 e as demais instâncias como
 negativas. 
 Após todos os classificadores terem sido treinados, quando uma instância
-ainda não de rótulo desconhecido 
+de rótulo desconhecido 
 é apresentado aos classificadores, todos aqueles que produzirem uma classe positiva
-terão sua classe associada á nova instância.
+terão sua classe associada à nova instância.
 O método de classificação de relevância binária é uma estratégia de transformação do
 problema, que decompõe o problema de classificação multirrótulo em diversos problemas
 de classificação binária unirrótulo, um para cada um dos rótulos do problema.
@@ -311,7 +314,7 @@ de dados, um para cada classificador binário.
 
 
 
-\subsection{Classifier Chain}
+\section{Classifier Chain}
 
 
 A idéia básica desse algoritmo é semelhante ao BR: realiza a transformação do
@@ -333,10 +336,12 @@ e seis instâncias. Note que a base de treino do classificador binário $B$ tem 
 Na fase de predição do método a classificação ocorre de forma sequencial, na ordem em que a cadeia foi definida.
 O classificador $c_1$ inicia o processo de classificação realizando a estimativa do rótulo associado da instância teste.
 A partir daí o classificador $c_i$ realiza a predição da instância teste assim que a predição do classificador $c_{i-1}$
-esteja disponível. O classificador $c_i$ agrega a predição do classificador $c_{i-1}$, que é um valor binário (0 ou 1),
-a instância de teste. A figura \ref{fig:CCtraintest} ilutra bem o processo de predição na qual o vetor de características da
+estiver disponível. O classificador $c_i$ agrega a predição do classificador $c_{i-1}$, que é um valor binário (0 ou 1),
+a instância de teste. A figura \ref{fig:CCtraintest} ilustra bem o processo de predição na qual o vetor de características da
 instância teste vai crescendo com adição de cada estimativa de rótulo.
 
+Dessa forma, o \CC~considera a dependência entre os rótulos, pois a predição de um de seus classificadores binários
+afeta diretamente na predição dos classificadores binários seguintes.
 
 \begin{figure}
 
@@ -346,27 +351,26 @@ instância teste vai crescendo com adição de cada estimativa de rótulo.
 \end{figure}
 
 
-\subsection{Ensemble of Classifier Chain}
+\section{Ensemble of Classifier Chain}
 O \textit{Ensemble of Classifier Chain} é composto de $k$ \textit{Classifiers Chain} distintos \cite{cc2009},
 para um $k$ pré-definido.
-Para \textit{Classifier Chain} do \textit{Ensemble} é definido uma ordem aleatória da cadeia e
-cada \textit{Classifier Chain} é treinado sobre um amostra aleatória da base de dados de treino.
-Na fase de predição, a instância de teste é submetida a todos os \textit{Classifiers Chain}, resultando
-em $k$ predições para uma mesma instância. A predição única final é uma combinação das $k$ predições individuais,
-que é feito por voto majoritário, ou seja, um rótulo $y$ estará na predição final se $y$ estiver
+Para cada um dos $k$ \textit{Classifiers Chain} é definido uma ordem aleatória da cadeia e
+cada um é treinado sobre um amostra aleatória da base de dados de treino.
+Na fase de predição, a instância é submetida a todos os \textit{Classifiers Chain}, resultando
+em $k$ predições individuais para uma mesma instância. A predição final é feita combinando 
+as $k$ predições individuais,
+sendo feito por voto majoritário, ou seja, um rótulo $y$ estará na predição final se $y$ estiver
 em pelo menos $\ceil{\frac{k}{2}}$ das predições individuais.
 O motivo para que cada \textit{Classifier Chain} do \textit{Ensemble} ser diferente é que
-ao combinar um classificador $c$ com outros classificadores diferentes,
-espera-se que nas instâncias em que as $c$ errar na predição dos rótulos, a maior parte dos outros
-classificadores acertem.
+ao combinar um classificador $\textbf{c}$ com outros classificadores diferentes,
+espera-se que nas instâncias em que $\textbf{c}$ classificar incorretamente,
+a maior parte dos outros classificadores classifiquem corretamente.
 
 
-
-
-\subsection{Relevância Binária Dependente - DBR}
+\section{Relevância Binária Dependente - DBR}
 \label{sec:dbr}
-Este método é proposto por \cite{dbr2014} é baseado no método BR
-e a diferença entre ambos está no fato de 
+Este método é proposto por \cite{dbr2014} e é baseado no método BR
+e a grande diferença entre ambos está no fato de 
 que o DBR considera dependência entre os $r$ rótulos.
 
 O DBR é composto de dois classificadores multirrótulo, $c_0$ e $c_1$ , 
@@ -379,39 +383,48 @@ exatamente o método BR. Os $r$ classificadores binários $c_1^1,c_1^2...,c_1^r$
   do classificador binário $c_1^i$ tem $|x|+r-1$ características
   e é definido como sendo $(x,y_1,...,y_{i-1},y_{i+1},...,y_{r})$.
   
-  \subsubsection{Fase de Treinamento}
-  Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ é o vetor de características de cada instância
-  e $y_i \in Y$ o vetor binário de rótulos de cada instância,
-  primeiro treina-se o $c_0$
+  \subsection{Fase de Treinamento}
+  Seja $D=\{((x_i),y_i)|i=1,...,n\}$ a base de dados de treino composta de $n$ instâncias,
+  onde $x_i \in X$ e $y_i \in Y$,
+  $x_i$ é o vetor de características de cada instância
+  e $y_i$ o vetor binário de rótulos de cada instância.
+  O método primeiro treina o $c_0$
   no espaço de características original conforme o treinamento do próprio BR mostrado na seção \ref{sec:br}.
-  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ adicionando os rótulos de cada
-  exemplo como características. Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
-  cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,r}),y_{i,j} | i=1,...,n\}$.
+  Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ ao adicionar os rótulos de cada
+  exemplo como características.
+  Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
+  cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados
+  $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,r}),y_{i,j} | i=1,...,n\}$.
   Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
-  Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
-  estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_r)$.
+  Dessa forma, ao invés de cada classificador binário ser uma função 
+  que depende apenas do vetor de características, como o BR,
+  o método é capaz de detectar dependência entre os rótulos pelo fato de
+  cada classificador binário $c_1^j$ 
+  ser definido por uma função que depende adicionalmente dos valores dos rótulos sendo preditos.
+%   $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_r)$.
   
-  \subsubsection{Fase de Predição}
-  Como no caso do Classifier Chain, os rótulos reais $y$, que são usado como características adicionais em cada instância de treino,
+  \subsection{Fase de Predição}
+  Como no caso do Classifier Chain, os rótulos reais $y$, que são usados como características adicionais em cada instância de treino,
  estão disponíveis apenas durante a fase de treinamento.
  Com isso, para tornar possível a classificação por $c_1$, o DBR usa o classificador $c_0$ com a finalidade de
  estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
- o que resulta no predição $c_0(x)=\hat{y}=(\hat{y}_1,\hat{y}_2,...,\hat{y}_r)$, que servirá como parte da instância de $c_1$,
+ o que resulta no predição $c_0(x)=\hat{y}=(\hat{y}_1,\hat{y}_2,...,\hat{y}_r)$, 
+ que servirá como parte da instância a ser classificada por $c_1$,
  onde antes era o lugar de $y$. 
  A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y})$ de uma forma bem similar ao BR:
  cada classificador binário $c_1^i$ do método é responsável pela predição de um único rótulo da instância
  cujo vetor de características é $(x,\hat{y}_1,...,\hat{y}_{j-1},\hat{y}_{j+1},...,\hat{y}_r)$.
 
-\subsection{Monte Carlo Classifier Chain}
+\section{Monte Carlo Classifier Chain}
 
 
 O método \textit{Classifier Chain with Monte Carlo Optimization} (MCC) é introduzido
 por \cite{mcc2012} para melhorar a qualidade de predição do \textit{Classifier Chain}.
 O método usa uma heurística gulosa para melhorar a fase de predição do \textit{Classifier Chain}.
 O método parte do pressuposto de que o \textit{Classifier Chain} geralmente não encontra
-o conjunto de rótulos $y^*,y^* \in {\{0,1\}}^r$ que tem a maior probabilidade de a instância de teste ter,
-dado o vetor de características da instância, ou seja, não segue corretamente a equação \ref{eq:funcprob}.
-Para encontrar o $y^*$ de maior probabilidade, a princípio deve-se procurar entre todas as possíveis
+o conjunto de rótulos $y^*,y^* \in {\{0,1\}}^r$ cuja probabilidade da instância ter seja máxima, ou seja, 
+não segue corretamente a equação \ref{eq:funcprob}.
+Para encontrar o $y^*$ de maior probabilidade, a princípio deve-se procurá-lo em todas as possíveis
 combinações de ${\{0,1\}}^r$, o que torna-se inviável para um valor de $r>10$.
 O MCC tenta encontrar esse $y^*$ sem testar todas as possíveis $2^r$ combinações do espaço de busca.
 Ele usa de um algoritmo de otimização, chamado \textit{Monte Carlo} \cite{montecarlo}, para
@@ -514,9 +527,13 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   A fase de treinamento do \MRLMa~é exatamente igual ao DBR.
   
   Formalmente, o treinamento de \MRLM~funciona da seguinte forma.
-  Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ é o vetor de características de cada instância
-  e $y_i \in Y$ o vetor binário de rótulos de cada instância,
-  primeiro treina-se o $c_0$
+  Seja $D=\{((x_i),y_i)|i=1,...,n\}$ a base de dados de treino composta de $n$ instâncias,
+  onde $x_i \in X$ e $y_i \in Y$,
+  $x_i$ é o vetor de características de cada instância
+  e $y_i$ o vetor binário de rótulos de cada instância.
+%   Dado uma base de dados de treino $D=\{((x_i),y_i)|i=1,...,n\}$ onde $x_i \in X$ é o vetor de características de cada instância
+%   e $y_i \in Y$ o vetor binário de rótulos de cada instância,
+  O algoritmo primeiro treina o classificador multirrótulo $c_0$
   no espaço de características original conforme o treinamento do próprio BR mostrado na seção \ref{sec:br}.
 %   Depois, treina-se $c_1$ em uma nova base de dados $D'$ que é construída a partir de $D$ e que é
 %   composta pelas instâncias $\{(y_1),(y_2),...,(y_n)\}$ as quais são os rótulos das instâncias da base de $D$
@@ -525,22 +542,31 @@ Formalmente, a estrutura do \MRLMa~é organizado da seguinte forma:
   exemplo como características. Assim, $D'$ é composta pelos exemplos $\{((x_i,y_i),y_i) |i=1,...,n\}$ e
   cada classificador binário $c_1^j$ de $c_1$ é induzido na base de dados $D'_j=\{(x_i,y_{i,1},...,y_{i,j-1},y_{i,j+1},...,y_{i,r}),y_{i,j} | i=1,...,n\}$.
   Note que a característica representando o $j$-ésimo rótulo é removido da base de dados.
-  Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
-  estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_r)$.
+  Dessa forma, ao invés de cada classificador binário ser uma função 
+  que depende apenas do vetor de características, como o BR,
+  o método é capaz de detectar dependência entre os rótulos pelo fato de
+  cada classificador binário $c_1^j$ 
+  ser definido por uma função que depende adicionalmente dos valores dos rótulos sendo preditos.
+%   Dessa forma, ao invés de estimar apenas $P(y_j|x)$ como o BR faz, o método é capaz de detectar dependência entre os rótulos ao
+%   estimar $P(y_j|x,y_1,...,y_{j-1},y_{j+1},...,y_r)$.
  
  \subsection{Fase de Predição}
  \label{sec:mrlm_prediction}
  O funcionamento do \MRLMa~distingue-se do DBR apenas na fase de predição.
  Dado o vetor de características $x$ de uma instância 
- onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^r$, queremos que a função $C:X\rightarrow Y$,
- representando o classificador multirrótulo \MRLMa, retorne $y$ quando o submetemos $x$, ou seja, $C(x)=y$.
+ onde $x\in X$ e seu conjunto de rótulos reais $y,y \in {\{0,1\}}^r$, queremos que a função $C$
+ representando o classificador multirrótulo \MRLMa, onde $C:X\rightarrow Y$,
+ retorne $y$ quando o submetemos $x$, ou seja, $C(x)=y$.
  
  Como no caso do DBR e do Classifier Chain, os rótulos reais $y$, que são usado como características especiais,
- estão disponíveis apenas durante a fase de treinamento. Dessa forma, para tornar possível a classificação por $c_1$, usou-se o $c_0$ para
+ estão disponíveis apenas durante a fase de treinamento.
+ Dessa forma, para tornar possível a classificação por $c_1$, 
+ usou-se o classificador multirrótulo $c_0$ para
  estimar os rótulos, %  Para alcançar isso, o \MRLMa~, após treinado, usa $c_0$ para realizar as primeiras estimativas dos rótulos,
- resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_r^0)$, que servirá como parte da instância de $c_1$
+ resultando em $c_0(x)=\hat{y}^0=(\hat{y}_1^0,\hat{y}_2^0,...,\hat{y}_r^0)$,
+ que servirá como parte da instância de $c_1$
  no lugar de $y$. 
-A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y}^0)$ de uma forma bem similar ao BR:
+ A partir daí, $c_1$ classifica o vetor de características $(x,\hat{y}^0)$ de uma forma bem similar ao BR:
  cada classificador binário $c_1^i$ do método é responsável pela predição de um único rótulo da instância
  cujo vetor de características é $(x,\hat{y}_1^0,...,\hat{y}_{j-1}^0,\hat{y}_{j+1}^0,...,\hat{y}_r^0)$. 
  Esse procedimento é o realizado pelo DBR e é ilustrado na figura \ref{fig:DBRstruct}. 
@@ -736,7 +762,7 @@ disponíveis.
 %  $c_0(x)$ resulta na estimativa $\hat{y}^3=c_1(c_1(c_1(c_0(x))))$ e assim por diante.
  Aplicando esse processo recursivo, espera-se que a cada recursão $i$ a estimativa dos rótulos $\hat{y}^i$ seja melhor do que
  seu antecessor $\hat{y}^{i-1}$. Teoricamente, essa afirmação se mantém se supormos que a estimativa $\hat{y}^1$ é melhor do que a $\hat{y}^0$, 
- o que é razoável uma vez que o classificador $c_0$, que é um BR, obtem seu resultado usando apenas estimativas marginais dos rótulos,
+ o que é razoável uma vez que o classificador $c_0$, que é um BR, obtêm seu resultado usando apenas estimativas marginais dos rótulos,
  %  ($P(y|x)=\prod_{j=1}^l{P(y_j,x)}$)
   enquanto que $c_1$ explora a correlação dos rótulos ao usá-los como características, obtendo assim 
  estimativas baseadas na probabilidade condicional.
@@ -754,8 +780,8 @@ disponíveis.
   Adicionalmente, o \MRLMa~adota uma técnica extra, inspirada no Classifier Chain que consiste em, para
  cada classificador binário $c_1^j$, atualizar a característica $\hat{y}_j$ imediatamente após 
  a sua classificação. Dessa forma, os classificadores binários seguintes, $c_1^{j+1},c_1^{j+2},...,c_1^{r}$,
- classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores. Isso é ilustrado
- na figura \ref{fig:RDBRstochastic} e é chamado de atualização dinâmica dos rótulos.
+ classificarão suas instâncias baseados em estimativas de rótulos mais atuais, possivelmente melhores.
+ Isso é ilustrado na figura \ref{fig:RDBRstochastic} e é chamado de atualização dinâmica dos rótulos.
  
 
  
@@ -763,7 +789,8 @@ disponíveis.
  \label{sec:mrlm_analise} 
  
  Nessa seção o método \MRLMa~é posto em prova. Com objetivo de analisar o método, implementou-se o algoritmo
- na linguagem de programação Java e no Weka \cite{weka}, que é uma biblioteca que integra técnicas de reconhecimento de padrões.
+ usando a linguagem de programação Java e no \textit{Weka} \cite{weka},
+ que é uma biblioteca que integra técnicas de reconhecimento de padrões.
  A principal hipótese em que o \MRLMa~é baseado será testado nessa seção com o intuito de validar o método.
  Com a finalidade de tornar os testes mais objetivos, a hipótese é melhor formalizado assim:
  \begin{itemize}
@@ -788,19 +815,20 @@ disponíveis.
 Resumidamente, a hipótese é que erros de predições pelo
 classificador $c_0$ do DBR afetam negativamente a classificação do classificador $c_1$.
 A comprovação dessa hipótese é feita da seguinte forma. Experimentos com o \MRLMa~são realizados
-usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica \textit{Subset Accuracy}
-quando o método é submetido a validação cruzada de 10 \textit{folds}.
+usando 7 bases de dados de domínio públicos. Cada experimento consiste em medir o valor da métrica
+\SA~quando o método é submetido a validação cruzada de 10 \textit{folds}.
 O experimento é repetido com o número máximo de iterações do
 \MRLMa~variando de 0 a 10 (Note que para o valor 0, o \MRLMa~se torna exatamente o BR).
 Ao variar esse parâmetro, espera-se que o método obtenha desempenho melhor para os valores mais altos.
-De fato, é o que ocorre na maioria dos casos, apesar de que o método estabiliza/converge rapidamente em relação ao
+De fato, é o que ocorre na maioria dos casos, apesar de que o método converge rapidamente em relação ao
 número de iterações.
 Os gráficos da figura \ref{fig:mrlmgraph1} mostram o que ocorre em 5 dos 7 casos testados: o método tem seu desempenho melhorado
 até o valor máximo de iterações chegar a 2, depois disso o método não tem seu desempenho alterado.
 Portanto 2 foi o valor máximo de iterações necessárias para o método convergir nesses casos.
 Nos outros dois casos o método convergiu com apenas uma iteração ou piorou 
 com duas ou mais iterações. Veja os dois gráficos dos dois casos na figura \ref{fig:mrlmgraph2}.
-Vale ressaltar que em 6 dos 7 casos, o método \MRLMa~conseguiu um desempenho melhor do que o DBR e em apenas um dos casos
+Vale ressaltar que em 6 dos 7 casos, 
+o método \MRLMa~conseguiu um desempenho melhor do que o DBR e em apenas um dos casos
 alcançou o mesmo desempenho do DBR.
 
 
@@ -863,6 +891,7 @@ o \MRLMa~não melhorou na sua segunda iteração.}
 \label{fig:mrlmgraph2}
 \end{figure}
 
+\FloatBarrier
 
 
 É importante analisar o quanto o método aumenta o tamanho da base de dados uma vez que isso acarreta no aumento
@@ -871,7 +900,7 @@ e $m$ o número de atributos da base original, na fase de treinamento do \MRLMa,
 $2r$, cada uma contendo $n$ instâncias. Em metade delas, as instâncias contidas tem $m$ atributos e na outra metade $m+r$ atributos.
 Já na fase de predição do algoritmo, no pior caso, o algoritmo usa $(k+1)r$ bases de dados de $n$ instâncias onde na primeira base, o
 número de atributos é igual a $m$ e nas restantes é igual $m+r$. Vale ressaltar que nem todas essas bases de dados precisam ser
-armazenados explicitamente na mémoria em espaços diferentes, algumas podem são reutilizadas no processo de predição.
+armazenados explicitamente na mémoria em espaços diferentes, algumas são reutilizadas no processo de predição.
 
 % Em relação a complexidade algorítma do \MRLMa, ela pode ser
 % aproximada pelo número de atributos destinados ao classificador base, uma vez que é um método de transformação
@@ -882,17 +911,19 @@ armazenados explicitamente na mémoria em espaços diferentes, algumas podem sã
 
 
 \chapter{Avaliação e Análise Experimental}
-Neste capítulo é descrito as bases de dados multirrótulo usadas nos experimentos, as medidas de avaliação escolhidas e a escolha
+Neste capítulo é descrito as bases de dados multirrótulo usadas nos experimentos, 
+as medidas de avaliação escolhidas e a escolha
 dos parâmetros dos classificadores. 
-A comparação e estudo dos métodos é feita considerando o custo computacional e a qualidade de predição.
-A qualidade de predição é estimada pelo método de avaliação por validação cruzada \ref{sec:modelav} com 10 grupos
-(\textit{10-fold cross-validation}) sobre \Nbases~bases de dados, todas apresentadas e descritas na subseção \ref{sec:datas}.
+A comparação e estudo dos métodos é feita considerando a qualidade de predição.
+A qualidade de predição é estimada pelo método de avaliação
+por validação cruzada com 10 grupos (\textit{10-fold cross-validation}), descrito na seção \ref{sec:modelav},
+sobre \Nbases~bases de dados, todas apresentadas e descritas na subseção \ref{sec:datas}.
 
 Para quantificar a qualidade de predição, 3 métricas foram utilizadas.
 As métricas escolhidas, bem como o motivo das escolhas,
 são listadas:
 \begin{itemize}
- \item Subset Accuracy, pois é mostrado que captura bem a correlação entre rótulos;
+ \item Subset Accuracy, pois é mostrado que captura bem se o método explora a correlação entre rótulos;
  \item Hamming Loss, pois é bem mais sensível que o Subset Accuracy;
  \item Example Based Accuracy, é o meio termo entre o Hamming Loss e o Subset Accuracy.
 %  \item Tempo computacional, pois é @@@ etc...
@@ -902,21 +933,12 @@ As fórmulas para o cálculo de cada uma das métricas são apresentadas na seç
 É interessante mostrar os resultados experimentais usando diferentes métricas, pois cada uma captura
 um aspecto diferente da classificação. 
 
-A análise experimental dos métodos se encontram divididos em dois estudos. O primeiro estudo consiste em
-comparar os métodos quando todos usam o mesmo classificador base e o segundo em comparar cada combinação de um
-modelo de classificação multirrótulo com uma configuração de parâmetros definida. 
-O primeiro estudo, que chamaremos de Estudo Específico, tem por objetivo analisar se cada método multirrótulo apresentada desempenhos diferentes para
-diferentes classificadores, ou seja, se o \textit{ranking} é alterado ao alterar o classificador base.
-O segundo estudo, que chamaremos de Estudo Geral,
-tem por objetivo analisar os métodos de uma forma geral,
-desconhecendo o classificador base que melhor se adapta a cada base, a priori.
-Nesse estudo, cada combinação de modelo multirrótulo com um classificador base é considerado
-um novo método multirrótulo.
-
-Num total, foram utilizados \Nml~modelos de classificação multirrótulos: BR, DBR, RDBR, CC, ECC e MCC.
-Para cada um deles utilizou-se os seguintes classificadores base KNN, SVM, \jqo e Regressão Logística.
+Os experimentos foram realizados utilizando \Nml~modelos de classificação multirrótulo: BR, DBR, RDBR, CC, ECC e MCC.
+Os classificadores bases usados, aqueles que são utilizados como classificadores binários para
+cada um dos métodos multirrótulos citados, foram os seguintes:
+KNN, SVM, \jqo~e Regressão Logística.
 Implementações públicas dos classificadores na biblioteca \textit{Weka} \cite{weka} foram usados para este trabalho.
-A seguir a descrição de cada um deles.
+A seguir a descrição de cada um dos classificadores binários.
 
 \begin{itemize}
  \item \textbf{KNN}: O KNN é uma das técnicas do aprendizado supervisionado mais conhecida. 
@@ -933,7 +955,6 @@ A seguir a descrição de cada um deles.
  que separa as duas classes na base de treino.
  O ``melhor'' hiperplano é definido como aquele que simultaneamente minimiza
  o erro de classificação e maximiza a distância do hiperplano à instância mais próxima dele \cite{topalgos2008}. 
- 
  
  \item \textbf{\jqo}: 
  O \jqo~é um algoritmo para contruir uma árvore de decisão.
@@ -962,9 +983,15 @@ A seguir a descrição de cada um deles.
 onde $\xx$ é o vetor de características, $\yy$ é a classe positiva e $\ww$ é um vetor de coeficientes de mesma dimensão
 que $\xx$ o qual é estimado durante a fase de treinamento do algoritmo pela máxima verossimilhança \cite{james2013introduction}.
 Pela equação \ref{eq:RL} podemos calcular a probabilidade de uma instância de características $\xx$ pertencer a classe $\yy$.
- 
- 
 \end{itemize}
+
+
+A análise experimental dos métodos se encontram divididos em dois estudos. O primeiro estudo consiste em
+comparar os métodos quando todos usam um mesmo classificador base em específico
+e o segundo em comparar cada combinação de um
+modelo de classificação multirrótulo com um classificador base. 
+Ambos estudos são detalhados na seção \ref{sec:exps}.
+
 
 
 % Para o melhor entendimento, neste capítulo um método multirrótulo é definido como sendo a combinação
@@ -1027,7 +1054,7 @@ base de dados privada \cite{mendel2008}.
 % \end{itemize}
 
 \begin{table}[h]
-\begin{tabular}{|c|ccccccc|}
+\begin{tabular}{|l|ccccccc|}
 \hline
 % \textbf{}         & \textbf{}        & \textbf{}         & \multicolumn{2}{c}{\textbf{ATRIBUTOS}} & \textbf{}        & \textbf{}              & \textbf{}          \\
 \textbf{BASE}      & \textbf{DOM} & \textbf{EXEMPLOS} & \textbf{DIS} & \textbf{NUM} & \textbf{RÓTULOS} & \textbf{CARD} & \textbf{DENS} \\ \hline
@@ -1036,7 +1063,7 @@ base de dados privada \cite{mendel2008}.
 \textbf{Enron}     & Texto            & 1702              & 1001              & 0                  & 53               & 3.378                  & 0.064              \\
 \textbf{Genbase}   & Biologia         & 662               & 1186              & 0                  & 27               & 1.252                  & 0.046              \\
 \textbf{Medical}   & Texto            & 978               & 1449              & 0                  & 45               & 1.245                  & 0.028              \\
-\textbf{Motorpump} & ??               & 1372              & 0                 & 40                 & 9                & 2.249                  & 0.250              \\
+\textbf{Motorpump} & Vibração         & 1372              & 0                 & 40                 & 9                & 2.249                  & 0.250              \\
 \textbf{Scene}     & Imagem           & 2407              & 0                 & 294                & 6                & 1.074                  & 0.179              \\
 \textbf{Yeast}     & Biologia         & 2417              & 0                 & 103                & 14               & 4.237                  & 0.303              \\  \hline
 
@@ -1049,10 +1076,10 @@ A tabela \ref{tab:datas} apresenta algumas estatísticas das bases de dados adqu
 Nela são apresentadas as seguintes informações de cada base de dados:
 \begin{itemize}
   \item \textbf{DOM}: Domínio pertencente;
-  \item \textbf{DIS}: número de atributos discretos;
-  \item \textbf{NUM}: número de atributos numéricos;
-  \item \textbf{CARD}: cardinalidade de rótulos na base de dados;
-  \item \textbf{DENS}: densidade de rótulos na base de dados.
+  \item \textbf{DIS}: Número de atributos discretos;
+  \item \textbf{NUM}: Número de atributos numéricos;
+  \item \textbf{CARD}: Cardinalidade de rótulos na base de dados, que significa o número médio de rótulos por exemplo;
+  \item \textbf{DENS}: Densidade de rótulos na base de dados. Calculado pela divisão da cardinalidade pelo número de possíveis rótulos.
 \end{itemize}
 
 
@@ -1072,12 +1099,44 @@ Nela são apresentadas as seguintes informações de cada base de dados:
 \label{sec:exps}
 Nesta seção é feita uma análise do desempenho dos métodos multirrótulos em cada uma das bases de dados
 em diferentes métricas.
-Essa seção é dividida em 2 subseções, um para o Estudo específico citado e
+A análise experimental dos métodos se encontram divididos em dois estudos.
+O primeiro estudo consiste em
+comparar os métodos quando todos usam um mesmo classificador base em específico
+e o segundo em comparar cada combinação de um
+modelo de classificação multirrótulo com um classificador base. 
+No primeiro estudo, que chamaremos de Estudo Específico, para cada um dos 4 classificadores bases, 
+cada método multirrótulo é 
+testado e enumerado de 1 a 6 segundo a ordem de melhor desempenho.
+O método que obtiver o melhor desempenho, lhe é atribuído o valor 1,
+o segundo melhor, lhe atribuído 2 e assim por diante.
+Essa enumeração é chamada de \textit{ranking} e o valor atribuído de \textit{rank}.
+No segundo estudo,
+que chamaremos de Estudo Geral,
+o \textit{rank} de cada método varia de 1 a 24, 
+uma vez que cada
+combinação de um modelo de classificação multirrótulo com um classificador base
+é considerado um método novo.
+Note que no Estudo Geral
+o \textit{rank} de um método multirrótulo que tem como o classificador base, por exemplo o KNN,
+é afetado pelo desempenho do mesmo método porém com outro classificador base.
+O Estudo Específico
+tem por principal objetivo evitar que isso aconteça.
+Adicionalmente, o Estudo Específico tem por objetivo
+analisar se cada método multirrótulo
+apresenta desempenhos diferentes para
+diferentes classificadores, ou seja, se o \textit{ranking} é alterado ao alterar o classificador base.
+O Estudo Geral
+tem por objetivo analisar as possíveis combinações de classificadores bases e modelo de classificação multirrótulo
+sem tornar a comparação e o \textit{ranking} específicos
+para um subconjunto dessas possíveis combinações.
+O motivo disso é tomar um ponto de vista em que se desconhece
+o classificador base que melhor se adapta a cada base a priori.
+Essa seção é dividida em 2 subseções, um para o Estudo específico e
 outro para o Estudo Geral, ambos definidos no ínicio do capítulo.
 
 No Estudo Específico os métodos tiveram seus classificadores bases fixados.
-A razão disso vem do fato de que queremos comparar os métodos multirrótulos entre si,
-e não os seus classificadores bases.
+% A razão disso vem do fato de que queremos comparar os métodos multirrótulos entre si,
+% e não os seus classificadores bases.
 Ao fixarmos o classificador base, 
 o desempenho irá depender apenas do modelo de classificação multirrótulo
 de cada um.
@@ -1088,22 +1147,6 @@ o ranking dos métodos multirrótulos.
 
 
 \subsection{Estudo Específico}
-% \input{tabelas/SAknn.tex}
-% \input{tabelas/HLknn.tex}
-% \input{tabelas/EBAknn.tex}
-% 
-% \input{tabelas/SAsvm.tex}
-% \input{tabelas/HLsvm.tex}
-% \input{tabelas/EBAsvm.tex}
-% 
-% \input{tabelas/SAj48.tex}
-% \input{tabelas/HLj48.tex}
-% \input{tabelas/EBAj48.tex}
-% 
-% \input{tabelas/SAlogi.tex}
-% \input{tabelas/HLlogi.tex}
-% \input{tabelas/EBAlogi.tex}
-
 \input{tabelas2/ESknn.tex}
 \input{tabelas2/ESsvm.tex}
 \input{tabelas2/ESj48.tex}
@@ -1123,29 +1166,30 @@ se encontram nas tabelas
 % \ref{tab:SAj48},\ref{tab:HLj48},\ref{tab:EBAj48},
 % \ref{tab:SAlogi},\ref{tab:HLlogi} e \ref{tab:EBAlogi}.
 Note que em todas as tabelas, para a base de dados \textit{Enron},
-o valor do \SA~é o mais baixo dentre todas bases.
-Isso é esperado uma vez que é a base com maior número de rótulos ($53$) e o \SA
-exige fortemente que a predição do classificador acerte a única possível combinação dentre as $2^{53}$ possíveis.
+o valor do \SA~é o mais baixo dentre todas as bases.
+Isso é esperado uma vez que é a base com maior número de rótulos ($53$) e o
+\SA~exige fortemente que a predição do classificador acerte a única possível combinação dentre as $2^{53}$ possíveis.
 Mas o interessante é que, apesar do \SA~ser o pior para essa base, o \HL~é o quarto melhor.
 Isso sugere que há alguns poucos rótulos que são difíceis de serem corretamente preditos.
 Para o classificador base KNN, o RDBR obteve o melhor resultado na métrica \SA~e na métrica \EBA.
 
 A ordem dos métodos que obtiverem o melhor rank médio altera-se consideravelmente
 ao alterar o classificador base.
-Por exemplo, com o KNN, a ordem crescente do rank médio no \SA~é \MRLMa,MCC,DBR,CC,BR,ECC com o KNN,
-mas com o SVM a ordem mudou para ECC,MCC,\MRLMa,CC,DBR,BR.
+Por exemplo, com o KNN, a ordem crescente do rank médio no \SA~é \MRLMa,MCC,DBR,CC,BR,ECC,
+entretanto com o SVM a ordem mudou para ECC,MCC,\MRLMa,CC,DBR,BR.
 
 O método BR alcança resultados melhores pela métrica \HL~do que para as outras.
 O seu ranking médio é sempre menor quando medido pelo \HL. Isso sugere que, apesar
 do BR não capturar a dependência entre rótulos, ele captura bem a dependência
 que cada rótulo tem com o vetor de características. Uma hipótese para explicar
 o desempenho dos métodos multirrótulos que exploram correlação entre rótulos ser
-pior que o do BR em alguns casos, é que os métodos empenham muito esforços para 
-achar a correlação entre rótulos e acabam desprezando o vetor de características. 
+pior que o do BR em alguns casos, é que os métodos empenham muitos esforços para 
+achar a dependência entre os rótulos e acabam desprezando a dependência de cada
+rótulo com o vetor de características. 
 Por exemplo, se o problema multirrótulo tiver um número de rótulos relativamente muito maior 
 que o número de características, a estratégia de expandir o espaço de características com 
-os valores dos rótulos irá reduzir significativamente a importância do vetor de características, 
-dependendo co classificador base. A hipótese é verdadeira quando não há (ou é baixa) a correlação entre rótulos
+os valores dos rótulos irá reduzir significativamente a importância do vetor de características.
+A hipótese é verdadeira quando não há (ou é baixa) a correlação entre rótulos
 na base de dados ou quando é complexa demais para ser entendida pelos métodos atuais.
 
 % Note mais uma vez que o desempenho muda muito de métrica pra métrica. O \CC~que tem
@@ -1153,17 +1197,14 @@ na base de dados ou quando é complexa demais para ser entendida pelos métodos 
 % Hamming Loss.
 
 
+\FloatBarrier
 \subsection{Estudo Geral}
 
-\input{tabelas/SAall.tex}
-\input{tabelas/HLall.tex}
-\input{tabelas/EBAall.tex}
-
-
 As tabelas \ref{tab:allresultsSA},\ref{tab:allresultsHL} e \ref{tab:allresultsEBA} mostram o  resultado alcançado
-por cada combinação de modelo de classificação multirrótulo e classificador base nas métricas \SA,\HL e \EBA.
+por cada combinação de modelo de classificação multirrótulo e classificador base nas métricas \SA,\HL~e \EBA.
 O ECC com KNN foi o único que não alcançou nenhum resultado, pois precisou de mais memória principal do que
 tinha disponível e é por isso que temos nas tabelas o símbolo do ponto de interrogação em seu resultado.
+A esse atribuímos a última colocação na base correpondente.
 Observando as tabelas podemos notar
 que os método multirrótulo ECC obtém os melhores resultados em geral. O ECC com \jqo~obteve o 
 melhor rank médio para as métricas \SA~e \HL, e o segundo melhor rank médio para a métrica \EBA.
@@ -1171,9 +1212,16 @@ O \MRLMa~com KNN alcançou resultados bons, ele teve o segundo melhor rank médi
 Interessante que o \MRLMa~com KNN obtém resultados muito melhores do que com outros classificadores base.
 Isso não ocorre com outros métodos, visto que alguns alcançam resultados melhores usando SVM e outros com \jqo.
 Note que o \textit{rank} de cada um dos métodos variam muito de base de dados para base de dados, ou seja, desvio padrão
-dos \textit{rank} é alto. Por exemplo, o MMC com KNN alcançou o pior desempenho na base \textit{Enron}, porém 
-teve o melhor desempenho na \textit{Yeast}. Esse desvio padrão alto sugere que não há método multirrótulo que
+dos \textit{rank} é alto. Por exemplo, o MCC com KNN alcançou o pior desempenho na base \textit{Enron}, porém 
+teve o melhor desempenho na \textit{Yeast}. Esse desvio padrão alto sugere que não há método multirrótulo 
+com um classificador base único que
 seja bom para todos os problemas, cada um é bom para um tipo de problema.
+
+\input{tabelas/SAall.tex}
+\input{tabelas/HLall.tex}
+\input{tabelas/EBAall.tex}
+
+\FloatBarrier
 
 
 
