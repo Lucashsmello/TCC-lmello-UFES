@@ -14,6 +14,8 @@
 \usepackage[ruled,longend]{algorithm2e} % para escrever algoritmos
 \usepackage{ulem}       % para trocar a fonte?
 
+\graphicspath{{pics/}}
+
 \definecolor{defblue}{rgb}{0.2, 0.2, 0.7}
 \definecolor{defred}{rgb}{0.4, 0.0, 0.0}
 \definecolor{defgreen}{rgb}{0.0, 0.4, 0.0}
@@ -72,7 +74,7 @@
 }
 
 %\title{Um Estudo da Eficiência da Autocentralidade no Problema de Isomorfismo de Grafos}
-\title[]{Uma Análise Experimental de Método para Classificação Multirrótulo}
+\title[]{Uma Análise Experimental de Métodos para Classificação Multirrótulo}
 \subtitle{}
 \author{Lucas Henrique Sousa Mello}
 \institute[NINFA]{}
@@ -121,16 +123,87 @@
 \section{Introdução}
 
 \begin{frame}
-  \frametitle{Problemas de Otimização}
+  \frametitle{Problemas de Classificação}
   \framesubtitle{O que são?}
-  Definição geral de um problema de otimização:
+  \begin{center}
+  Determinar a classe de um objeto \\ dentre um conjunto pré-definido de classes. 
+  \end{center}
+
+  
+  
+  \begin{exampleblock}{Exemplos:}
+  \begin{itemize}
+   \item Fruta: descobrir se é Maçã, Uva ou Morango.
+   \item Filme: descobrir se é de comédia ou não.
+  \end{itemize}
+  
+ \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problemas de Classificação}
+  \framesubtitle{O que são?}
+  
+  Um objeto é descrito por um vetor de características.
+  
+    \begin{exampleblock}{Exemplo:}
+  \begin{itemize}
+   \item Fruta: Cor, massa e formato.
+  \end{itemize}
+  
+ \end{exampleblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Problemas de Classificação Multirrótulo}
+  \framesubtitle{O que são?}
+  
+  Um objeto pode estar associado a mais de uma classe simultaneamente.
+  
+    \begin{exampleblock}{Exemplo:}
+  \begin{itemize}
+   \item Filme: pode ser de comédia e romance.
+  \end{itemize}
+  
+ \end{exampleblock}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Problemas de Classificação}
+  \framesubtitle{O que são?}
+  
+  Definição geral de um problema de classificação unirrótulo:
+  
   \vspace{10pt}
   \begin{align}
-    \textrm{maximizar}
-      \quad & z = f(x) \nonumber \\
-  	  \quad & x \in S \nonumber \\
+    \textrm{encontrar}
+      \quad & f(x)=y \\
+  	  \quad & \textrm{para todo }x \in X \nonumber \\
 	  \nonumber
   \end{align}
+  
+  Muito difícil encontrar $f$, portanto $f$ é aproximado.
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Problemas de Classificação}
+  \framesubtitle{O que são?}
+  
+  Definição geral de um problema de classificação multi:
+  
+  \vspace{10pt}
+  \begin{align}
+    \textrm{encontrar}
+      \quad & f(x)=y \\
+  	  \quad & \textrm{para todo }x \in X \nonumber \\
+	  \nonumber
+  \end{align}
+  
+  Muito difícil encontrar $f$, portanto $f$ é aproximado.
+  
 \end{frame}
 
 %\begin{frame}
@@ -183,175 +256,175 @@
   \end{itemize}
 \end{frame}
 
-\section{O problema da Mochila}
-
-\begin{frame}
-  \frametitle{O Problema da Mochila} % versão padrão
-  \framesubtitle{\textit{Knapsack Problem}}
-  Utilizar a mochila para carregar o maior valor possível, respeitando a sua
-  capacidade.
-  \begin{columns}[T]
-    % Primeira coluna
-	  \begin{column}{.5\textwidth}
-      \begin{block}{Modelagem matemática}
-	    { \footnotesize
-        \begin{align*}
-          \textrm{maximizar} \quad
-		  	& z = \sum_{j=1}^n p_j x_j \\
-          \textrm{sujeito a} \quad
-		  	& \sum_{j=1}^n w_{j}x_j \leq C \\
-            & {x_j \in \{0,1\}, \quad j=1,\cdots,n.}
-        \end{align*}
-		}
-      \end{block}
-    \end{column}
-    % Segunda coluna
-    \begin{column}{.5\textwidth}
-	  \begin{center}
-        \includegraphics[scale=0.3]{knapsack}
-	  \end{center}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}
-  \frametitle{O Problema da Mochila Multidimensional}
-  A \textit{mochila} agora possui mais de uma capacidade (dimensão).
-  \begin{columns}[T]
-    % Primeira coluna
-	  \begin{column}{.5\textwidth}
-      \begin{block}{Modelagem matemática}
-	    { \footnotesize
-        \begin{align*}
-          \textrm{maximizar}
-            \quad & z = \sum_{j=1}^n p_j x_j \\
-          \textrm{sujeito a}
-  	        \quad & \sum_{j=1}^n w_{ij}x_j \leq c_i, \quad i=1,\cdots,m, \\
-                & x_j \in \{0,1\}, \quad j=1,\cdots,n.
-        \end{align*}
-		}
-      \end{block}
-    \end{column}
-      % Segunda coluna
-      \begin{column}{.5\textwidth}
-	  { \tiny
-	  \begin{center}
-	  \chamada{\small Ex.: Seleção de projetos.}
-	  \\
-      \begin{tabular}{|l|r|c|c|c|} \hline
-      {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Prog.} & {\bf Designers} \\ \hline
-	  Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
-	  Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
-	  Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
-      \end{tabular}
-	  \end{center}
-
-	  \begin{center}
-      \begin{tabular}{|l|c|c|c|c|} \hline
-        {\bf Equipe} & {\bf Quantidade} \\ \hline
-	    Analistas & 6 \\ \hline
-	    Programadores & 16 \\ \hline
-	    Designers & 4 \\ \hline
-      \end{tabular}
-	  \end{center}
-	  }
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}
-  \frametitle{O Problema da Mochila com Dependência}
-  Nesta variação existe uma dependência entre os itens selecionados. \\
-  \vfill
-  \begin{tabular}{|l|r|c|c|c|} \hline
-    {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Programadores} & {\bf Designers} \\ \hline
-	Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
-	Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
-	Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
-  \end{tabular}
-  \vfill
-  \begin{columns}[T]
-    \begin{column}{.5\textwidth}
-      \begin{tabular}{|l|c|c|c|c|} \hline
-        {\bf Equipe} & {\bf Quantidade} \\ \hline
-	    Analistas & 6 \\ \hline
-	    Programadores & 16 \\ \hline
-	    Designers & 4 \\ \hline
-      \end{tabular}
-	\end{column}
-    \begin{column}{.5\textwidth}
-	  \chamada{Ex.:} Alocando no mínimo $1$ Analista para cada $3$ programadores.
-	\end{column}
-  \end{columns}
-\end{frame}
-
-\section{O Problema de Combate a Perdas}
-
-\begin{frame}
-  \frametitle{O Problema de Planejamento de Combate a Perdas}
-  \chamada{Contexto do problema}
-  \begin{itemize}
-  	\litem{A distribuidora local estima que do total de energia distribuida
-	  $13\%$ é perdida com fraude e apenas $7\%$ com fenômenos físicos.}
-  	\litem{A ANEEL estipula para as ditribuidoras de todo o país uma meta anual de
-  	  redução de perda de energia.}
-    \litem {Planejamento plurianual para redução da fraude:}
-	\begin{enumerate}
-	  \item{Alcançar a meta estipulada, resgatando o maior valor em dinheiro possível;}
-	  \item{Conjunto de ações de redução de fraude;}
-	  \item{Respeitando um orçamento anual;}
-	\end{enumerate}
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{O Problema de Planejamento de Combate a Perdas}
-    \begin{center}
-	\includegraphics[scale=0.37]{meta.eps}
-	\vspace{10pt}
-    { \scriptsize
-    \begin{tabular}{|l|r|r|r|r|r|r|r|}
-      \hline
-      \multirow{2}{*}{\bf Ação} & \multirow{2}{*}{\bf Quant.$^{1}$} & \multicolumn{2}{|c|}{\bf Custo} & \multicolumn{4}{c|}{\bf Recuperação (Kwh)} \\ \cline {3-4} \cline{5-8}
-		& & {\bf CAPEX} & {\bf OPEX} & ${ \bf 1^\circ}$ & ${ \bf 2^\circ}$ & ${ \bf 3^\circ}$ & ${ \bf 4^\circ}$ \\ \hline
-		Ação A & 140 & R\$ 100,00 & R\$ 0,00 & 100 & 70 & 70 & 70 \\ \hline
-		Ação B & 200 & R\$ 50,00 & R\$ 70,00 & 20 & 50 & 75 & 50 \\ \hline
-		Ação C & 175 & R\$ 90,00 & R\$ 30,00 & 50 & 100 & 100 & 100 \\ \hline
-		Ação D & 1000 & R\$ 1050,00 &R\$ 250,00 & 13 & 600 & 600 & 600 \\ \hline
-    \end{tabular}
-	}
-    \end{center}
-	{\footnotesize $^1$Restrição de mercado.}
-\end{frame}
-
-\begin{frame}
-  \frametitle{O Problema de Planejamento de Combate a Perdas}
-  \chamada{Outras características do problema:}
-  \begin{enumerate}
-    \item{Diferentes faixas de tensão (baixa, média ou alta);}
-    \begin{itemize}
-      \litem{Preço da energia varia entre as faixas.}
-    \end{itemize}
-    \litem{Deve-se considerar a taxa interna de retorno (juros);}
-    \litem{Pode haver dependência entre as ações;}
-    \litem{Mesmo com orçamento anual, é preferível realizar um planejamento por
-	  períodos menores (bimestral, trimestral, mensal, etc);}
-  \end{enumerate}
-\end{frame}
-
-\section{Objetivo da Pesquisa}
-
-\begin{frame}
-  \frametitle{Objetivos da Linha de Pesquisa}
-  \begin{itemize}
-    \item{Estudar complexidade do problema;}
-	\begin{itemize}
-	  \item{Quais conjuntos de ações tornam o problema difícil?}
-	  \litem{O quanto cada restrição torna o problema difícil?}
-	\end{itemize}
-    \litem{Propor métodos heurísticos para a resolução.}
-  \end{itemize}
-\end{frame}
+% \section{O problema da Mochila}
+% 
+% \begin{frame}
+%   \frametitle{O Problema da Mochila} % versão padrão
+%   \framesubtitle{\textit{Knapsack Problem}}
+%   Utilizar a mochila para carregar o maior valor possível, respeitando a sua
+%   capacidade.
+%   \begin{columns}[T]
+%     % Primeira coluna
+% 	  \begin{column}{.5\textwidth}
+%       \begin{block}{Modelagem matemática}
+% 	    { \footnotesize
+%         \begin{align*}
+%           \textrm{maximizar} \quad
+% 		  	& z = \sum_{j=1}^n p_j x_j \\
+%           \textrm{sujeito a} \quad
+% 		  	& \sum_{j=1}^n w_{j}x_j \leq C \\
+%             & {x_j \in \{0,1\}, \quad j=1,\cdots,n.}
+%         \end{align*}
+% 		}
+%       \end{block}
+%     \end{column}
+%     % Segunda coluna
+%     \begin{column}{.5\textwidth}
+% 	  \begin{center}
+%         \includegraphics[scale=0.3]{knapsack}
+% 	  \end{center}
+%     \end{column}
+%   \end{columns}
+% \end{frame}
+% 
+% \begin{frame}
+%   \frametitle{O Problema da Mochila Multidimensional}
+%   A \textit{mochila} agora possui mais de uma capacidade (dimensão).
+%   \begin{columns}[T]
+%     % Primeira coluna
+% 	  \begin{column}{.5\textwidth}
+%       \begin{block}{Modelagem matemática}
+% 	    { \footnotesize
+%         \begin{align*}
+%           \textrm{maximizar}
+%             \quad & z = \sum_{j=1}^n p_j x_j \\
+%           \textrm{sujeito a}
+%   	        \quad & \sum_{j=1}^n w_{ij}x_j \leq c_i, \quad i=1,\cdots,m, \\
+%                 & x_j \in \{0,1\}, \quad j=1,\cdots,n.
+%         \end{align*}
+% 		}
+%       \end{block}
+%     \end{column}
+%       % Segunda coluna
+%       \begin{column}{.5\textwidth}
+% 	  { \tiny
+% 	  \begin{center}
+% 	  \chamada{\small Ex.: Seleção de projetos.}
+% 	  \\
+%       \begin{tabular}{|l|r|c|c|c|} \hline
+%       {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Prog.} & {\bf Designers} \\ \hline
+% 	  Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
+% 	  Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
+% 	  Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
+%       \end{tabular}
+% 	  \end{center}
+% 
+% 	  \begin{center}
+%       \begin{tabular}{|l|c|c|c|c|} \hline
+%         {\bf Equipe} & {\bf Quantidade} \\ \hline
+% 	    Analistas & 6 \\ \hline
+% 	    Programadores & 16 \\ \hline
+% 	    Designers & 4 \\ \hline
+%       \end{tabular}
+% 	  \end{center}
+% 	  }
+%     \end{column}
+%   \end{columns}
+% \end{frame}
+% 
+% \begin{frame}
+%   \frametitle{O Problema da Mochila com Dependência}
+%   Nesta variação existe uma dependência entre os itens selecionados. \\
+%   \vfill
+%   \begin{tabular}{|l|r|c|c|c|} \hline
+%     {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Programadores} & {\bf Designers} \\ \hline
+% 	Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
+% 	Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
+% 	Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
+%   \end{tabular}
+%   \vfill
+%   \begin{columns}[T]
+%     \begin{column}{.5\textwidth}
+%       \begin{tabular}{|l|c|c|c|c|} \hline
+%         {\bf Equipe} & {\bf Quantidade} \\ \hline
+% 	    Analistas & 6 \\ \hline
+% 	    Programadores & 16 \\ \hline
+% 	    Designers & 4 \\ \hline
+%       \end{tabular}
+% 	\end{column}
+%     \begin{column}{.5\textwidth}
+% 	  \chamada{Ex.:} Alocando no mínimo $1$ Analista para cada $3$ programadores.
+% 	\end{column}
+%   \end{columns}
+% \end{frame}
+% 
+% \section{O Problema de Combate a Perdas}
+% 
+% \begin{frame}
+%   \frametitle{O Problema de Planejamento de Combate a Perdas}
+%   \chamada{Contexto do problema}
+%   \begin{itemize}
+%   	\litem{A distribuidora local estima que do total de energia distribuida
+% 	  $13\%$ é perdida com fraude e apenas $7\%$ com fenômenos físicos.}
+%   	\litem{A ANEEL estipula para as ditribuidoras de todo o país uma meta anual de
+%   	  redução de perda de energia.}
+%     \litem {Planejamento plurianual para redução da fraude:}
+% 	\begin{enumerate}
+% 	  \item{Alcançar a meta estipulada, resgatando o maior valor em dinheiro possível;}
+% 	  \item{Conjunto de ações de redução de fraude;}
+% 	  \item{Respeitando um orçamento anual;}
+% 	\end{enumerate}
+%   \end{itemize}
+% \end{frame}
+% 
+% \begin{frame}
+%   \frametitle{O Problema de Planejamento de Combate a Perdas}
+%     \begin{center}
+% 	\includegraphics[scale=0.37]{meta.eps}
+% 	\vspace{10pt}
+%     { \scriptsize
+%     \begin{tabular}{|l|r|r|r|r|r|r|r|}
+%       \hline
+%       \multirow{2}{*}{\bf Ação} & \multirow{2}{*}{\bf Quant.$^{1}$} & \multicolumn{2}{|c|}{\bf Custo} & \multicolumn{4}{c|}{\bf Recuperação (Kwh)} \\ \cline {3-4} \cline{5-8}
+% 		& & {\bf CAPEX} & {\bf OPEX} & ${ \bf 1^\circ}$ & ${ \bf 2^\circ}$ & ${ \bf 3^\circ}$ & ${ \bf 4^\circ}$ \\ \hline
+% 		Ação A & 140 & R\$ 100,00 & R\$ 0,00 & 100 & 70 & 70 & 70 \\ \hline
+% 		Ação B & 200 & R\$ 50,00 & R\$ 70,00 & 20 & 50 & 75 & 50 \\ \hline
+% 		Ação C & 175 & R\$ 90,00 & R\$ 30,00 & 50 & 100 & 100 & 100 \\ \hline
+% 		Ação D & 1000 & R\$ 1050,00 &R\$ 250,00 & 13 & 600 & 600 & 600 \\ \hline
+%     \end{tabular}
+% 	}
+%     \end{center}
+% 	{\footnotesize $^1$Restrição de mercado.}
+% \end{frame}
+% 
+% \begin{frame}
+%   \frametitle{O Problema de Planejamento de Combate a Perdas}
+%   \chamada{Outras características do problema:}
+%   \begin{enumerate}
+%     \item{Diferentes faixas de tensão (baixa, média ou alta);}
+%     \begin{itemize}
+%       \litem{Preço da energia varia entre as faixas.}
+%     \end{itemize}
+%     \litem{Deve-se considerar a taxa interna de retorno (juros);}
+%     \litem{Pode haver dependência entre as ações;}
+%     \litem{Mesmo com orçamento anual, é preferível realizar um planejamento por
+% 	  períodos menores (bimestral, trimestral, mensal, etc);}
+%   \end{enumerate}
+% \end{frame}
+% 
+% \section{Objetivo da Pesquisa}
+% 
+% \begin{frame}
+%   \frametitle{Objetivos da Linha de Pesquisa}
+%   \begin{itemize}
+%     \item{Estudar complexidade do problema;}
+% 	\begin{itemize}
+% 	  \item{Quais conjuntos de ações tornam o problema difícil?}
+% 	  \litem{O quanto cada restrição torna o problema difícil?}
+% 	\end{itemize}
+%     \litem{Propor métodos heurísticos para a resolução.}
+%   \end{itemize}
+% \end{frame}
 
 
 \end{document}
