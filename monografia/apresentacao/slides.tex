@@ -1,0 +1,357 @@
+\documentclass[10pt,fleqn]{beamer}
+
+\usepackage[portuges,brazilian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{multirow} % To merge cels horizontaly
+
+\usepackage{multicol} % para utilizar ambiente "multicols"
+\usepackage{pdfpages} % para incluir paginas de documentos PDFs
+\usepackage{color, amsmath}
+\usepackage{subfigure}
+\usepackage{graphicx} % para incluir figuras
+\usepackage[ruled,longend]{algorithm2e} % para escrever algoritmos
+\usepackage{ulem}       % para trocar a fonte?
+
+\definecolor{defblue}{rgb}{0.2, 0.2, 0.7}
+\definecolor{defred}{rgb}{0.4, 0.0, 0.0}
+\definecolor{defgreen}{rgb}{0.0, 0.4, 0.0}
+
+\definecolor{ninfagreen}{rgb}{0.168, 0.541, 0.569} % changed this
+
+% Set left ident of equations
+\setlength{\mathindent}{4pt}
+
+\newcommand{\mydef}[1]{{\vspace{8pt} \large \color{defblue} #1}}
+\newcommand{\myred}[1]{{\bf \color{defred} #1}}
+\newcommand{\mygreen}[1]{{\bf \color{defgreen} #1}}
+
+\renewcommand{\rmdefault}{put} % Utopia Font
+\renewcommand{\sfdefault}{put} % Utopia Font
+\renewcommand{\emph}[1]{ {\bf #1} }
+
+% Scale Equations
+\newcommand*{\Scale}[2][4]{\scalebox{#1}{$#2$}}%
+
+\newcommand{\litem}[1]{
+  \item{#1 \vspace{9pt}}
+}
+
+%\usetheme{Berkeley}
+%\usetheme{Hannover}
+%\usetheme{Marcos}
+%\usetheme{default}
+\usetheme{Boadilla}
+%\usetheme{Pittsburgh}
+
+%\useinnertheme{rectangles}
+%\useoutertheme{tree}
+%\setbeamercolor{separation line}{use=structure,bg=structure.fg!50!bg}
+
+%\usecolortheme{dolphin}
+%\usecolortheme{seahorse}
+
+\beamertemplatenavigationsymbolsempty
+
+% Escrita dos algoritmos
+\SetKwInput{KwIn}{Entrada}
+\SetKwInput{KwOut}{Saída}
+\SetKwFor{While}{enquanto}{faça:}{fim}
+\SetKwFor{For}{para}{faça:}{fim}
+\SetKwBlock{Begin}{início}{fim}
+\SetKwIF{If}{ElseIf}{Else}{se}{então}{senão se}{senão}{fim}
+
+\newcommand{\bigbullet}{\,\begin{picture}(-1,1)(-1,-2)\circle*{5}\end{picture}\ }
+\newcommand{\termo}[1]{\textbf{#1}}
+\newcommand{\titulo}[1]{\centering \LARGE \vfill \textcolor{defblue}{\textbf{#1}} \vfill }
+
+\newcommand{\chamada}[1]{
+  \textcolor{ninfagreen}{\textbf{#1}}
+  \vspace{10pt}
+}
+
+%\title{Um Estudo da Eficiência da Autocentralidade no Problema de Isomorfismo de Grafos}
+\title[]{Uma Análise Experimental de Método para Classificação Multirrótulo}
+\subtitle{}
+\author{Lucas Henrique Sousa Mello}
+\institute[NINFA]{}
+\date[Vitória, 17/03/2014]{Vitória, 17 de Março de 2014}
+\subject{}
+
+% Figura de fundo
+\setbeamercolor{background canvas}{bg=white}
+\setbeamertemplate{background}{\includegraphics[width=\paperwidth,bb=0 0 1036 777]{fundo.png}}
+
+% Posição dos títulos dos slides
+\addtobeamertemplate{frametitle}{\vskip 2.5ex }{}
+\addtobeamertemplate{frametitle}{\bf }{}
+
+\begin{document}
+
+\definecolor{beamer@blendedblue}{rgb}{0.168, 0.541, 0.569} % changed this
+
+%\setbeamercolor{normal text}{fg=black,bg=white}
+%\setbeamercolor{alerted text}{fg=red}
+%\setbeamercolor{example text}{fg=green!50!black}
+
+%\setbeamercolor{structure}{fg=beamer@blendedblue}
+
+%\setbeamercolor{background canvas}{parent=normal text}
+%\setbeamercolor{background}{parent=background canvas}
+
+%\setbeamercolor{palette primary}{fg=yellow,bg=yellow} % changed this
+%\setbeamercolor{palette secondary}{use=structure,fg=structure.fg!100!green} % changed this
+%\setbeamercolor{palette tertiary}{use=structure,fg=structure.fg!100!green} % changed this
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Sumário}
+%   \begin{itemize}
+%     \litem{Introdução}
+%     \litem{O problema da Mochila}
+%     \litem{O Problema de Combate a Perdas}
+%     \litem{Objetivos da Pesquisa}
+%   \end{itemize}
+% \end{frame}
+
+\section{Introdução}
+
+\begin{frame}
+  \frametitle{Problemas de Otimização}
+  \framesubtitle{O que são?}
+  Definição geral de um problema de otimização:
+  \vspace{10pt}
+  \begin{align}
+    \textrm{maximizar}
+      \quad & z = f(x) \nonumber \\
+  	  \quad & x \in S \nonumber \\
+	  \nonumber
+  \end{align}
+\end{frame}
+
+%\begin{frame}
+%  \frametitle{Otimização Contínua x Combinatória (Discreta)}
+%  \begin{align*}
+%    \textrm{maximizar}
+%      \quad & z = f(x) & \textrm{maximizar} \quad & z = f(x) \\
+%  	  \quad & x \in \mathbb{R} & \quad & x \in \mathbb{N} \\
+%	  \nonumber
+%  \end{align*}
+%\end{frame}
+
+\begin{frame}
+  \frametitle{Problemas de Otimização Combinatória}
+  \framesubtitle{Quando o problema é combinatório?}
+  Definição geral de um problema de otimização combinatória:
+  \begin{align}
+    \textrm{maximizar}
+      \quad & z = f(x) \nonumber \\
+  	  \quad & x \in S \nonumber, \qquad S \, \textrm{é finito} \\
+	  \nonumber
+  \end{align}
+\end{frame}
+
+%\begin{frame}
+%  \frametitle{Otimização Contínua x Combinatória (Discreta)}
+%  \begin{align*}
+%    \textrm{maximizar}
+%      \quad & z = f(x) & \textrm{maximizar} \quad & z = f(x) \\
+%  	  \quad & x \in \mathbb{R} & \quad & x \in \mathbb{N} \\
+%	  \nonumber
+%  \end{align*}
+%\end{frame}
+
+%\begin{frame}
+%  \frametitle{Problemas Difíceis (NP-Hard)}
+%\end{frame}
+
+\begin{frame}
+  \frametitle{Problemas de Otimização Combinatória}
+  Muitos deles são NP-Hard. Como resolvê-los?
+  \vspace{10pt}
+  \begin{itemize}
+    \litem{Algoritmos Exatos}
+    \litem{Algoritmos de Aproximação}
+    \litem{Algoritmos Heurísticos}
+	\begin{itemize}
+	  \item{Meta-heurísticas}
+	\end{itemize}
+  \end{itemize}
+\end{frame}
+
+\section{O problema da Mochila}
+
+\begin{frame}
+  \frametitle{O Problema da Mochila} % versão padrão
+  \framesubtitle{\textit{Knapsack Problem}}
+  Utilizar a mochila para carregar o maior valor possível, respeitando a sua
+  capacidade.
+  \begin{columns}[T]
+    % Primeira coluna
+	  \begin{column}{.5\textwidth}
+      \begin{block}{Modelagem matemática}
+	    { \footnotesize
+        \begin{align*}
+          \textrm{maximizar} \quad
+		  	& z = \sum_{j=1}^n p_j x_j \\
+          \textrm{sujeito a} \quad
+		  	& \sum_{j=1}^n w_{j}x_j \leq C \\
+            & {x_j \in \{0,1\}, \quad j=1,\cdots,n.}
+        \end{align*}
+		}
+      \end{block}
+    \end{column}
+    % Segunda coluna
+    \begin{column}{.5\textwidth}
+	  \begin{center}
+        \includegraphics[scale=0.3]{knapsack}
+	  \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{O Problema da Mochila Multidimensional}
+  A \textit{mochila} agora possui mais de uma capacidade (dimensão).
+  \begin{columns}[T]
+    % Primeira coluna
+	  \begin{column}{.5\textwidth}
+      \begin{block}{Modelagem matemática}
+	    { \footnotesize
+        \begin{align*}
+          \textrm{maximizar}
+            \quad & z = \sum_{j=1}^n p_j x_j \\
+          \textrm{sujeito a}
+  	        \quad & \sum_{j=1}^n w_{ij}x_j \leq c_i, \quad i=1,\cdots,m, \\
+                & x_j \in \{0,1\}, \quad j=1,\cdots,n.
+        \end{align*}
+		}
+      \end{block}
+    \end{column}
+      % Segunda coluna
+      \begin{column}{.5\textwidth}
+	  { \tiny
+	  \begin{center}
+	  \chamada{\small Ex.: Seleção de projetos.}
+	  \\
+      \begin{tabular}{|l|r|c|c|c|} \hline
+      {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Prog.} & {\bf Designers} \\ \hline
+	  Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
+	  Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
+	  Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
+      \end{tabular}
+	  \end{center}
+
+	  \begin{center}
+      \begin{tabular}{|l|c|c|c|c|} \hline
+        {\bf Equipe} & {\bf Quantidade} \\ \hline
+	    Analistas & 6 \\ \hline
+	    Programadores & 16 \\ \hline
+	    Designers & 4 \\ \hline
+      \end{tabular}
+	  \end{center}
+	  }
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{O Problema da Mochila com Dependência}
+  Nesta variação existe uma dependência entre os itens selecionados. \\
+  \vfill
+  \begin{tabular}{|l|r|c|c|c|} \hline
+    {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Programadores} & {\bf Designers} \\ \hline
+	Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
+	Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
+	Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
+  \end{tabular}
+  \vfill
+  \begin{columns}[T]
+    \begin{column}{.5\textwidth}
+      \begin{tabular}{|l|c|c|c|c|} \hline
+        {\bf Equipe} & {\bf Quantidade} \\ \hline
+	    Analistas & 6 \\ \hline
+	    Programadores & 16 \\ \hline
+	    Designers & 4 \\ \hline
+      \end{tabular}
+	\end{column}
+    \begin{column}{.5\textwidth}
+	  \chamada{Ex.:} Alocando no mínimo $1$ Analista para cada $3$ programadores.
+	\end{column}
+  \end{columns}
+\end{frame}
+
+\section{O Problema de Combate a Perdas}
+
+\begin{frame}
+  \frametitle{O Problema de Planejamento de Combate a Perdas}
+  \chamada{Contexto do problema}
+  \begin{itemize}
+  	\litem{A distribuidora local estima que do total de energia distribuida
+	  $13\%$ é perdida com fraude e apenas $7\%$ com fenômenos físicos.}
+  	\litem{A ANEEL estipula para as ditribuidoras de todo o país uma meta anual de
+  	  redução de perda de energia.}
+    \litem {Planejamento plurianual para redução da fraude:}
+	\begin{enumerate}
+	  \item{Alcançar a meta estipulada, resgatando o maior valor em dinheiro possível;}
+	  \item{Conjunto de ações de redução de fraude;}
+	  \item{Respeitando um orçamento anual;}
+	\end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{O Problema de Planejamento de Combate a Perdas}
+    \begin{center}
+	\includegraphics[scale=0.37]{meta.eps}
+	\vspace{10pt}
+    { \scriptsize
+    \begin{tabular}{|l|r|r|r|r|r|r|r|}
+      \hline
+      \multirow{2}{*}{\bf Ação} & \multirow{2}{*}{\bf Quant.$^{1}$} & \multicolumn{2}{|c|}{\bf Custo} & \multicolumn{4}{c|}{\bf Recuperação (Kwh)} \\ \cline {3-4} \cline{5-8}
+		& & {\bf CAPEX} & {\bf OPEX} & ${ \bf 1^\circ}$ & ${ \bf 2^\circ}$ & ${ \bf 3^\circ}$ & ${ \bf 4^\circ}$ \\ \hline
+		Ação A & 140 & R\$ 100,00 & R\$ 0,00 & 100 & 70 & 70 & 70 \\ \hline
+		Ação B & 200 & R\$ 50,00 & R\$ 70,00 & 20 & 50 & 75 & 50 \\ \hline
+		Ação C & 175 & R\$ 90,00 & R\$ 30,00 & 50 & 100 & 100 & 100 \\ \hline
+		Ação D & 1000 & R\$ 1050,00 &R\$ 250,00 & 13 & 600 & 600 & 600 \\ \hline
+    \end{tabular}
+	}
+    \end{center}
+	{\footnotesize $^1$Restrição de mercado.}
+\end{frame}
+
+\begin{frame}
+  \frametitle{O Problema de Planejamento de Combate a Perdas}
+  \chamada{Outras características do problema:}
+  \begin{enumerate}
+    \item{Diferentes faixas de tensão (baixa, média ou alta);}
+    \begin{itemize}
+      \litem{Preço da energia varia entre as faixas.}
+    \end{itemize}
+    \litem{Deve-se considerar a taxa interna de retorno (juros);}
+    \litem{Pode haver dependência entre as ações;}
+    \litem{Mesmo com orçamento anual, é preferível realizar um planejamento por
+	  períodos menores (bimestral, trimestral, mensal, etc);}
+  \end{enumerate}
+\end{frame}
+
+\section{Objetivo da Pesquisa}
+
+\begin{frame}
+  \frametitle{Objetivos da Linha de Pesquisa}
+  \begin{itemize}
+    \item{Estudar complexidade do problema;}
+	\begin{itemize}
+	  \item{Quais conjuntos de ações tornam o problema difícil?}
+	  \litem{O quanto cada restrição torna o problema difícil?}
+	\end{itemize}
+    \litem{Propor métodos heurísticos para a resolução.}
+  \end{itemize}
+\end{frame}
+
+
+\end{document}
