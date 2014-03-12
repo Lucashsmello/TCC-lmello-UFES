@@ -14,6 +14,9 @@
 \usepackage[ruled,longend]{algorithm2e} % para escrever algoritmos
 \usepackage{ulem}       % para trocar a fonte?
 
+\usepackage{textcomp}
+\usepackage{amssymb}
+
 \graphicspath{{pics/}}
 
 \definecolor{defblue}{rgb}{0.2, 0.2, 0.7}
@@ -163,46 +166,51 @@
     \begin{exampleblock}{Exemplo:}
   \begin{itemize}
    \item Filme: pode ser de comédia e romance.
-  \end{itemize}
+  \end{itemize} 
   
  \end{exampleblock}
+ Pode haver dependência entre as classes!
 \end{frame}
 
 
 \begin{frame}
-  \frametitle{Problemas de Classificação}
+  \frametitle{Problemas de Classificação Unirrótulo}
   \framesubtitle{O que são?}
   
-  Definição geral de um problema de classificação unirrótulo:
-  
-  \vspace{10pt}
+  Seja $Y=\{r_1,r_2,r_3,...,r_m\}$ o conjunto dos $m$ possíveis rótulos.
+%   \vspace{10pt}
+  \begin{block}{Definição Formal:}
   \begin{align}
     \textrm{encontrar}
       \quad & f(x)=y \\
-  	  \quad & \textrm{para todo }x \in X \nonumber \\
+  	  \quad & \textrm{para todo }x \in X, \nonumber \\
+  	  \quad & y\in Y
 	  \nonumber
   \end{align}
+  \end{block}
   
-  Muito difícil encontrar $f$, portanto $f$ é aproximado.
+  Um classificador é $f$ aproximado.
   
 \end{frame}
 
 
 \begin{frame}
-  \frametitle{Problemas de Classificação}
+  \frametitle{Problemas de Classificação Multirrótulo}
   \framesubtitle{O que são?}
   
-  Definição geral de um problema de classificação multi:
-  
-  \vspace{10pt}
+  Seja $Y=\{r_1,r_2,r_3,...,r_m\}$ o conjunto dos $m$ possíveis rótulos.
+% %     \vspace{10pt}
+  \begin{block}{Definição Formal:}
   \begin{align}
     \textrm{encontrar}
       \quad & f(x)=y \\
-  	  \quad & \textrm{para todo }x \in X \nonumber \\
+  	  \quad & \textrm{para todo }x \in X, \nonumber \\
+  	  \quad & y\subseteq Y
 	  \nonumber
   \end{align}
+  \end{block}
   
-  Muito difícil encontrar $f$, portanto $f$ é aproximado.
+  Um classificador é $f$ aproximado.
   
 \end{frame}
 
@@ -217,214 +225,81 @@
 %\end{frame}
 
 \begin{frame}
-  \frametitle{Problemas de Otimização Combinatória}
-  \framesubtitle{Quando o problema é combinatório?}
-  Definição geral de um problema de otimização combinatória:
-  \begin{align}
-    \textrm{maximizar}
-      \quad & z = f(x) \nonumber \\
-  	  \quad & x \in S \nonumber, \qquad S \, \textrm{é finito} \\
-	  \nonumber
-  \end{align}
-\end{frame}
-
-%\begin{frame}
-%  \frametitle{Otimização Contínua x Combinatória (Discreta)}
-%  \begin{align*}
-%    \textrm{maximizar}
-%      \quad & z = f(x) & \textrm{maximizar} \quad & z = f(x) \\
-%  	  \quad & x \in \mathbb{R} & \quad & x \in \mathbb{N} \\
-%	  \nonumber
-%  \end{align*}
-%\end{frame}
-
-%\begin{frame}
-%  \frametitle{Problemas Difíceis (NP-Hard)}
-%\end{frame}
-
-\begin{frame}
-  \frametitle{Problemas de Otimização Combinatória}
-  Muitos deles são NP-Hard. Como resolvê-los?
-  \vspace{10pt}
+  \frametitle{Problemas de Classificação}
+  \framesubtitle{Complexidade}
+  
+  Temos $m$ possíveis rótulos.
+  
+  Número de possíveis saídas:
   \begin{itemize}
-    \litem{Algoritmos Exatos}
-    \litem{Algoritmos de Aproximação}
-    \litem{Algoritmos Heurísticos}
-	\begin{itemize}
-	  \item{Meta-heurísticas}
-	\end{itemize}
+   \item Unirrótulo: $m$ (Linear)
+   \item Multirrótulo: $2^m$ (Exponencial)
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Avaliação de Desempenho}
+  Como estimar quão próximo o classificador ($\hat{f}$) é de $f$?
+  
+  \begin{itemize}
+   \item Testes onde resultado esperado é conhecido.
+   \begin{itemize}
+    \item Para cada $x\in \{x_1,x_2,...,x_n\}$, $\hat{f}(x)=f(x)?$
+   \end{itemize}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Avaliação de Desempenho}
+  \framesubtitle{Métricas Multirrótulo}
+  Quão próximo cada teste de $\hat{f}(x)$ é de $f(x)$?
+  \begin{center}
+  $\{\textrm{Comédia,Romance}\} \approx \{\textrm{Comédia,Ação}\}$?
+  \end{center}
+  
+  \begin{itemize}
+  \litem{Subset Accuracy}: 1 se $\hat{f}(x)=f(x)$,~$0$~contrário.
+  \litem{Hamming Loss}: $\frac{1}{m}(\hat{f}(x) \triangle f(x))$. 
+  \litem{Example Based Accuracy}: \large{$\frac{|\hat{f}(x) \cap f(x)|}{|\hat{f}(x) \cup f(x)|}$}
+  
   \end{itemize}
 \end{frame}
 
-% \section{O problema da Mochila}
-% 
-% \begin{frame}
-%   \frametitle{O Problema da Mochila} % versão padrão
-%   \framesubtitle{\textit{Knapsack Problem}}
-%   Utilizar a mochila para carregar o maior valor possível, respeitando a sua
-%   capacidade.
-%   \begin{columns}[T]
-%     % Primeira coluna
-% 	  \begin{column}{.5\textwidth}
-%       \begin{block}{Modelagem matemática}
-% 	    { \footnotesize
-%         \begin{align*}
-%           \textrm{maximizar} \quad
-% 		  	& z = \sum_{j=1}^n p_j x_j \\
-%           \textrm{sujeito a} \quad
-% 		  	& \sum_{j=1}^n w_{j}x_j \leq C \\
-%             & {x_j \in \{0,1\}, \quad j=1,\cdots,n.}
-%         \end{align*}
-% 		}
-%       \end{block}
-%     \end{column}
-%     % Segunda coluna
-%     \begin{column}{.5\textwidth}
-% 	  \begin{center}
-%         \includegraphics[scale=0.3]{knapsack}
-% 	  \end{center}
-%     \end{column}
-%   \end{columns}
-% \end{frame}
-% 
-% \begin{frame}
-%   \frametitle{O Problema da Mochila Multidimensional}
-%   A \textit{mochila} agora possui mais de uma capacidade (dimensão).
-%   \begin{columns}[T]
-%     % Primeira coluna
-% 	  \begin{column}{.5\textwidth}
-%       \begin{block}{Modelagem matemática}
-% 	    { \footnotesize
-%         \begin{align*}
-%           \textrm{maximizar}
-%             \quad & z = \sum_{j=1}^n p_j x_j \\
-%           \textrm{sujeito a}
-%   	        \quad & \sum_{j=1}^n w_{ij}x_j \leq c_i, \quad i=1,\cdots,m, \\
-%                 & x_j \in \{0,1\}, \quad j=1,\cdots,n.
-%         \end{align*}
-% 		}
-%       \end{block}
-%     \end{column}
-%       % Segunda coluna
-%       \begin{column}{.5\textwidth}
-% 	  { \tiny
-% 	  \begin{center}
-% 	  \chamada{\small Ex.: Seleção de projetos.}
-% 	  \\
-%       \begin{tabular}{|l|r|c|c|c|} \hline
-%       {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Prog.} & {\bf Designers} \\ \hline
-% 	  Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
-% 	  Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
-% 	  Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
-%       \end{tabular}
-% 	  \end{center}
-% 
-% 	  \begin{center}
-%       \begin{tabular}{|l|c|c|c|c|} \hline
-%         {\bf Equipe} & {\bf Quantidade} \\ \hline
-% 	    Analistas & 6 \\ \hline
-% 	    Programadores & 16 \\ \hline
-% 	    Designers & 4 \\ \hline
-%       \end{tabular}
-% 	  \end{center}
-% 	  }
-%     \end{column}
-%   \end{columns}
-% \end{frame}
-% 
-% \begin{frame}
-%   \frametitle{O Problema da Mochila com Dependência}
-%   Nesta variação existe uma dependência entre os itens selecionados. \\
-%   \vfill
-%   \begin{tabular}{|l|r|c|c|c|} \hline
-%     {\bf Projeto} & {\bf Valor} & {\bf Analistas} & {\bf Programadores} & {\bf Designers} \\ \hline
-% 	Projeto A & R\$ 100 000,00 & 2 & 6 & 1 \\ \hline
-% 	Projeto B & R\$ 150 000,00 & 4 & 10 & 3 \\ \hline
-% 	Projeto C & R\$ 80 000,00 & 2 & 4 & 2 \\ \hline
-%   \end{tabular}
-%   \vfill
-%   \begin{columns}[T]
-%     \begin{column}{.5\textwidth}
-%       \begin{tabular}{|l|c|c|c|c|} \hline
-%         {\bf Equipe} & {\bf Quantidade} \\ \hline
-% 	    Analistas & 6 \\ \hline
-% 	    Programadores & 16 \\ \hline
-% 	    Designers & 4 \\ \hline
-%       \end{tabular}
-% 	\end{column}
-%     \begin{column}{.5\textwidth}
-% 	  \chamada{Ex.:} Alocando no mínimo $1$ Analista para cada $3$ programadores.
-% 	\end{column}
-%   \end{columns}
-% \end{frame}
-% 
-% \section{O Problema de Combate a Perdas}
-% 
-% \begin{frame}
-%   \frametitle{O Problema de Planejamento de Combate a Perdas}
-%   \chamada{Contexto do problema}
-%   \begin{itemize}
-%   	\litem{A distribuidora local estima que do total de energia distribuida
-% 	  $13\%$ é perdida com fraude e apenas $7\%$ com fenômenos físicos.}
-%   	\litem{A ANEEL estipula para as ditribuidoras de todo o país uma meta anual de
-%   	  redução de perda de energia.}
-%     \litem {Planejamento plurianual para redução da fraude:}
-% 	\begin{enumerate}
-% 	  \item{Alcançar a meta estipulada, resgatando o maior valor em dinheiro possível;}
-% 	  \item{Conjunto de ações de redução de fraude;}
-% 	  \item{Respeitando um orçamento anual;}
-% 	\end{enumerate}
-%   \end{itemize}
-% \end{frame}
-% 
-% \begin{frame}
-%   \frametitle{O Problema de Planejamento de Combate a Perdas}
-%     \begin{center}
-% 	\includegraphics[scale=0.37]{meta.eps}
-% 	\vspace{10pt}
-%     { \scriptsize
-%     \begin{tabular}{|l|r|r|r|r|r|r|r|}
-%       \hline
-%       \multirow{2}{*}{\bf Ação} & \multirow{2}{*}{\bf Quant.$^{1}$} & \multicolumn{2}{|c|}{\bf Custo} & \multicolumn{4}{c|}{\bf Recuperação (Kwh)} \\ \cline {3-4} \cline{5-8}
-% 		& & {\bf CAPEX} & {\bf OPEX} & ${ \bf 1^\circ}$ & ${ \bf 2^\circ}$ & ${ \bf 3^\circ}$ & ${ \bf 4^\circ}$ \\ \hline
-% 		Ação A & 140 & R\$ 100,00 & R\$ 0,00 & 100 & 70 & 70 & 70 \\ \hline
-% 		Ação B & 200 & R\$ 50,00 & R\$ 70,00 & 20 & 50 & 75 & 50 \\ \hline
-% 		Ação C & 175 & R\$ 90,00 & R\$ 30,00 & 50 & 100 & 100 & 100 \\ \hline
-% 		Ação D & 1000 & R\$ 1050,00 &R\$ 250,00 & 13 & 600 & 600 & 600 \\ \hline
-%     \end{tabular}
-% 	}
-%     \end{center}
-% 	{\footnotesize $^1$Restrição de mercado.}
-% \end{frame}
-% 
-% \begin{frame}
-%   \frametitle{O Problema de Planejamento de Combate a Perdas}
-%   \chamada{Outras características do problema:}
-%   \begin{enumerate}
-%     \item{Diferentes faixas de tensão (baixa, média ou alta);}
-%     \begin{itemize}
-%       \litem{Preço da energia varia entre as faixas.}
-%     \end{itemize}
-%     \litem{Deve-se considerar a taxa interna de retorno (juros);}
-%     \litem{Pode haver dependência entre as ações;}
-%     \litem{Mesmo com orçamento anual, é preferível realizar um planejamento por
-% 	  períodos menores (bimestral, trimestral, mensal, etc);}
-%   \end{enumerate}
-% \end{frame}
-% 
-% \section{Objetivo da Pesquisa}
-% 
-% \begin{frame}
-%   \frametitle{Objetivos da Linha de Pesquisa}
-%   \begin{itemize}
-%     \item{Estudar complexidade do problema;}
-% 	\begin{itemize}
-% 	  \item{Quais conjuntos de ações tornam o problema difícil?}
-% 	  \litem{O quanto cada restrição torna o problema difícil?}
-% 	\end{itemize}
-%     \litem{Propor métodos heurísticos para a resolução.}
-%   \end{itemize}
-% \end{frame}
+\begin{frame}
+  \frametitle{Avaliação de Desempenho}
+  \framesubtitle{Métricas Multirrótulo}
+  \begin{itemize}
+  \litem{Subset Accuracy}: Confere se explorou dependência entre rótulos.
+  \litem{Hamming Loss}: Confere se explorou as características.
+  \litem{Example Based Accuracy}: Meio termo dos anteriores.
+  \end{itemize}
+  \begin{block}{}
+Afirmações baseadas em argumentos matemáticos.
+ \end{block}
+ 
+\end{frame}
 
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Transformação do problema}
+  
+  Comumente é adotado a estratégia ``Dividir para Conquistar'':
+    \begin{center}
+  \includegraphics[scale=0.53]{transformar}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Transformação do problema}
+  
+  Comumente é adotado a estratégia ``Dividir para Conquistar'':
+    \begin{center}
+  \includegraphics[scale=0.53]{transformar}
+    \end{center}
+\end{frame}
 
 \end{document}
