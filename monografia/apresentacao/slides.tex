@@ -282,6 +282,8 @@ Afirmações baseadas em argumentos matemáticos.
  
 \end{frame}
 
+% CLASSIFICADORES MULTIRRÓTULOS: -------------------------------
+
 \begin{frame}
   \frametitle{Classificadores Multirrótulo}
   \framesubtitle{Transformação do problema}
@@ -294,12 +296,95 @@ Afirmações baseadas em argumentos matemáticos.
 
 \begin{frame}
   \frametitle{Classificadores Multirrótulo}
-  \framesubtitle{Transformação do problema}
+  \framesubtitle{Binary Relevance}
+  Fase de Treinamento do Binary Relevance (BR):
   
-  Comumente é adotado a estratégia ``Dividir para Conquistar'':
     \begin{center}
-  \includegraphics[scale=0.53]{transformar}
+  \includegraphics[scale=0.4]{BR-figure2}
     \end{center}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Dependent Binary Relevance}
+  
+  O Dependent Binary Relevance (DBR) considera a dependência entre rótulos:
+  
+  \begin{itemize}
+   \item É adicionado uma nova etapa ao BR.
+%    \item Na nova etapa, rótulos são considerados características.
+   \item Na nova etapa, rótulos são considerados características.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Dependent Binary Relevance}
+  O Dependent Binary Relevance usa o BR:
+  
+    \begin{center}
+  \includegraphics[scale=0.4]{DBR-prediction-fig}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Recursive Dependent Binary Relevance}
+  O Recursive Dependent Binary Relevance (RDBR):
+   \begin{itemize}
+    \item Melhoria do DBR.
+    \item Baseado no mesmo princípio: rótulos como boas características.
+    \item Saída multirrótulo do DBR é reusado.
+   \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Recursive Dependent Binary Relevance}
+    \begin{center}
+  \includegraphics[scale=0.4]{RDBR-fig}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Classificadores Multirrótulo}
+  \framesubtitle{Recursive Dependent Binary Relevance}
+    \begin{center}
+  \includegraphics[scale=0.4]{RDBR-fig}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Recursive Dependent Binary Relevance}
+  \framesubtitle{Análise}
+    
+    Testes experimentais:
+    \begin{itemize}
+     \item 8 bases de dados
+     \item 4 classificadores binários: KNN,SVM,Regressão Logística e C4.5.
+     \item Validação Cruzada com 10 folds.
+    \end{itemize}
+    
+    \begin{block}{Resultados}
+     \begin{itemize}
+      \item Melhorou em \textbf{80\%} dos testes;
+      \item Empatou em \textbf{12.5\%};
+      \item Piorou em \textbf{6.25\%}.
+     \end{itemize}
+    \end{block}
+   \begin{center}
+  $RDBR\geq DBR$, em \textbf{92.5\%} dos casos.
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Análise Empírica}
+  \framesubtitle{Configuração Experimental}
+  
+    
+\end{frame}  
 
 \end{document}
